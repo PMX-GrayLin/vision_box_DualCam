@@ -1,0 +1,12 @@
+{
+   "cmd":"DOUT_SET_MODE",
+   "args":{
+      "CameraId":"1",
+      "DoutPin":"2",
+      "DoutActive":"Low",
+      "SelectMode":"Result",
+      "msgId":"7343_1715660999977",
+      "cmd":"DOUT_SET_MODE"
+   },
+   "noWaitResponse":true
+}

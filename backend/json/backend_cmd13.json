@@ -1,0 +1,20 @@
+{
+   "cmd":"CAMERA_SET_CONFIG",
+   "args":{
+      "ProjectName":"Two%--2",
+      "CameraId":"2",
+      "PixelFormat":"Mono8",
+      "Width":3072,
+      "Offset_X":0,
+      "Offset_Y":0,
+      "BinningScale":1,
+      "TriggerMode":"Software",
+      "ExposureMode":"Manual",
+      "ExposureTime":10000,
+      "SaveImgOpt":"Every Image",
+      "SaveImgMaxLimit":100,
+      "msgId":"7230_1715661020668",
+      "cmd":"CAMERA_SET_CONFIG"
+   },
+   "noWaitResponse":true
+}

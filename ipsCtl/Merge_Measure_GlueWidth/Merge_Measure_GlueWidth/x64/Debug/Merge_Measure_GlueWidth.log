@@ -1,0 +1,404 @@
+﻿  Method_GigECamCtrl.cpp
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECam\GigECamDataStructureDef.h(46,40): warning C4353: 使用了非標準的擴充: 常數 0 當做函式運算式。請用 '__noop' 函式內建代替
+C:\OpenCV_451\opencv\build\include\opencv2\calib3d.hpp(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+  Main_Unittesting.cpp
+C:\OpenCV_451\opencv\build\include\opencv2\calib3d.hpp(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\cvip.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8973,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9032,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9033,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9035,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9980,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9988,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9995,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10002,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10009,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10016,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10022,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10028,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10057,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10066,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10075,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10084,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10098,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10105,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10112,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10119,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10126,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10136,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10146,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10156,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10589,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10590,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1397,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1407,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1423,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1435,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1461,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1469,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1482,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1581,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1589,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1603,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1610,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winreg.h(102,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winioctl.h(11224,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winioctl.h(13338,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winspool.h(1200,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winspool.h(1205,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(376,78): warning C4267: '正在初始化': 將 'size_t' 轉換為 'unsigned int'，資料可能遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(377,78): warning C4267: '正在初始化': 將 'size_t' 轉換為 'unsigned int'，資料可能遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(378,74): warning C4267: '正在初始化': 將 'size_t' 轉換為 'unsigned int'，資料可能遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(379,75): warning C4267: '正在初始化': 將 'size_t' 轉換為 'unsigned int'，資料可能遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(394,89): warning C4244: '引數': 將 'double' 轉換為 '_Tp'，由於類型不同，可能導致資料遺失
+          with
+          [
+              _Tp=int
+          ]
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\GigECamCtrl_Acquisition.h(394,70): warning C4244: '引數': 將 'double' 轉換為 '_Tp'，由於類型不同，可能導致資料遺失
+          with
+          [
+              _Tp=int
+          ]
+  Measure_GlueWidth_ConcreteClass.cpp
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\cvip.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+C:\OpenCV_451\opencv\build\include\opencv2\calib3d.hpp(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8973,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9032,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9033,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9035,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9980,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9988,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9995,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10002,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10009,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10016,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10022,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10028,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10057,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10066,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10075,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10084,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10098,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10105,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10112,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10119,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10126,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10136,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10146,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10156,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10589,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10590,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1397,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1407,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1423,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1435,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1461,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1469,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1482,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1581,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1589,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1603,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1610,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winreg.h(102,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\include\spdlog\details\circular_q.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\include\spdlog\fmt\bundled\chrono.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+  Measure_GlueWidth_InterfaceClass.cpp
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\cvip.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+C:\OpenCV_451\opencv\build\include\opencv2\calib3d.hpp(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8973,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9032,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9033,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9035,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9980,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9988,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(9995,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10002,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10009,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10016,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10022,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10028,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10034,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10057,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10066,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10075,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10084,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10098,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10105,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10112,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10119,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10126,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10136,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10146,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10156,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10589,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(10590,17): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1397,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1407,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1423,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1435,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1461,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1469,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1482,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1581,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1589,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1603,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(1610,22): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winreg.h(102,21): error C2872: 'ACCESS_MASK': 模稜兩可的符號
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winnt.h(8972,15): message : 可能是 'DWORD ACCESS_MASK'
+C:\OpenCV_451\opencv\build\include\opencv2\core\mat.hpp(65,22): message : 或       'cv::AccessFlag ACCESS_MASK'
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\include\spdlog\details\circular_q.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\include\spdlog\fmt\bundled\chrono.h(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+D:\RexTY_Linux\ipl_arch64\Merge_Measure_GlueWidth\Measure_GlueWidth_InterfaceClass.cpp(12,5): error C2491: 'CreateObject_Class': dllimport 函式 的定義是不被允許的
+  正在產生程式碼...

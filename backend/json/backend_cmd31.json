@@ -1,0 +1,9 @@
+{
+   "cmd":"AUTO_TEST_SET_MODE",
+   "noWaitResponse":true,
+   "args":{
+      "onoffSetting":0,
+      "msgId":"7646_1715965825143",
+      "cmd":"AUTO_TEST_SET_MODE"
+   }
+}

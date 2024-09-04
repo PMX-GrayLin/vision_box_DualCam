@@ -1,0 +1,9 @@
+{
+   "cmd":"TRIGGERMODE_SET_PARAM",
+   "noWaitResponse":true,
+   "args":{
+      "Enb_TriggerMode_Activate":1,
+      "msgId":"9342_1715965821978",
+      "cmd":"TRIGGERMODE_SET_PARAM"
+   }
+}

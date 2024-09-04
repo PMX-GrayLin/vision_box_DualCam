@@ -1,0 +1,10 @@
+{
+   "cmd":"REPORT_TEST_RESULT",
+   "noWaitResponse":true,
+   "args":{
+      "Result":"NG",
+      "CameraId":"2",
+      "msgId":"8336_1715965823133",
+      "cmd":"REPORT_TEST_RESULT"
+   }
+}

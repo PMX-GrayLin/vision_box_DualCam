@@ -1,0 +1,9 @@
+{
+   "cmd":"REPORT_TEST_RESULT",
+   "args":{
+      "CameraId":"2",
+      "msgId":"4026_1694426615098",
+      "Result":"NG"
+   }
+}
+

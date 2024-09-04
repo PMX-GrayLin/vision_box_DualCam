@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="來源檔案">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="標頭檔">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="資源檔">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="標頭檔\GigECam">
+      <UniqueIdentifier>{810bd886-99ef-40d7-aa51-2c82efceb975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="來源檔案\GigECam">
+      <UniqueIdentifier>{46302d10-24a6-4f67-a137-cc0b24ca4162}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\BaseDataStructureDef.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cvip.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DLLVerification_GlueWidth.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Measure_GlueWidth_ConcreteClass.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Measure_GlueWidth_DLL.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Measure_GlueWidth_InterfaceClass.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Method_Alignment.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Method_ImgProcessing.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Method_Measure.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GigECamCtrl_Acquisition.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\generalfunc.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GigECam\GigECamDataStructureDef.h">
+      <Filter>標頭檔\GigECam</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GigECam\GigECamLib_ConcreteClass.h">
+      <Filter>標頭檔\GigECam</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GigECam\GigECamLib_InterfaceClass.h">
+      <Filter>標頭檔\GigECam</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GigECam\Method_GigECamCtrl.h">
+      <Filter>標頭檔\GigECam</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\cvip.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DLLVerification_GlueWidth.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Main_Unittesting.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Measure_GlueWidth_ConcreteClass.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Measure_GlueWidth_DLL.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Measure_GlueWidth_InterfaceClass.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Method_Alignment.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Method_ImgProcessing.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Method_Measure.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GigECam\Method_GigECamCtrl.cpp">
+      <Filter>來源檔案\GigECam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GigECam\GigECamLib_ConcreteClass.cpp">
+      <Filter>來源檔案\GigECam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GigECam\GigECamLib_InterfaceClass.cpp">
+      <Filter>來源檔案\GigECam</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Makefile">
+      <Filter>來源檔案</Filter>
+    </None>
+  </ItemGroup>
+</Project>

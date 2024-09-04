@@ -1,0 +1,13 @@
+{
+   "cmd":"LIGHT_SET_BRIGHTNESS",
+   "args":{
+      "ProjectName":"Two%--2",
+      "CameraId":"2",
+      "lightSource":"2",
+      "Brightness":"10",
+      "Switch":"OFF",
+      "msgId":"2327_1715661000289",
+      "cmd":"LIGHT_SET_BRIGHTNESS"
+   },
+   "noWaitResponse":true
+}

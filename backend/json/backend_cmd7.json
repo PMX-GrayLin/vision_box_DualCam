@@ -1,0 +1,12 @@
+{
+   "cmd":"DIN_SET_MODE",
+   "args":{
+      "CameraId":"2",
+      "DinPin":"1",
+      "DinActive":"High",
+      "SelectMode":"Glue inspection",
+      "msgId":"6467_1715661000915",
+      "cmd":"DIN_SET_MODE"
+   },
+   "noWaitResponse":true
+}

@@ -1,0 +1,10 @@
+Model:  
+    path: cnn/MobileNetV2.tflite
+    width: 224
+Project Root:
+    '../dataset'
+Show:
+    Send Msg: true
+    Recv Msg: true
+    Acc: true
+kfold: 0
