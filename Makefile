@@ -16,7 +16,6 @@ VERSION_FLAG += -DIOS_VERSION="\"IOS.0.0.4\""
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_AddTimestamp_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_SpeedOptimization_DEBUG
 
-
 PP = aarch64-linux-gnu-g++
 
 HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
