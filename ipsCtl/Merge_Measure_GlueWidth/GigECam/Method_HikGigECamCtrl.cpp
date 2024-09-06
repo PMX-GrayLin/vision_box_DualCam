@@ -117,7 +117,7 @@ int CMethod_HikGigECamCtrl::GigeCam_Init()
 			else
 			{
 				nDeviceIndex = nIndex;
-				CAMI(" ~^_^~  MV_CC_OpenDevice[ %d ]\n", nDeviceIndex);
+				// CAMI(" ~^_^~  MV_CC_OpenDevice[ %d ]\n", nDeviceIndex);
 
 				break;
 			}
@@ -1407,12 +1407,12 @@ int CMethod_HikGigECamCtrl::Configure_Get(void* pCam, LpGigECamConfig pParamOut,
 		if (!nRet) nRet = MV_CC_GetEnumValue(camera, "DecimationHorizontal", &cfg_Binning_ScaleVal);
 		if (0x80000106 == nRet) //0x80000106 == The node access condition is wrong, so we try "BinningHorizontal"; 
 		{
-			CAMW(" # Waring !!, Can not get info of \"DecimationHorizontal\"[0x%x], try to get \"BinningHorizontal\" node info.\n", nRet);
+			// CAMW(" # Waring !!, Can not get info of \"DecimationHorizontal\"[0x%x], try to get \"BinningHorizontal\" node info.\n", nRet);
 			nRet = MV_CC_GetEnumValue(camera, "BinningHorizontal", &cfg_Binning_ScaleVal);
 			bflgIsBinningMode = true;
 		}
 		else {
-			CAMI(" @ OK ~~, Can get info of \"DecimationHorizontal\"[0x%x]\n", nRet);
+			// CAMI(" @ OK ~~, Can get info of \"DecimationHorizontal\"[0x%x]\n", nRet);
 			bflgIsBinningMode = false;
 		}
 		usleep(500);

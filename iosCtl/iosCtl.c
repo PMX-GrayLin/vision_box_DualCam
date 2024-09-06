@@ -2592,10 +2592,11 @@ int ios_readEthAddr(char *eth, char *jstring)
 int iosCtl_init()
 {
   int ret;
+  xlog("%s:%d \n\r", __func__, __LINE__);
   
-  IOSLOG(0, "*********************************\n");
-  IOSLOG(0, "*****   IOS Controller Init.    *****\n");
-  IOSLOG(0, "*********************************\n");
+  // IOSLOG(0, "*********************************\n");
+  // IOSLOG(0, "*****   IOS Controller Init.    *****\n");
+  // IOSLOG(0, "*********************************\n");
 
   //pid_t signal_pid = getpid();
 
