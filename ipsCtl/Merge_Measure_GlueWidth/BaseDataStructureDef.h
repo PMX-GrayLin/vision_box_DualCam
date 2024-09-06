@@ -44,8 +44,6 @@ inline void Algo_Log_Level() {
 #define iplYELLOW "\033[1;33m"
 #define iplRED "\033[0;32;31m"
 
-
-
 // white
 #define IPLV(format, b...) if ((iplDebugLevel) >= (IPL_LOG_LEVEL_VERBOSE))  printf("__ipl_# %s(): ln:%d :" iplWHITE format iplNONE, __FUNCTION__, __LINE__, ##b)
 	//if ((iplDebugLevel) >= (IPL_LOG_LEVEL_VERBOSE))  printf("__ipl_# %s: %s(): ln:%d :" iplWHITE format iplNONE, __FILE__, __FUNCTION__, __LINE__, ##b)

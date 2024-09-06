@@ -34,6 +34,7 @@ inline void Cam_Log_Level() {
 }
 
 
+// ??
 /* define the tty color */
 #define camNONE "\033[m"
 #define camWHITE "\033[1;37m"

@@ -22,7 +22,7 @@ uint8_t ios_CmdInfo[512];
 uint8_t UpdateLEDStatus_Flg = 0;
 
 // ??
-uint32_t mainDebugLevel = 10;
+uint32_t mainDebugLevel = !0;
 uint32_t iosDebugLevel = 10;
 uint32_t ipsDebugLevel = 10;
 uint32_t rextyDebugLevel = 10;

@@ -10,6 +10,14 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#define DEBUGX
+
+#ifndef DEBUGX
+#define xlog(...) ((void)0)
+#else
+#define xlog(...) printf(__VA_ARGS__)
+#endif
+
 /* Constants defined by configure.ac */
 #define HAVE_INTTYPES_H 1
 #define HAVE_STDINT_H 1

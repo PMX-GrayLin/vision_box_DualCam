@@ -2958,6 +2958,8 @@ int main(int argc, char **argv)
     MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
     MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
     MAINLOG(0, "*******************************************\n");
+
+    // ??
     COLOR_PRINT("VisonBox_Version\n");
 
     /* Signal handling */
@@ -3015,42 +3017,47 @@ int main(int argc, char **argv)
     ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
     if (ret < 0)
     {
-        perror("Cannot create thread 1 !!\n");
+        xlog("%s:%d, pthread_create error:thread 1!! \n\r", __func__, __LINE__);
+        // perror("pthread_create error:thread1!!");
         exit(1);
     }
 
     ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
     if (ret < 0)
     {
-        perror("Cannot create thread 2 !!\n");
+        xlog("%s:%d, pthread_create error:thread 2!! \n\r", __func__, __LINE__);
+        // perror("Cannot create thread 2 !!\n");
         exit(1);
     }
 
     /* create a thread for IP process */
     int iCamId[2] = {0 ,1}; //dual camera
-    fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
+    // fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
     ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
     if (ret < 0)
     {
-        perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+        xlog("%s:%d, pthread_create error:thread 3!! \n\r", __func__, __LINE__);
+        // perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
         exit(1);
     }
 
     usleep(10000);
 
-    fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
+    // fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
     ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
     if (ret < 0)
     {
-        perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+        xlog("%s:%d, pthread_create error:thread 4!! \n\r", __func__, __LINE__);
+        // perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
         exit(1);
     }    
 
-    fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
+    // fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
     ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
     if (ret < 0)
     {
-        perror("Cannot create thread 5 _ ios_process(...) !!\n");
+        xlog("%s:%d, pthread_create error:thread 5!! \n\r", __func__, __LINE__);
+        // perror("Cannot create thread 5 _ ios_process(...) !!\n");
         exit(1);
     }    
 
@@ -3058,7 +3065,8 @@ int main(int argc, char **argv)
     ret = iosCtl_init();
     if (ret < 0)
     {
-        perror("iosCtl_init");
+        xlog("%s:%d, iosCtl_init fail \n\r", __func__, __LINE__);
+        // perror("iosCtl_init");
         exit(1);
     }
 
