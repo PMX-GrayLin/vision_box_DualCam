@@ -40,15 +40,16 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <net/if.h>
-#include "../common.h"
-#include "iosCtl.h"
-#include "gpio.h"
-#include "pwm.h"
 #include <linux/watchdog.h> 
 #include <poll.h>
 #include <chrono>
 #include <ctime>
 #include <ifaddrs.h>
+#include "../common.h"
+#include "iosCtl.h"
+#include "gpio.h"
+#include "pwm.h"
+#include "spi.h"
 
 #if defined (__cplusplus)
 extern "C" {
@@ -56,6 +57,10 @@ extern "C" {
     #include <i2c/smbus.h>
     #include "i2cbusses.h"
     #include "../mainCtl/ext_mqtt_client.h"
+
+    #include "VL53L1X_api.h"
+    #include "VL53L1X_calibration.h"
+    #include "vl53l1_platform.h"
 
 #if defined (__cplusplus)
 }
@@ -195,6 +200,7 @@ void close_sigint(int sig)
 {
     IOSLOG(0, "[IOS](%s): Signal %d caught! \n", __func__, sig);
     ios_modbus_free();
+    SPI_Close();
     sleep(2);
     exit(1);
 }
@@ -453,7 +459,13 @@ int iosLED_init()
     char *end;
     char filename[20];
     int force = 1;
-
+#if 1
+    ios_setStatusLed(LED1_PWR, LED_OFF);
+    ios_setStatusLed(LED2_STAT, LED_OFF);
+    ios_setStatusLed(LED3_COM, LED_OFF);
+    ios_setStatusLed(LED4_TRIG, LED_OFF);
+    ios_setStatusLed(LED5_ERR, LED_OFF);
+#else
     do {
         led_i2cbus = lookup_i2c_bus("2");
         if (led_i2cbus < 0) {
@@ -490,6 +502,7 @@ int iosLED_init()
     if ((ret = i2c_smbus_write_byte_data(iosLED_file, PCA64_P1, (char)0x00)) < 0) {
         printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
     }
+#endif
     return ret;
 }
 
@@ -678,33 +691,19 @@ int ios_doutSetProcess(IOS_DOUT_SET_PROCESS *ios_dout)
   if((ios_dout != NULL) && (ios_dout->outPin < OUT_PIN_MAX) && (ios_dout->outPin >= DOUT_PIN_1)){
     IOSLOG(0, "%s()%d: outPin=[%d] outMode=[%s] onoffSetting=[%d] OneShotPeriod=[%d]\n", __func__, __LINE__
         , ios_dout->outPin, ios_dout->outMode, ios_dout->onoffSetting, ios_dout->OneShotPeriod);
+        
+    if(!strcasecmp((char *)&ios_dout->outMode[0], "High") && ios_dout->onoffSetting == 1) {
+        spi_gpio_set_value(ios_dout->outPin - 1, 1);
+    } else {
+        spi_gpio_set_value(ios_dout->outPin - 1, 0);
+    }
     if(ios_dout->outPin == 1) {
-        if(!strcasecmp((char *)&ios_dout->outMode[0], "High") || ios_dout->onoffSetting == 1) {
-            gpio_set_value(DO1_VB, 1);
-        } else {
-            gpio_set_value(DO1_VB, 0);
-        }
         iosDO1_blink_time = ios_dout->OneShotPeriod;
     } else if(ios_dout->outPin == 2) {
-        if(!strcasecmp((char *)&ios_dout->outMode[0], "High") || ios_dout->onoffSetting == 1) {
-            gpio_set_value(DO2_VB, 1);
-        } else {
-            gpio_set_value(DO2_VB, 0);
-        }
         iosDO2_blink_time = ios_dout->OneShotPeriod;
     } else if(ios_dout->outPin == 3) {
-        if(!strcasecmp((char *)&ios_dout->outMode[0], "High") || ios_dout->onoffSetting == 1) {
-            gpio_set_value(DO3_VB, 1);
-        } else {
-            gpio_set_value(DO3_VB, 0);
-        }
         iosDO3_blink_time = ios_dout->OneShotPeriod;
     } else if(ios_dout->outPin == 4) {
-        if(!strcasecmp((char *)&ios_dout->outMode[0], "High") || ios_dout->onoffSetting == 1) {
-            gpio_set_value(DO4_VB, 1);
-        } else {
-            gpio_set_value(DO4_VB, 0);
-        }
         iosDO4_blink_time = ios_dout->OneShotPeriod;
     }
     return ret;
@@ -718,20 +717,21 @@ int ios_getStatus(IOS_IO_GET_STATUS *ios_getstatus)
     IOSLOG(0, "[IOS](%s): new command is DIO_GET_STATUS. \n", __func__);
     unsigned int di1_val = 0, di2_val = 0, di3_val = 0, di4_val = 0, ailed_detect_val = 0;
     unsigned int do1_val = 0, do2_val = 0, do3_val = 0, do4_val = 0;
-
-    gpio_get_value(DI1_VB, &di1_val);
-    gpio_get_value(DI2_VB, &di2_val);
-    gpio_get_value(DI3_VB, &di3_val);
-    gpio_get_value(DI4_VB, &di4_val);
-    gpio_export(AILED_DETECT);
-    gpio_set_dir(AILED_DETECT, 0);
-    gpio_get_value(AILED_DETECT, &ailed_detect_val);
+    #if 1
+    spi_gpio_do_get_value(0, &do1_val);
+    spi_gpio_do_get_value(1, &do2_val);
     
+    spi_gpio_di_get_value(0, &di1_val);
+    spi_gpio_di_get_value(1, &di2_val);
+    spi_gpio_di_get_value(4, &ailed_detect_val);
+
+    #else
     gpio_get_value(DO1_VB, &do1_val);
     gpio_get_value(DO2_VB, &do2_val);
     gpio_get_value(DO3_VB, &do3_val);
     gpio_get_value(DO4_VB, &do4_val);
-
+    #endif
+    
     ios_getstatus->dout1 = do1_val;
     ios_getstatus->dout2 = do2_val;
     ios_getstatus->dout3 = do3_val;
@@ -740,9 +740,12 @@ int ios_getStatus(IOS_IO_GET_STATUS *ios_getstatus)
     ios_getstatus->din2 = di2_val;
     ios_getstatus->din3 = di3_val;
     ios_getstatus->din4 = di4_val;
+    ios_getstatus->ailed_detect = ailed_detect_val;
 
     ios_getstatus->trigger1 = trig_trigger1;
     ios_getstatus->trigger2 = trig_trigger2;
+    IOSLOG(0, "ios_getstatus.din1=%d\n", ios_getstatus->din1);
+    IOSLOG(0, "ios_getstatus.din2=%d\n", ios_getstatus->din2);
 
     return ret;
 }
@@ -815,7 +818,7 @@ void ios_LED_Status_Handler(void)
   usleep(50000);
 
   if (strcmp((char *)Process_Node.UsrDef1Mode, (char *)"Light status") == 0 ||
-      strcmp((char *)Process_Node.UsrDef2Mode, (char *)"Light status") == 0) 
+      strcmp((char *)Process_Node.UsrDef2Mode, (char *)"Light status") == 0)
   {
     uint16_t  brightness[2];
     IOS_LED_SET_PROCESS  ios_setled_tmp;
@@ -838,7 +841,7 @@ void ios_LED_Status_Handler(void)
     } else {
       sprintf((char *)ios_setled_tmp.outStatus, "%s", (char *)"OFF");
     }
-
+    
     sprintf((char *)ios_setled_tmp.outMode, "%s", (char *)"Light status");
     ios_setled_tmp.outBlinkDelay = 0;
     ios_setled_tmp.outOffDelay = 0;
@@ -1391,7 +1394,7 @@ void sig_receiveData_handler(int sig, siginfo_t *info, void *unused)
             ext_mqtt_publisher_Dual(job_t, 1);
             IOSLOG(0, "%d: rvalue [%d]=[%d] trig_dout_pin[4]=[%d]11111111111111\r\n", __LINE__, DI_TRIG1, rvalue, trig_dout_pin[4]);
             // PDM_STREAM_0 SAI5_RXD0
-            //gpio_set_value(trig_dout_pin[4], 1);
+            //spi_gpio_set_value(trig_dout_pin[4], 1);
             IOSLOG(0, "[IOS](%s): by joe Need FrontEnd send value\n", __func__);
             Process_Node.Brightness[0] = 101;
             ios_Control_Light_Handler(LIGHT_SOURCE_1, TRUE);
@@ -1400,7 +1403,7 @@ void sig_receiveData_handler(int sig, siginfo_t *info, void *unused)
             Process_Node.Active = true;
             // Process_Flow_Handler();
         } else {
-            //gpio_set_value(trig_dout_pin[4], 0);
+            //spi_gpio_set_value(trig_dout_pin[4], 0);
             ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
         }
         #endif
@@ -1521,14 +1524,16 @@ void *ioCtl(void *argu)
     strtmp = std::to_string(duration.count());
     IOSLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
 
-    iosLED_i2cset(LED0_VB_PWR_R, 0);
-    iosLED_i2cset(LED0_VB_PWR_G, 1);
-    
+    ios_setStatusLed(LED1_PWR, LED_GREEN);  
+
     while(1) {
         if(bTearDown == true) {
             break;
         }
-
+    /*int value = 0;
+    int level = spi_gpio_di_get_value(0, &value);
+    IOSLOG(0, RED "level=[%d]\r\n", level);
+    usleep(1000000);*/
         /*{
             int iosLED_blink = 0;
             int iosLED_ret0 = iosLED_val0;
@@ -1569,8 +1574,8 @@ void *ioCtl(void *argu)
             if(duration.count() >= iosDO1_blink_time) {
                 iosDO1_blink_time = 0;
                 unsigned int di_val = 0;
-                gpio_get_value(DO1_VB, &di_val);
-                gpio_set_value(DO1_VB, ~(di_val) & 0x01);
+                spi_gpio_do_get_value(0, &di_val);
+                spi_gpio_set_value(0, ~(di_val) & 0x01);
             }
         } else {
             iosDO1_start = std::chrono::high_resolution_clock::now();
@@ -1583,8 +1588,8 @@ void *ioCtl(void *argu)
             if(duration.count() >= iosDO2_blink_time) {
                 iosDO2_blink_time = 0;
                 unsigned int di_val = 0;
-                gpio_get_value(DO2_VB, &di_val);
-                gpio_set_value(DO2_VB, ~(di_val) & 0x01);
+                spi_gpio_do_get_value(1, &di_val);
+                spi_gpio_set_value(1, ~(di_val) & 0x01);
             }
         } else {
             iosDO2_start = std::chrono::high_resolution_clock::now();
@@ -1598,8 +1603,8 @@ void *ioCtl(void *argu)
             if(duration.count() >= iosDO3_blink_time) {
                 iosDO3_blink_time = 0;
                 unsigned int di_val = 0;
-                gpio_get_value(DO3_VB, &di_val);
-                gpio_set_value(DO3_VB, ~(di_val) & 0x01);
+                spi_gpio_do_get_value(2, &di_val);
+                spi_gpio_set_value(2, ~(di_val) & 0x01);
             }
         } else {
             iosDO3_start = std::chrono::high_resolution_clock::now();
@@ -1612,8 +1617,8 @@ void *ioCtl(void *argu)
             if(duration.count() >= iosDO4_blink_time) {
                 iosDO4_blink_time = 0;
                 unsigned int di_val = 0;
-                gpio_get_value(DO4_VB, &di_val);
-                gpio_set_value(DO4_VB, ~(di_val) & 0x01);
+                spi_gpio_do_get_value(3, &di_val);
+                spi_gpio_set_value(3, ~(di_val) & 0x01);
             }
         } else {
             iosDO4_start = std::chrono::high_resolution_clock::now();
@@ -1621,13 +1626,12 @@ void *ioCtl(void *argu)
 
         usleep(1000);
     }
-                
-    iosLED_i2cset(LED0_VB_PWR_R, 0);
-    iosLED_i2cset(LED0_VB_PWR_G, 0);
-    iosLED_i2cset(LED1_VB_CAM1_CON_R, 0);
-    iosLED_i2cset(LED1_VB_CAM1_CON_G, 0);
-    iosLED_i2cset(LED2_VB_CAM2_CON_R, 0);
-    iosLED_i2cset(LED2_VB_CAM2_CON_G, 0);
+
+    ios_setStatusLed(LED1_PWR, LED_OFF);
+    ios_setStatusLed(LED2_STAT, LED_OFF);
+    ios_setStatusLed(LED3_COM, LED_OFF);
+    ios_setStatusLed(LED4_TRIG, LED_OFF);
+    ios_setStatusLed(LED5_ERR, LED_OFF);
     
     if(iosLED_file > 0) {
         close(iosLED_file);
@@ -1715,6 +1719,88 @@ int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc)
     strcpy(ios_sfc->msg, read_buf);
 
     return 0;
+}
+
+
+#define MICRO_WAIT 200000
+
+#define VL53L1_MAX_I2C_XFER_SIZE 256
+
+#define MSG_START "VL53L1X sensor detected\n"
+#define MSG_OK "ok\n"
+#define MSG_UNKNOWN_CMD "Unknown command\n"
+#define MSG_WRONG_VALUE "Warning: Wrong value sent\n"
+#define INPUT_BUFFER_SIZE 512
+
+#define ST_TOF_IOCTL_WFI 1
+
+uint16_t tof_Dev;
+
+int tof_init(void)
+{
+    int status;
+	int adapter_nr = 1;
+	int file = 0;
+	
+	uint8_t byteData, sensorState = 0;
+	uint16_t wordData;
+	
+	uint8_t first_range = 1;
+	uint8_t I2cDevAddr = 0x29;
+
+	IOSLOG(0, "[IOS](%s): I2C Bus number is %d\n", __func__, adapter_nr);
+
+	file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
+	if (file == -1) {
+	    IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
+		return -1;
+	}
+
+	status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
+	IOSLOG(0, "VL53L1X Model_ID: %X\n", byteData);
+	status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
+	IOSLOG(0, "VL53L1X Module_Type: %X\n", byteData);
+	status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
+	IOSLOG(0, "VL53L1X: %X\n", wordData);
+	while (sensorState == 0) {
+		status += VL53L1X_BootState(tof_Dev, &sensorState);
+		VL53L1_WaitMs(tof_Dev, 2);
+	}
+	IOSLOG(0, "Chip booted\n");
+
+	status = VL53L1X_SensorInit(tof_Dev);
+	/* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
+	status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+	status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
+	status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
+	status += VL53L1X_StartRanging(tof_Dev);
+
+
+}
+
+int tofReadDistance(void)
+{
+    uint8_t first_range = 1;
+    VL53L1X_Result_t Results;
+    int status = 0;
+
+    /* Get the data the new way */
+    status += VL53L1X_GetResult(tof_Dev, &Results);
+
+    IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
+			Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+
+    /* trigger next ranging */
+    status += VL53L1X_ClearInterrupt(tof_Dev);
+    if (first_range) {
+    	/* very first measurement shall be ignored
+    	 * thus requires twice call
+    	 */
+    	status += VL53L1X_ClearInterrupt(tof_Dev);
+    	first_range = 0;
+    }
+    
+    return Results.Distance;
 }
 
 int iosPWM_init(int channel_num)
@@ -1839,12 +1925,12 @@ void *trigCtl(void *argu)
     trig_pin[3] = DI4_VB;
     trig_pin[4] = DI_TRIG1;
     trig_pin[5] = DI_TRIG2;
-    snprintf(&trig_edge[0][0], (int)sizeof(&trig_edge[0][0]), "rising");
-    snprintf(&trig_edge[1][0], (int)sizeof(&trig_edge[1][0]), "rising");
-    snprintf(&trig_edge[2][0], (int)sizeof(&trig_edge[2][0]), "rising");
-    snprintf(&trig_edge[3][0], (int)sizeof(&trig_edge[3][0]), "rising");
-    snprintf(&trig_edge[4][0], (int)sizeof(&trig_edge[4][0]), "rising");
-    snprintf(&trig_edge[5][0], (int)sizeof(&trig_edge[5][0]), "rising");
+    snprintf(&trig_edge[0][0], sizeof(&trig_edge[0][0]), "");
+    snprintf(&trig_edge[1][0], sizeof(&trig_edge[1][0]), "");
+    snprintf(&trig_edge[2][0], sizeof(&trig_edge[2][0]), "");
+    snprintf(&trig_edge[3][0], sizeof(&trig_edge[3][0]), "");
+    snprintf(&trig_edge[4][0], sizeof(&trig_edge[4][0]), "");
+    snprintf(&trig_edge[5][0], sizeof(&trig_edge[5][0]), "");
 
     trig_dout_pin[0] = DO1_VB;
     trig_dout_pin[1] = DO2_VB;
@@ -2155,7 +2241,6 @@ TRIG_RESET:
         usleep(1000);
 #else
         if (fdset[0].revents & POLLPRI) {
-            debounce_pin = DI1_VB;
             gpio_get_value(DI1_VB, &rvalue);
             read(fdset[0].fd, buf, MAX_BUF);
             IOSLOG(0, "Debunce %f(ms) count=[%d] \n", duration.count(), debounce_counter);
@@ -2166,15 +2251,16 @@ TRIG_RESET:
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI1_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI1_VB;
             } else if(!strncasecmp(&trig_edge[0][0], "falling", strlen("falling")) && rvalue == 0) {
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI1_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI1_VB;
             } else {
                 debounce_counter--;
             }
         } else if (fdset[1].revents & POLLPRI) {
-            debounce_pin = DI2_VB;
             gpio_get_value(DI2_VB, &rvalue);
             read(fdset[1].fd, buf, MAX_BUF);
             IOSLOG(0, "Debunce %f(ms) count=[%d] \n", duration.count(), debounce_counter);
@@ -2185,15 +2271,16 @@ TRIG_RESET:
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI2_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI2_VB;
             } else if(!strncasecmp(&trig_edge[1][0], "falling", strlen("falling")) && rvalue == 0) {
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI2_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI2_VB;
             } else {
                 debounce_counter--;
             }
         } else if (fdset[2].revents & POLLPRI) {
-            debounce_pin = DI3_VB;
             gpio_get_value(DI3_VB, &rvalue);
             read(fdset[2].fd, buf, MAX_BUF);
             IOSLOG(0, "Debunce %f(ms) count=[%d] \n", duration.count(), debounce_counter);
@@ -2204,15 +2291,16 @@ TRIG_RESET:
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI3_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI3_VB;
             } else if(!strncasecmp(&trig_edge[2][0], "falling", strlen("falling")) && rvalue == 0) {
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI3_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI3_VB;
             } else {
                 debounce_counter--;
             }
         } else if (fdset[3].revents & POLLPRI) {
-            debounce_pin = DI4_VB;
             gpio_get_value(DI4_VB, &rvalue);
             read(fdset[3].fd, buf, MAX_BUF);
             IOSLOG(0, "Debunce %f(ms) count=[%d] \n", duration.count(), debounce_counter);
@@ -2223,10 +2311,12 @@ TRIG_RESET:
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI4_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI4_VB;
             } else if(!strncasecmp(&trig_edge[3][0], "falling", strlen("falling")) && rvalue == 0) {
                 IOSLOG(0, "%d: poll() GPIO %d interrupt rvalue: [%d]\r\n\n", __LINE__, DI4_VB, rvalue);
                 start = std::chrono::high_resolution_clock::now();
                 debounce_counter++;
+                debounce_pin = DI4_VB;
             } else {
                 debounce_counter--;
             }
@@ -2591,40 +2681,29 @@ int ios_readEthAddr(char *eth, char *jstring)
 
 int iosCtl_init()
 {
-  int ret;
-  xlog("%s:%d \n\r", __func__, __LINE__);
-  
-  // IOSLOG(0, "*********************************\n");
-  // IOSLOG(0, "*****   IOS Controller Init.    *****\n");
-  // IOSLOG(0, "*********************************\n");
-
-  //pid_t signal_pid = getpid();
-
-  struct sigaction sig;
-  sigemptyset(&sig.sa_mask);
-  sig.sa_sigaction = sig_receiveData_handler;
-  sig.sa_flags = SA_SIGINFO | SA_RESTART;
-  ret = sigaction(SIGMCU, &sig, nullptr);
-  if (ret == -1) {
-    printf("[IOS](%s): Failed to caught SIGMCU signal\n", __func__);
-  }
+    int ret;
+    
+    IOSLOG(0, "*********************************\n");
+    IOSLOG(0, "*****   IOS Controller Init.    *****\n");
+    IOSLOG(0, "*********************************\n");
+    
+    //pid_t signal_pid = getpid();
+    
+    struct sigaction sig;
+    sigemptyset(&sig.sa_mask);
+    sig.sa_sigaction = sig_receiveData_handler;
+    sig.sa_flags = SA_SIGINFO | SA_RESTART;
+    ret = sigaction(SIGMCU, &sig, nullptr);
+    if (ret == -1) {
+      printf("[IOS](%s): Failed to caught SIGMCU signal\n", __func__);
+    }
     trig_dout_pin[0] = DOUT_PIN_1;
     trig_dout_pin[1] = DOUT_PIN_2;
     trig_dout_pin[2] = DOUT_PIN_3;
     trig_dout_pin[3] = DOUT_PIN_4;
     trig_dout_pin[4] = DOUT_PIN_1;
     trig_dout_pin[5] = DOUT_PIN_2;
-  /*  // by joe
-  fd = open("/dev/Vision_Box", O_RDWR);
-  printf("[IOS](%s): signal_pid is %d\n", __func__, signal_pid);
-  if(fd < 0){
-    IOSLOG(0, "[IOS](%s): ERROR when opening rpmsg driver, exit..\n", __func__);
-    return -1;
-  }else{
-    IOSLOG(0, "[IOS](%s): device = %d \r\n", __func__, fd);
-  }
-  ioctl(fd, 0x111, signal_pid);
-  */
+
     /*ret = pthread_create(&wdtThread, NULL, (void *)&wdtCtl, NULL);
     if (ret < 0){
         printf("[IOS](%s): Create wdtCtl thread fail! \n", __func__);
@@ -2637,7 +2716,9 @@ int iosCtl_init()
     iosGPIO_init();
     iosLED_init();
     sfcCtl_init();
-    
+    SPI_Open();
+    tof_init();
+
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);  	
     if (ret < 0){
       printf("[IOS](%s): Create iosCtl thread fail! \n", __func__);
@@ -2655,6 +2736,7 @@ int iosCtl_init()
         printf("[IOS](%s): Create ioCtl thread fail! \n", __func__);
         return -1;
     }
-
+    
+    ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
     return ret;
 }

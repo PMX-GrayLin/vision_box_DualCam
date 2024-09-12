@@ -43,6 +43,7 @@
 #include "ipsCtl/IPS_MethodStructureDef.h"
 #include "IPLAlgoDataStructureDef.h"
 #include "iosCtl/IOS_CompFunction.h"
+#include "iosCtl/spi.h"
 
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
@@ -222,6 +223,7 @@ extern void setStatus_mp(int pStatus);
 extern int32_t ext_mqtt_subscriber_Dual();
 extern int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc);
 extern int sfcCtl_serial_port;
+extern int tofReadDistance(void);
 
 /*********************************************************************
         Prototype
@@ -446,6 +448,7 @@ int ios_get_status_json_create(char *jstring)
     json_object_object_add(obj_4, "din2", json_object_new_int(ios_getstatus.din2));
     json_object_object_add(obj_4, "din3", json_object_new_int(ios_getstatus.din3));
     json_object_object_add(obj_4, "din4", json_object_new_int(ios_getstatus.din4));
+    json_object_object_add(obj_4, "ailed_detect", json_object_new_int(ios_getstatus.ailed_detect));
 
     /* only send the command, other parameter has been deposited in the structure */
     memset(jstring, '\0', strlen(jstring));
@@ -793,6 +796,45 @@ int ios_sfc_params_json_create(char *jstring)
     json_object_object_add(root, "response", obj_3);
     json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
     json_object_object_add(obj_3, "msg", json_object_new_string(&ios_sfc.msg[0]));
+
+    obj_4 = (struct json_object *)json_object_new_object();
+    json_object_object_add(obj_3, "pset", obj_4);
+    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+    /* only send the command, other parameter has been deposited in the structure */
+
+    memset(jstring, '\0', strlen(jstring));
+    const char *buf_cst = json_object_to_json_string(root);
+    sprintf(jstring, "%s", buf_cst);
+    MAINLOG(0, "%s json : %s\n", __func__, jstring);
+    json_object_put(root);
+    return 0;
+}
+
+/***********************************************************
+ *	Function 	: ios_get_tof_json_create
+ *	Description : create ToF json format
+ *	Param 		: char * string
+ *	Return		: NONE
+ *************************************************************/
+int ios_get_tof_json_create(char *jstring)
+{
+    struct json_object *root, *obj_2, *obj_3, *obj_4;
+
+    if (jstring == nullptr)
+        return -1;
+    /* create json format */
+    root = (struct json_object *)json_object_new_object();
+    obj_2 = (struct json_object *)json_object_new_object();
+    json_object_object_add(root, "cmd", json_object_new_string("IO_TOF_GET_PARAM"));
+
+    json_object_object_add(root, "args", obj_2);
+    char buf[128];
+    ios_readVersionFile(&buf[0]);
+    json_object_object_add(obj_2, "distance", json_object_new_int(ios_tof.distance));
+
+    obj_3 = (struct json_object *)json_object_new_object();
+    json_object_object_add(root, "response", obj_3);
+    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
 
     obj_4 = (struct json_object *)json_object_new_object();
     json_object_object_add(obj_3, "pset", obj_4);
@@ -2459,15 +2501,15 @@ void ios_process(void *argu)
                 MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
             } else if (seInfo.emAlgoId == LED_SET_MODE) {
                 MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LED_SET_MODE]);
-                // printf("ios_setLedMode.Indication = %d\n", strlen(ios_setLedMode.Indication));
-                // printf("ios_setLedMode.Indication = %s\n", ios_setLedMode.Indication);
+                MAINLOG(0, "%d ios_setLedMode.Indication = %d\n", __LINE__, strlen(ios_setLedMode.Indication));
+                MAINLOG(0, "%d ios_setLedMode.Indication = %s\n", __LINE__, ios_setLedMode.Indication);
                 if (strlen((char *)ios_setLedMode.Indication) != 0)
                 {
                     // printf("ios_setLedMode.Indication\n");
                     if (strcmp((char *)ios_setLedMode.Indication, (char *)"ON") == 0)
                     {
                         if (strcmp((char *)ios_setLedMode.Color, (char *)"Red") == 0)
-                        {
+                        {MAINLOG(0, "%d \n", __LINE__);
                             sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
                         }
                         else if (strcmp((char *)ios_setLedMode.Color, (char *)"Green") == 0)
@@ -2516,7 +2558,7 @@ void ios_process(void *argu)
                         sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
                     }
                     else if (strcmp((char *)ios_setLedMode.ledMode, (char *)"Light status") == 0)
-                    {
+                    {MAINLOG(0, "%d \n", __LINE__);
                         /* turn off LED */
                         usleep(50000); /* delay 50  ms */
                         sprintf((char *)ios_setled.outStatus, "%s", "OFF");
@@ -2544,6 +2586,21 @@ void ios_process(void *argu)
                 {
                     MAINLOG(0, "[MAINCTL] : user define LED number is wrong !!");
                 }
+                        
+                        
+    if(!strcasecmp((char *)&ios_setled.outStatus[0], "OFF")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+        ios_setStatusLed(ios_setLedMode.led, 0);
+    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Red ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+        ios_setStatusLed(ios_setLedMode.led, 1);
+    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Green ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+        ios_setStatusLed(ios_setLedMode.led, 2);
+    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Orange ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+        ios_setStatusLed(ios_setLedMode.led, 3);
+    } else {
+        MAINLOG(0, "[MAINCTL] : ios_setled outStatus [%s] is wrong !!", ios_setled.outStatus);
+    }
+      
+                
                 usleep(50000); /* delay 50  ms */
                 ios_LED_Status_Handler();
                 //ios_ledSetProcess(&ios_setled);
@@ -2724,7 +2781,7 @@ void ios_process(void *argu)
             } else if (seInfo.emAlgoId == IO_RTC_SET_MODE) {
                 MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_RTC_SET_MODE]);
                 IO_SetLocalTime(ios_rtc.use_ntp, &ios_rtc.local_time, &ios_rtc.timezone[0]);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[IO_RTC_SET_MODE]);
+                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
                 ext_mqtt_publisher_Dual(job_t, ios_cameraid);
             } else if (seInfo.emAlgoId == IO_SYS_GET_PARAMS) {
                 MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_SYS_GET_PARAMS]);
@@ -2736,6 +2793,45 @@ void ios_process(void *argu)
                 //ios_response_json_create(job_t, ios_respStr[IO_SHOP_FLOOR_CONTROL], (char *)ios_CmdInfo);
                 ios_sfc_params_json_create(job_t);
                 ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+            } else if (seInfo.emAlgoId == IO_MAINLED_SET_PARAM) {
+                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_MAINLED_SET_PARAM]);
+                ios_setMainLightLevel(ios_mainled.intBrightness);
+                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+            } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
+                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
+                ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.intBrightness);
+                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+            } else if (seInfo.emAlgoId == IO_EXTLIGHTING_SET_PARAM) {
+                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_SET_PARAM]);
+                    
+                __LIGHT_MANUFACTURER__  manufacturer;
+                if(!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
+                    manufacturer = OPT;
+                }
+
+                ios_setExtLightLevel_withChannel(manufacturer, ios_ailighting.intBrightness, ios_ailighting.channel);
+                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+            } else if (seInfo.emAlgoId == IO_EXTLIGHTING_GET_PARAM) {
+                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_GET_PARAM]);
+                    
+                __LIGHT_MANUFACTURER__  manufacturer;
+                if(!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
+                    manufacturer = OPT;
+                }
+
+                ios_readExtLightLevel_withChannel(manufacturer, ios_ailighting.channel);
+                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+            } else if (seInfo.emAlgoId == IO_TOF_GET_PARAM) {
+                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_TOF_GET_PARAM]);
+                ios_tof.distance = tofReadDistance();
+                MAINLOG(0, "[MAIN] : Distance=[%d]\n", ios_tof.distance);
+                ios_get_tof_json_create(job_t);
+                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[IO_TOF_GET_PARAM]);
             } else {
                 MAINLOG(0, RED "[MAIN] : Unknow cmd emAlgoId=[%d] szCmd=[%s] fail.\n", seInfo.emAlgoId, seInfo.szCmd);
                 ios_sys_get_params_json_create(job_t);
@@ -2958,8 +3054,6 @@ int main(int argc, char **argv)
     MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
     MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
     MAINLOG(0, "*******************************************\n");
-
-    // ??
     COLOR_PRINT("VisonBox_Version\n");
 
     /* Signal handling */
@@ -3009,7 +3103,7 @@ int main(int argc, char **argv)
     usleep(100000);
 
     /* internal Mqtt commmand for StreamingMode enable. */
-    FW_Mqtt_PriorityPass_Internal(0);
+    FW_Mqtt_PriorityPass_Internal(1);
 
     usleep(100000);
 
@@ -3017,47 +3111,42 @@ int main(int argc, char **argv)
     ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
     if (ret < 0)
     {
-        xlog("%s:%d, pthread_create error:thread 1!! \n\r", __func__, __LINE__);
-        // perror("pthread_create error:thread1!!");
+        perror("Cannot create thread 1 !!\n");
         exit(1);
     }
 
     ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
     if (ret < 0)
     {
-        xlog("%s:%d, pthread_create error:thread 2!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 2 !!\n");
+        perror("Cannot create thread 2 !!\n");
         exit(1);
     }
 
     /* create a thread for IP process */
     int iCamId[2] = {0 ,1}; //dual camera
-    // fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
+    fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
     ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
     if (ret < 0)
     {
-        xlog("%s:%d, pthread_create error:thread 3!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+        perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
         exit(1);
     }
 
     usleep(10000);
 
-    // fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
+    fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
     ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
     if (ret < 0)
     {
-        xlog("%s:%d, pthread_create error:thread 4!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+        perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
         exit(1);
     }    
 
-    // fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
+    fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
     ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
     if (ret < 0)
     {
-        xlog("%s:%d, pthread_create error:thread 5!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 5 _ ios_process(...) !!\n");
+        perror("Cannot create thread 5 _ ios_process(...) !!\n");
         exit(1);
     }    
 
@@ -3065,8 +3154,7 @@ int main(int argc, char **argv)
     ret = iosCtl_init();
     if (ret < 0)
     {
-        xlog("%s:%d, iosCtl_init fail \n\r", __func__, __LINE__);
-        // perror("iosCtl_init");
+        perror("iosCtl_init");
         exit(1);
     }
 

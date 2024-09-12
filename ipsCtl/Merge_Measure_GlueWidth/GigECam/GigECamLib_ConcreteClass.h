@@ -14,11 +14,11 @@
 // # Gige cmaera controller
 //#include "Method_GigECamCtrl.h"
 //#include "Method_ArvGigECamCtrl.h"
-#include "Method_HikGigECamCtrl.h"
+//#include "Method_HikGigECamCtrl.h"
 //#include "Method_BaslerGigECamCtrl.h"
 //#include "Method_OPTGigECamCtrl.h"
-#include "Method_NoneCamCtrl.h"
-
+//#include "Method_NoneCamCtrl.h"
+#include "Method_V4L2CamCtrl.h"
 
 using namespace std;
 
@@ -29,7 +29,9 @@ enum class emCamProviderList {
 	CAM_PROVIDER_HikVision,	
 	CAM_PROVIDER_Basler,	
 	CAM_PROVIDER_PointGrey,	
-	CAM_PROVIDER_OPT		
+	CAM_PROVIDER_OPT,
+	CAM_PROVIDER_UVC
+	
 };
 
 inline int Cam_Provider_Selection() {
@@ -88,8 +90,9 @@ private:
 	//CMethod_BaslerGigECamCtrl cam_ctrl;	// # Basler
 	//CMethod_OPTGigECamCtrl cam_ctrl;	// # OPT vision
 
-	CMethod_HikGigECamCtrl cam_ctrl_hik;	// # Hik vision
-	CMethod_NoneCamCtrl cam_ctrl_none;	// # None camera using
+	//CMethod_HikGigECamCtrl cam_ctrl_hik;	// # Hik vision
+	//CMethod_NoneCamCtrl cam_ctrl_none;	// # None camera using
+	CMethod_V4L2CamCtrl cam_ctrl_uvc;	// # UVC camera using
 
 private:
 	seGigECamConfig m_seConfig;

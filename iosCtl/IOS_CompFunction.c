@@ -13,7 +13,7 @@
 #include <vector>
 #include <mutex>
 #include "IOS_CompFunction.h"
-
+#include "spi.h"
 
 pthread_mutex_t _IO_JsonQ_lock = PTHREAD_MUTEX_INITIALIZER;
 std::deque<seIO_JsonInfo> BufQueue_IO_Json;
@@ -21,6 +21,7 @@ std::deque<seIO_JsonInfo> BufQueue_IO_Json;
 extern int IO_AILighting_DutyCycle(char *channel, int value);
 extern char trig_DinMode;
 extern char trig_DinMode_Dual;
+extern int tofReadDistance(void);
 
 int IO_JsonQ_Init()
 {
@@ -667,6 +668,8 @@ int IO_MqttParse_DIO_GET_STATUS(const char *pCmd, const void *pJson_Obj, void *p
     if (j_args != nullptr)
     {
         MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+            
+        //joe
     }
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
@@ -1114,7 +1117,242 @@ int IO_MqttParse_IO_SHOP_FLOOR_CONTROL(const char *pCmd, const void *pJson_Obj, 
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
 }
 
+int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
+{
+    if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
+    {
+        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        return -1;
+    }
+    MAINLOG(0, "[MAIN] : It's my command : IO_MAINLED_SET_PARAM\n");
+    struct json_object *root, *j_args, *j_param;
+    root = (struct json_object *)pJson_Obj;
 
+    /* parsing "args" */
+    j_args = (struct json_object *)json_object_object_get(root, "args");
+
+    if (j_args != nullptr)
+    {
+        // parsing "args"
+        j_args = (struct json_object *)json_object_object_get(root, "args");
+        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+            ios_mainled.intBrightness = json_object_get_int(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+            if (!strcasecmp(json_object_get_string(j_param), "off"))
+            {
+                ios_mainled.intBrightness = 0;
+            }
+        }
+    }  
+    
+    
+    
+    memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
+    strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+}
+
+int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
+{
+    if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
+    {
+        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        return -1;
+    }
+    MAINLOG(0, "[MAIN] : It's my command : IO_AILIGHTING_SET_PARAM\n");
+    struct json_object *root, *j_args, *j_param;
+    root = (struct json_object *)pJson_Obj;
+
+    /* parsing "args" */
+    j_args = (struct json_object *)json_object_object_get(root, "args");
+
+    if (j_args != nullptr)
+    {
+        // parsing "args"
+        j_args = (struct json_object *)json_object_object_get(root, "args");
+        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "lightSource");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
+            ios_ailighting.strlightSource = json_object_get_string(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+            ios_ailighting.intBrightness = json_object_get_int(j_param);
+        }
+
+        int led1, led2, led3, led4, value;
+        if (sscanf(ios_ailighting.strlightSource.c_str(), "[%d,%d,%d,%d]", &led1, &led2, &led3, &led4) >= 4)
+        {
+            ios_ailighting.intBrightness = value = (char)(led1 | led2 << 1 | led3 << 2 | led4 << 3) & 0x0F;
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+            if (!strcasecmp(json_object_get_string(j_param), "off"))
+            {
+                ios_ailighting.intBrightness = 0;
+            }
+        }
+    }
+
+    memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
+    strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+}
+
+int IO_MqttParse_IO_EXTLIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
+{
+    if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
+    {
+        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        return -1;
+    }
+    MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_SET_PARAM\n");
+    struct json_object *root, *j_args, *j_param;
+    root = (struct json_object *)pJson_Obj;
+
+    /* parsing "args" */
+    j_args = (struct json_object *)json_object_object_get(root, "args");
+
+    if (j_args != nullptr)
+    {
+        // parsing "args"
+        j_args = (struct json_object *)json_object_object_get(root, "args");
+        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "lightSource");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
+            ios_ailighting.strlightSource = json_object_get_string(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+            ios_ailighting.intBrightness = json_object_get_int(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "channel");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : channel = %d\n", __func__, json_object_get_int(j_param));
+            ios_ailighting.channel = json_object_get_int(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+            if (!strcasecmp(json_object_get_string(j_param), "off"))
+            {
+                ios_ailighting.intBrightness = 0;
+            }
+        }
+    }
+
+    memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
+    strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+}
+
+int IO_MqttParse_IO_EXTLIGHTING_GET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
+{
+    if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
+    {
+        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        return -1;
+    }
+    MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_GET_PARAM\n");
+    struct json_object *root, *j_args, *j_param;
+    root = (struct json_object *)pJson_Obj;
+
+    /* parsing "args" */
+    j_args = (struct json_object *)json_object_object_get(root, "args");
+
+    if (j_args != nullptr)
+    {
+        // parsing "args"
+        j_args = (struct json_object *)json_object_object_get(root, "args");
+        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "lightSource");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
+            ios_ailighting.strlightSource = json_object_get_string(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+            ios_ailighting.intBrightness = json_object_get_int(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "channel");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : channel = %d\n", __func__, json_object_get_int(j_param));
+            ios_ailighting.channel = json_object_get_int(j_param);
+        }
+
+        j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
+        if (j_param)
+        {
+            IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+            if (!strcasecmp(json_object_get_string(j_param), "off"))
+            {
+                ios_ailighting.intBrightness = 0;
+            }
+        }
+    }
+
+    memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
+    strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+}
+
+int IO_MqttParse_IO_TOF_GET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
+{
+    
+    if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
+    {
+        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        return -1;
+    }
+    MAINLOG(0, "[MAIN] : It's my command : IO_TOF_GET_PARAM\n");
+    struct json_object *root, *j_args, *j_param;
+    root = (struct json_object *)pJson_Obj;
+
+    /* parsing "args" */
+    j_args = (struct json_object *)json_object_object_get(root, "args");
+
+    if (j_args != nullptr)
+    {
+        // parsing "args"
+        j_args = (struct json_object *)json_object_object_get(root, "args");
+        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+    }
+
+    memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
+    strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Json text information by the MQTT subscribe
@@ -1156,41 +1394,12 @@ static seIO_AlgoParamReg gIO_AlgoParamReg[] = {
     {IO_RTC_SET_MODE,     ios_cmdStr[IO_RTC_SET_MODE],     &ios_trigger, szJson_IO_Function, IO_MqttParse_IO_RTC_SET_MODE},
     {IO_SYS_GET_PARAMS,   ios_cmdStr[IO_SYS_GET_PARAMS],   &ios_trigger, szJson_IO_Function, IO_MqttParse_IO_SYS_GET_PARAMS},
     {IO_SHOP_FLOOR_CONTROL,ios_cmdStr[IO_SHOP_FLOOR_CONTROL],   &ios_trigger, szJson_IO_Function, IO_MqttParse_IO_SHOP_FLOOR_CONTROL},
-    
-    
-    
-/*
-  TRIGGER_SET_PROCESS,
-  TRIGGER_GET_PROCESS,
-  DIN_SET_PROCESS,
-  DIN_GET_PROCESS,
-  IOS_GET_STATUS,
-  LIGHT_SET_PWM,
-  LIGHT_GET_PWM,
-  LED_SET_PROCESS,
-  LED_GET_PROCESS,
+    {IO_MAINLED_SET_PARAM,ios_cmdStr[IO_MAINLED_SET_PARAM],&ios_trigger, szJson_IO_Function, IO_MqttParse_IO_MAINLED_SET_PARAM},
+    {IO_AILIGHTING_SET_PARAM,ios_cmdStr[IO_AILIGHTING_SET_PARAM],&ios_trigger, szJson_IO_Function, IO_MqttParse_IO_AILIGHTING_SET_PARAM},
+    {IO_EXTLIGHTING_SET_PARAM,ios_cmdStr[IO_EXTLIGHTING_SET_PARAM],&ios_trigger, szJson_IO_Function, IO_MqttParse_IO_EXTLIGHTING_SET_PARAM},
+    {IO_EXTLIGHTING_GET_PARAM,ios_cmdStr[IO_EXTLIGHTING_GET_PARAM],&ios_trigger, szJson_IO_Function, IO_MqttParse_IO_EXTLIGHTING_GET_PARAM},
+    {IO_TOF_GET_PARAM,    ios_cmdStr[IO_TOF_GET_PARAM],    &ios_trigger, szJson_IO_Function, IO_MqttParse_IO_TOF_GET_PARAM},
 
-  LED_SET_MODE,
-  DIN_SET_MODE,
-  DOUT_SET_MODE,
-  DOUT_MANUAL_CONTROL,
-  DIO_GET_STATUS,
-  LIGHT_SET_BRIGHTNESS,
-  LIGHT_GET_BRIGHTNESS,
-  CAMERA_STREAMING_CONTROL,
-  MODBUS_SET_PARAMS,
-  */
-  
-  /*
-  MODBUS_GET_PARAMS,
-  TRIGGER_SET_MODE,
-  REPORT_TEST_RESULT,
-  AUTO_TEST_SET_MODE,
-  
-  IO_RTC_SET_MODE,
-  IO_SYS_GET_PARAMS,
-
-*/
     // The End of AlgoParam register
     {ENUM_IO_ALGO_END, ios_cmdStr[ENUM_IO_ALGO_END], NULL, NULL, NULL}
 

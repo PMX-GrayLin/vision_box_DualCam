@@ -53,6 +53,23 @@ using namespace cv;
 /// # //////////////////////////////////////////////////////////////////////////////
 
 
+static std::string formatTimestamp(const std::chrono::system_clock::time_point &timestamp)
+{
+    std::time_t tt = std::chrono::system_clock::to_time_t(timestamp);
+    std::tm *gmt = std::localtime(&tt);
+
+    char timestr[32];
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", gmt);
+
+    auto duration_since_epoch = timestamp.time_since_epoch();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count() % 1000;
+
+    std::ostringstream oss;
+    oss << timestr << "." << std::setfill('0') << std::setw(3) << millis;
+
+    return oss.str();
+}
+
 static string getCurrentTime()
 {
 	string strTime;

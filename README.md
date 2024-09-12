@@ -1,1 +1,0 @@
-# vision_box_DualCam_gray

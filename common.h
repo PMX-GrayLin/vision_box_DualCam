@@ -10,14 +10,6 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define DEBUGX
-
-#ifndef DEBUGX
-#define xlog(...) ((void)0)
-#else
-#define xlog(...) printf(__VA_ARGS__)
-#endif
-
 /* Constants defined by configure.ac */
 #define HAVE_INTTYPES_H 1
 #define HAVE_STDINT_H 1
@@ -52,8 +44,6 @@
 #define YELLOW        "\033[1;33m"
 #define LIGHT_GRAY    "\033[0;37m"
 #define WHITE         "\033[1;37m"
-
-#define IOD_FIFO_PATH "/var/run/iod_fifo"
 
 #define STATIC_IP	false
 #define DHCP_IP 	true
@@ -273,6 +263,7 @@ typedef struct _IOS_GET_STATUS_{
   uint8_t trigger2;
   uint8_t camera1;
   uint8_t camera2;
+  uint8_t ailed_detect;
 }IOS_IO_GET_STATUS;
 
 typedef struct _IOS_LED_SET_PROCESS_{
@@ -308,6 +299,10 @@ typedef struct _IOS_DIN_SET_MODE_{
   uint8_t SelectMode[32];
 }IOS_DIN_SET_MODE;
 
+typedef struct _IOS_TOF_GET_MODE_{
+  uint16_t distance;
+}IOS_TOF_GET_MODE;
+
 enum{
   TCP,
   RTU
@@ -334,6 +329,14 @@ typedef enum _CAMERA_PARA_{
   HARDWARE,
   EVERY_IMAGE,
 }CAMERA_PARA;
+
+static char *camera_paraStr[] = {
+    "no define",
+    "mono",
+    "color",
+    "software",
+    "hardware",
+    "every image"};
 
 typedef enum __IPS_CMD__ {
   NO_IP_CMD = 0,
@@ -374,6 +377,13 @@ typedef struct __IOS_RTC_SET_MODE__{
     char timezone[64];
 }IOS_RTC_SET_MODE;
 
+typedef struct __IOS_MAINLED_SET_MODE__{
+    std::string strlightSource;  // ex: 1,2,3,4,all
+    int intBrightness;           // ex: 0~255
+    int intValue;
+    int channel;
+}IOS_MAINLED_SET_MODE;
+
 typedef struct __IOS_SFC_SET_MODE__{
     char msg[1024];
 }IOS_SFC_SET_MODE;
@@ -401,7 +411,10 @@ extern uint8_t ios_CmdInfo[];
 extern uint8_t UpdateLEDStatus_Flg;
 extern IOS_RTC_SET_MODE ios_rtc;
 extern IOS_SFC_SET_MODE ios_sfc;
-
+extern IOS_MAINLED_SET_MODE ios_mainled;
+extern IOS_MAINLED_SET_MODE ios_ailighting;
+extern IOS_MAINLED_SET_MODE ios_extlighting;
+extern IOS_TOF_GET_MODE ios_tof;
 #ifdef __cplusplus
 }
 #endif

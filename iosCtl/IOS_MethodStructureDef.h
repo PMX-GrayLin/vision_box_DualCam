@@ -35,6 +35,11 @@ typedef enum __IOS_CMD__ {
   IO_RTC_SET_MODE,
   IO_SYS_GET_PARAMS,
   IO_SHOP_FLOOR_CONTROL,
+  IO_MAINLED_SET_PARAM,
+  IO_AILIGHTING_SET_PARAM,
+  IO_EXTLIGHTING_SET_PARAM,
+  IO_EXTLIGHTING_GET_PARAM,
+  IO_TOF_GET_PARAM,
 
   ENUM_IO_ALGO_END // end of enum
 }IOS_CMD;
@@ -68,6 +73,12 @@ static char *ios_cmdStr[]={
   (char*)"IO_RTC_SET_MODE",
   (char*)"IO_SYS_GET_PARAMS",
   (char*)"IO_SHOP_FLOOR_CONTROL",
+  (char*)"IO_MAINLED_SET_PARAM",
+  (char*)"IO_AILIGHTING_SET_PARAM",
+  (char*)"IO_EXTLIGHTING_SET_PARAM",
+  (char*)"IO_EXTLIGHTING_GET_PARAM",
+  (char*)"IO_TOF_GET_PARAM",
+
 };
 
 static char *ios_respStr[]={
@@ -99,6 +110,12 @@ static char *ios_respStr[]={
   (char*)"IO_RTC_SET_MODE",
   (char*)"IO_SYS_GET_PARAMS",
   (char*)"IO_SHOP_FLOOR_CONTROL",
+  (char*)"IO_MAINLED_SET_PARAM",
+  (char*)"IO_AILIGHTING_SET_PARAM",
+  (char*)"IO_EXTLIGHTING_SET_PARAM",
+  (char*)"IO_EXTLIGHTING_GET_PARAM",
+  (char*)"IO_TOF_GET_PARAM",
+  
 };
 typedef struct tagIO_JsonInfo
 {

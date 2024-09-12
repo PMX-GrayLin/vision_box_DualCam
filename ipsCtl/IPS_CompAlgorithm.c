@@ -443,7 +443,7 @@ void ExModeQ_Destory_Dual(const int iID)
 int ipsComp_IPL_Init()
 {
     int res = 0;
-
+return 0;
     if (pter_hdl_IPL == nullptr)
     {
         pter_hdl_IPL = static_cast<void *>(CreateObject_Labview());
@@ -1395,8 +1395,10 @@ int Method_GigECameraStrm_Start(void *phdl, const LPImageInfo pImgIn, void *pPar
     int res = 0;
     clock_t start, end;
 
-    if (phdl == nullptr || pParam == nullptr || pResults == nullptr)
+    if (phdl == nullptr || pParam == nullptr || pResults == nullptr) {
+        IPSLOG(0, "Error!!! nullptr\n", __func__);
         return -1;
+    }
 
     IPSLOG(0, "[__Method_GigECameraCtl__] : <--- end \n", __func__);
 
@@ -7831,7 +7833,7 @@ int createHashMap_Method()
     {
 
         std::string strTmp = gAlgoMethodReg[i].strCmd;
-IPSLOG(0, "%s()%d: [%s].\n", __FUNCTION__, __LINE__, strTmp.c_str());
+// IPSLOG(0, "%s()%d: [%s].\n", __FUNCTION__, __LINE__, strTmp.c_str());
         gHashMap_Method[strTmp] = i;
     }
 
@@ -7852,7 +7854,6 @@ int compareHashMap_Method(std::string strKey)
     {
 
         IPSLOG(0, "%s()%d: ## Method__Element: %s, has ID: %d\n", __FUNCTION__, __LINE__, strKey.c_str(), it->second);
-        printf("%s()%d: ## Method__Element: %s, has ID: %d\n", __FUNCTION__, __LINE__, strKey.c_str(), it->second);
         return it->second;
     }
     else
@@ -7881,12 +7882,9 @@ int setAlgo_MethodAssign(const char *szKey, const char *szJsonArg) // , std::vec
 
 
     int i = compareHashMap_Method(szKey);
-    IPSLOG(0, "%s()%d: ## ---------------> compareHashMap_Method = %d \n\n", i);
-    printf("%s()%d: ## ---------------> compareHashMap_Method = %d \n\n", __FUNCTION__, __LINE__, i);
-fprintf(stderr, "%s()%d: 11111111111111111111\n", __FUNCTION__, __LINE__);
+    IPSLOG(0, "%s()%d: ## ---------------> compareHashMap_Method = %d \n\n", __FUNCTION__, __LINE__, i);
     if (-1 != i)
     {
-fprintf(stderr, "%s()%d: 11111111111111111111\n", __FUNCTION__, __LINE__);
         IPSLOG(0, "[__%s__] : AlgoMethod_TblCnt ===> %02d\n", __func__, i);
         IPSLOG(0, "[__%s__] : AlgoMethod_strCmd ===> %s\n", __func__, gAlgoMethodReg[i].strCmd);
         IPSLOG(0, "[__%s__] : szJsonArg ===>\n %s\n", __func__, szJsonArg);

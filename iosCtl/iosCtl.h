@@ -122,6 +122,21 @@ typedef enum {
     LED4_VB_USER2_G      // PCA64_P1_1   EXP_P0_1
 } LED_PCA64;
 
+typedef enum {
+    LED1_PWR = 0,     // PCA64_P0_0   EXT_PWREN1
+    LED2_STAT,
+    LED3_COM,
+    LED4_TRIG,
+    LED5_ERR
+} AICAMERA_LED_G2;
+
+typedef enum {
+    LED_OFF = 0,     // PCA64_P0_0   EXT_PWREN1
+    LED_RED,
+    LED_GREEN,
+    LED_ORG
+} AICAMERA_LED_COLOR;
+
 #define IOS_BIT_OPERATION                       0x01
 
 #define IOS_LED1_BIT                            0x0007

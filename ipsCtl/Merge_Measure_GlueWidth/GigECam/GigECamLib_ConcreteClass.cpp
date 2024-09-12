@@ -12,22 +12,9 @@ GigECam_C_Library::GigECam_C_Library()
 {
 	m_seConfig = seGigECamConfig();
 
-
 	Cam_Log_Level();
 
-
-	switch (Cam_Provider_Selection()) {
-	
-	case static_cast<int>(emCamProviderList::CAM_PROVIDER_NONE) :
-	default:
-		phdl_cam = &cam_ctrl_none;
-		break;
-
-	case static_cast<int>(emCamProviderList::CAM_PROVIDER_HikVision) :
-		phdl_cam = &cam_ctrl_hik;
-		break;	
-	}
-
+        phdl_cam = &cam_ctrl_uvc;
 }
 
 GigECam_C_Library::~GigECam_C_Library()
@@ -37,6 +24,10 @@ GigECam_C_Library::~GigECam_C_Library()
 int GigECam_C_Library::Init()
 {
 	int res = 0;
+
+	if(phdl_cam == nullptr) {
+        	fprintf(stderr, "%s()%d: Error: phdl_cam is null.\n", __FUNCTION__, __LINE__);
+    	}
 
 	res = phdl_cam->GigeCam_Init();
 
