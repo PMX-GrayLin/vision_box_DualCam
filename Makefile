@@ -17,7 +17,8 @@ VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_AddTimestamp_DEBUG
 VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_SpeedOptimization_DEBUG
 VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
 
-PP = aarch64-linux-gnu-g++
+# PP = aarch64-linux-gnu-g++
+PP = ${CC}
 
 HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
 		
