@@ -19,7 +19,7 @@ VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
 
 # GG
 # PP = aarch64-linux-gnu-g++
-PP = ${CC}
+PP = ${CXX}
 CXXFLAGS += "-std=c++11"
 
 HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
