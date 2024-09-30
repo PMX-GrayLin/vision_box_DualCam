@@ -82,7 +82,6 @@ INCLUDE +=-I /usr/include/json-c
 
 # INCLUDE += -I${STAGING_INCDIR}/json-c
 # INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
-INCLUDE += -I$/usr/include/json-c
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
