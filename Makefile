@@ -206,7 +206,7 @@ tof_lib:
 	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: %.c
-	@echo "$(CC)"
+	@echo ""
 	@echo Compiling $< ...
 	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
