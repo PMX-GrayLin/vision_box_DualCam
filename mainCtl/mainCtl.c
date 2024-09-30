@@ -35,7 +35,7 @@
 #include <chrono>
 #include <deque>
 #include <string>
-#include "../common.h"
+#include "../common.hpp"
 #include "mainCtl.h"
 #include <semaphore.h>
 #include "ipsCtl/IPS_CompAlgorithm.h"

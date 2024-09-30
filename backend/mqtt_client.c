@@ -32,7 +32,7 @@ Contributors:
 #include <mosquitto.h>
 #include <json.h>
 #include "../client_shared.h"
-#include "../common.h"
+#include "../common.hpp"
 
 #include <chrono>
 #include <ctime>

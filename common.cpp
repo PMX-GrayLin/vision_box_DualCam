@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 
 MAIN_PROCESS main_process;
 CAMERA_GRAB camera_grab;

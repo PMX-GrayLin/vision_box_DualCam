@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "common.h": "c",
+        "common.hpp": "c",
         "stdint.h": "c",
         "stdio.h": "c"
     }
