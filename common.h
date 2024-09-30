@@ -25,7 +25,7 @@
 # endif
 #endif
 #include <stdbool.h>
-#include <string>
+#include <string.h>
 #include <ctime>
 
 /* define the tty color */
