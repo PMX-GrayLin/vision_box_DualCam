@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "common.hpp": "c",
-        "stdint.h": "c",
-        "stdio.h": "c"
-    }
-}
