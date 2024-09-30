@@ -57,7 +57,7 @@ CPPFLAG += -I/usr/include/modbus
 # INCLUDE +=-I /usr/include/glib-2.0
 # INCLUDE +=-I /usr/lib/aarch64-linux-gnu/glib-2.0/include
 # INCLUDE +=-I /usr/local/include
-INCLUDE +=-I /usr/include/json-c
+# INCLUDE +=-I /usr/include/json-c
 # INCLUDE +=-I /usr/local/include/json-c
 # INCLUDE +=-I /usr/local/include/modbus
 # INCLUDE +=-I /usr/include/python3.10
@@ -82,6 +82,7 @@ INCLUDE +=-I /usr/include/json-c
 
 # INCLUDE += -I${STAGING_INCDIR}/json-c
 # INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
+INCLUDE += -I/usr/include/json-c
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
