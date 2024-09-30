@@ -80,6 +80,7 @@ CPPFLAG += -I/usr/include/modbus
 # INCLUDE +=-I /home/ubuntu/primax/image/usr/include
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
+INCLUDE += -I${STAGING_INCDIR}/json-c
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
