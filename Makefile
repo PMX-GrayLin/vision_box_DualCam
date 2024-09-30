@@ -20,7 +20,7 @@ VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
 # GG
 # PP = aarch64-linux-gnu-g++
 PP = ${CXX}
-CXXFLAGS += "-std=c++11"
+# CXXFLAGS += "-std=c++11"
 
 HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
 		
@@ -37,7 +37,7 @@ DFLAG += $(VERSION_FLAG)
 
 # CPP compile FLAG
 CPPFLAG=
-CPPFLAG += -std=c++14 -O0 -g 
+# CPPFLAG += -std=c++14 -O0 -g 
 CPPFLAG += -Wall -Wcomment -pipe -MMD
 CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 CPPFLAG += -I/usr/include/modbus
