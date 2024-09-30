@@ -25,6 +25,7 @@
 # endif
 #endif
 #include <stdbool.h>
+#include <string.h>
 #include <string>
 #include <ctime>
 
