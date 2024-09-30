@@ -82,7 +82,10 @@ CPPFLAG += -I/usr/include/modbus
 
 # INCLUDE += -I${STAGING_INCDIR}/json-c
 # INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
-INCLUDE += -I/usr/include/json-c
+# INCLUDE += -I/usr/include/json-c
+INCLUDE += -I${BB_INCDIR}/json-c
+
+
 
 # INCLUDE += -I${BUILD_DIR}/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
 INCLUDE += -I/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
