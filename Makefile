@@ -40,7 +40,7 @@ CPPFLAG=
 # CPPFLAG += -std=c++14 -O0 -g 
 CPPFLAG += -Wall -Wcomment -pipe -MMD
 CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
-CPPFLAG += -I/usr/include/modbus
+# CPPFLAG += -I/usr/include/modbus
 
 # Include 
 # INCLUDE= 
@@ -86,7 +86,7 @@ CPPFLAG += -I/usr/include/modbus
 # INCLUDE += -I${BB_INCDIR}/json-c
 
 # INCLUDE += -I${BUILD_DIR}/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
-INCLUDE += -I/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
+# INCLUDE += -I/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
