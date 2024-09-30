@@ -25,7 +25,8 @@
 # endif
 #endif
 #include <stdbool.h>
-#include <string.h>
+#include <string>
+#include <ctime>
 
 /* define the tty color */
 #define NONE          "\033[m"
