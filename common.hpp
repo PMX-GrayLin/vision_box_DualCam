@@ -330,7 +330,7 @@ typedef enum _CAMERA_PARA_{
   EVERY_IMAGE,
 }CAMERA_PARA;
 
-static char *camera_paraStr[] = {
+static const char* camera_paraStr[] = {
     "no define",
     "mono",
     "color",
