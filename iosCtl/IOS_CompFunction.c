@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h> /* memset */
 #include <json.h>
-#include "../common.hpp"
+#include "../common.h"
 
 #include <chrono>
 #include <ctime>

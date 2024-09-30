@@ -29,7 +29,7 @@
 #include <semaphore.h>
 #include <json.h>
 #include <time.h>
-#include "../common.hpp"
+#include "../common.h"
 #include "../mainCtl/ext_mqtt_client.h"
 
 #include <list>

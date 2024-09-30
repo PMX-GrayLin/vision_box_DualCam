@@ -17,7 +17,7 @@
 #include <arpa/inet.h> //inet_addr
 // #include <semaphore.h>
 #include <json.h>
-#include "../common.hpp"
+#include "../common.h"
 // #include "mainCtl.h"
 
 /* SW Add */

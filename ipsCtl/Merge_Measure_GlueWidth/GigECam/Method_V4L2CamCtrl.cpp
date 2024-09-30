@@ -25,7 +25,7 @@
 
 #include "../cvip.h"
 #include "Method_V4L2CamCtrl.h"
-#include "../../../common.hpp"
+#include "../../../common.h"
 
 /////////////////////////////////////////////////////////////////////////////
 /// V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>>
