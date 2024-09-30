@@ -84,6 +84,8 @@ CPPFLAG += -I/usr/include/modbus
 # INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
 INCLUDE += -I/usr/include/json-c
 
+INCLUDE += -I${BUILD_DIR}/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src/
+
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
 LDFLAG += -L /usr/local/lib/ -L /usr/lib/aarch64-linux-gnu/ -lmosquitto -ljson-c -lpython3.10 -lcurl
