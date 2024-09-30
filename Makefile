@@ -84,7 +84,6 @@ CPPFLAG += -I/usr/include/modbus
 INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
 
 
-
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
 LDFLAG += -L /usr/local/lib/ -L /usr/lib/aarch64-linux-gnu/ -lmosquitto -ljson-c -lpython3.10 -lcurl
@@ -177,7 +176,7 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # 	ls -l $(TARGET)
 
 # OBJ_MLDL << no use
-all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS)
+all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS) $(IPS_OBJS)
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
