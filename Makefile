@@ -208,7 +208,7 @@ tof_lib:
 %.o: %.c
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CC) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 clean:
 	rm -f *.o *.d *.opp $(TARGET) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
