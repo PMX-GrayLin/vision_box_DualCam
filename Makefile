@@ -43,42 +43,42 @@ CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 CPPFLAG += -I/usr/include/modbus
 
 # Include 
-INCLUDE= 
-INCLUDE +=-I .
-INCLUDE +=-I $(shell pwd)
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
-INCLUDE +=-I /usr/include
-INCLUDE +=-I /usr/include/opencv2
-INCLUDE +=-I /home/user/primax/include/opencv4
-INCLUDE +=-I /usr/include/spinnaker
-INCLUDE +=-I /usr/include/glib-2.0
-INCLUDE +=-I /usr/lib/aarch64-linux-gnu/glib-2.0/include
-INCLUDE +=-I /usr/local/include
-INCLUDE +=-I /usr/include/json-c
-INCLUDE +=-I /usr/local/include/json-c
-INCLUDE +=-I /usr/local/include/modbus
-INCLUDE +=-I /usr/include/python3.10
-INCLUDE +=-I /home/user/.local/lib/python3.10/site-packages/numpy/core/include
-INCLUDE +=-I /home/user/.local/lib/python3.10/site-packages/numpy/core/include/numpy
-INCLUDE +=-I /opt/MVS/include
-INCLUDE +=-I /usr/include/curl
-INCLUDE +=-I /opt/pylon/include
-INCLUDE +=-I /opt/OPT/OPTCameraDemo/include
-INCLUDE +=-I /opt/spinnaker/include
+# INCLUDE= 
+# INCLUDE +=-I .
+# INCLUDE +=-I $(shell pwd)
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
+# INCLUDE +=-I /usr/include
+# INCLUDE +=-I /usr/include/opencv2
+# INCLUDE +=-I /home/user/primax/include/opencv4
+# INCLUDE +=-I /usr/include/spinnaker
+# INCLUDE +=-I /usr/include/glib-2.0
+# INCLUDE +=-I /usr/lib/aarch64-linux-gnu/glib-2.0/include
+# INCLUDE +=-I /usr/local/include
+# INCLUDE +=-I /usr/include/json-c
+# INCLUDE +=-I /usr/local/include/json-c
+# INCLUDE +=-I /usr/local/include/modbus
+# INCLUDE +=-I /usr/include/python3.10
+# INCLUDE +=-I /home/user/.local/lib/python3.10/site-packages/numpy/core/include
+# INCLUDE +=-I /home/user/.local/lib/python3.10/site-packages/numpy/core/include/numpy
+# INCLUDE +=-I /opt/MVS/include
+# INCLUDE +=-I /usr/include/curl
+# INCLUDE +=-I /opt/pylon/include
+# INCLUDE +=-I /opt/OPT/OPTCameraDemo/include
+# INCLUDE +=-I /opt/spinnaker/include
 
-INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/tools
-INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/include
-INCLUDE += -I$(shell pwd)/iosCtl/tof_lib
-INCLUDE += -I$(shell pwd)/iosCtl/tof_lib/core
+# INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/tools
+# INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/include
+# INCLUDE += -I$(shell pwd)/iosCtl/tof_lib
+# INCLUDE += -I$(shell pwd)/iosCtl/tof_lib/core
 
-INCLUDE +=-I/home/ubuntu/primax/image/usr/include/opencv4
-INCLUDE +=-I/home/ubuntu/primax/image/usr/include/neuron/api
+# INCLUDE +=-I/home/ubuntu/primax/image/usr/include/opencv4
+# INCLUDE +=-I/home/ubuntu/primax/image/usr/include/neuron/api
 
-INCLUDE +=-I /home/ubuntu/primax/image/usr/include
-LDFLAG += -L /home/ubuntu/primax/image/usr/lib
+# INCLUDE +=-I /home/ubuntu/primax/image/usr/include
+# LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
 
 LDFLAG= 
