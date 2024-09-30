@@ -57,7 +57,7 @@ CPPFLAG += -I/usr/include/modbus
 # INCLUDE +=-I /usr/include/glib-2.0
 # INCLUDE +=-I /usr/lib/aarch64-linux-gnu/glib-2.0/include
 # INCLUDE +=-I /usr/local/include
-# INCLUDE +=-I /usr/include/json-c
+INCLUDE +=-I /usr/include/json-c
 # INCLUDE +=-I /usr/local/include/json-c
 # INCLUDE +=-I /usr/local/include/modbus
 # INCLUDE +=-I /usr/include/python3.10
@@ -81,8 +81,8 @@ CPPFLAG += -I/usr/include/modbus
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
 # INCLUDE += -I${STAGING_INCDIR}/json-c
-INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
-
+# INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
+INCLUDE += -I$/usr/include/json-c
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
@@ -176,7 +176,7 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # 	ls -l $(TARGET)
 
 # OBJ_MLDL << no use
-all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS) $(IPS_OBJS)
+all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS)
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
