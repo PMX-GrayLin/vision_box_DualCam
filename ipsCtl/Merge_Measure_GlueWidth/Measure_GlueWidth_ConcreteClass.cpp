@@ -1,10 +1,8 @@
 #include "Measure_GlueWidth_ConcreteClass.h"
 #include <string>
 #define CVUI_IMPLEMENTATION
-
 // ?? gray : temp remove for no cvui support at yocto
 // #include "cvui.h"
-
 
 using namespace std;
 
@@ -13,7 +11,6 @@ using namespace std;
 #define MINOR 7	
 #define BUILD 20220328
 std::string strVer = std::to_string(MAJOR) + '.' + std::to_string(MINOR) + "." + std::to_string(BUILD);
-
 
 
 //int PTWDLL_C_GlueWidth::vbs_Align_ImageCalibration(const char* strSrcImg,
