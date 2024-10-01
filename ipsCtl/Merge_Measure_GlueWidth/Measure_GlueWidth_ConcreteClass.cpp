@@ -176,7 +176,7 @@ int PTWDLL_C_GlueWidth::vbs_Align_CropTemplate(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -278,7 +278,7 @@ int PTWDLL_C_GlueWidth::vbs_Align_PatternMatch(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -457,7 +457,7 @@ int PTWDLL_C_GlueWidth::vbs_Align_FindProfile(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -645,7 +645,7 @@ int PTWDLL_C_GlueWidth::vbs_Align_DetectCircle(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -810,7 +810,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_Annulus(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -945,7 +945,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_Rect(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1124,7 +1124,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_Circle(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1284,7 +1284,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_CropImg_Annulus(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1445,7 +1445,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_CropImg_Rect(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1603,7 +1603,7 @@ int PTWDLL_C_GlueWidth::vbs_InspectBox_CropImg_Circle(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1763,7 +1763,7 @@ int PTWDLL_C_GlueWidth::vbs_Histogram_Annulus(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -1913,7 +1913,7 @@ int PTWDLL_C_GlueWidth::vbs_Histogram_Rect(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -2073,7 +2073,7 @@ int PTWDLL_C_GlueWidth::vbs_Histogram_Circle(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -2237,7 +2237,7 @@ int PTWDLL_C_GlueWidth::vbs_Threshold(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -2378,7 +2378,7 @@ int PTWDLL_C_GlueWidth::vbs_Morphology(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -2516,7 +2516,7 @@ int PTWDLL_C_GlueWidth::vbs_NoiseRemoval(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -2646,7 +2646,7 @@ int PTWDLL_C_GlueWidth::vbs_DataAugmentation(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 
@@ -2747,7 +2747,7 @@ int PTWDLL_C_GlueWidth::vbs_GlueWidth_Measure_Annulus(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 
 				IPLE(" Error !!!, Can not convert the ptrImgInfo to cv::Mat of OpenCV.\n");
 				return ER_ABORT;
@@ -2906,7 +2906,7 @@ int PTWDLL_C_GlueWidth::vbs_GlueWidth_Measure_Rect(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 
 				IPLE(" Error !!!, Can not convert the ptrImgInfo to cv::Mat of OpenCV.\n");
 				return ER_ABORT;
@@ -3068,7 +3068,7 @@ int PTWDLL_C_GlueWidth::vbs_GlueWidth_Measure_Rect(void* pSrcImg,
 
 // 		if (pIP->ptrImgInfo) {
 
-// 			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+// 			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 // 				return ER_ABORT;
 // 			}
 // #ifdef ALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
