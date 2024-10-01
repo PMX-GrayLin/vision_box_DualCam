@@ -52,7 +52,7 @@ int yuyv2rgb_converter::Run_CPU(const unsigned char* pYuyv, cv::Mat& matDst)
     start = std::chrono::high_resolution_clock::now();
 
     // # func()
-    const unsigned char* img_data_ptr = pYuyv;
+    unsigned char* img_data_ptr = const_cast<unsigned char*>(pYuyv);
     tmp_mat = cv::Mat(m_height, m_width, CV_8UC2, img_data_ptr);
 
     cv::cvtColor(tmp_mat, matDst, cv::COLOR_YUV2BGR_YUYV); //<-- Good~~
