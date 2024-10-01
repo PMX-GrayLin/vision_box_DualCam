@@ -487,7 +487,7 @@ extern int msgQ_ipsSend(uint8_t  *msg);
 extern int msgQ_recIos(uint8_t *msg);
 extern int msgQ_recIps(uint8_t *msg);
 
-extern UINT32 mcMsgQParser(char *buf);
+extern unsigned int mcMsgQParser(char *buf);
 
 extern int iosCtl_init();
 extern int ipsCtl_init();
