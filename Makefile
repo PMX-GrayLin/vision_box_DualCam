@@ -180,7 +180,7 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # 	ls -l $(TARGET)
 
 # OBJ_MLDL << no use
-all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS)
+all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS)
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
