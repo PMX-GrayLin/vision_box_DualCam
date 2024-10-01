@@ -40,7 +40,7 @@ int PTWDLL_C_GlueWidth::vbs_Align_ImageCalibration(void* pSrcImg,
 
 		if (pIP->ptrImgInfo) {
 
-			if (CCVIPItem::Uint8ToCvMat(pIP->ptrImgInfo, m_SrcImg) < ER_OK) {
+			if (CCVIPItem::Uint8ToCvMat(const_cast<LPImageInfo>(pIP->ptrImgInfo), m_SrcImg) < ER_OK) {
 				return ER_ABORT;
 			}
 
