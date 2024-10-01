@@ -5924,614 +5924,614 @@ void *backend_mqtt_sub(void *argu)
 
 
 
-int main(int argc, char **argv)
-{
-    int ret;
-    char a[10];
-    seImageFormat seROI;
+// int main(int argc, char **argv)
+// {
+//     int ret;
+//     char a[10];
+//     seImageFormat seROI;
 
-    //////////////////////////////////
-    // gpio control
-    /////////////////////////////////
+//     //////////////////////////////////
+//     // gpio control
+//     /////////////////////////////////
 
-#if (End_GpioCtrl)
+// #if (End_GpioCtrl)
 
-    struct pollfd fdset[2];
-    int nfds = 2;
-    int gpio_fd, timeout, rc;
-    unsigned int gpio;
-    int len, index = 1;
+//     struct pollfd fdset[2];
+//     int nfds = 2;
+//     int gpio_fd, timeout, rc;
+//     unsigned int gpio;
+//     int len, index = 1;
 
-    // Real gpio control function
-    gpio = 0;
+//     // Real gpio control function
+//     gpio = 0;
 
-    gpio_export(gpio);
-    gpio_set_dir(gpio, 0);
-    gpio_set_edge(gpio, "rising");
-    gpio_fd = gpio_fd_open(gpio);
+//     gpio_export(gpio);
+//     gpio_set_dir(gpio, 0);
+//     gpio_set_edge(gpio, "rising");
+//     gpio_fd = gpio_fd_open(gpio);
 
-    timeout = POLL_TIMEOUT;
+//     timeout = POLL_TIMEOUT;
 
-    memset((void *)fdset, 0, sizeof(fdset));
-    fdset[0].fd = STDIN_FILENO;
-    fdset[0].events = POLLIN;
-    fdset[1].fd = gpio_fd;
-    fdset[1].events = POLLPRI;
+//     memset((void *)fdset, 0, sizeof(fdset));
+//     fdset[0].fd = STDIN_FILENO;
+//     fdset[0].events = POLLIN;
+//     fdset[1].fd = gpio_fd;
+//     fdset[1].events = POLLPRI;
 
-#endif
+// #endif
 
-    /////////////////////////////////
+//     /////////////////////////////////
 
-    BACKENDLOG(0, "*********************************\n");
-    BACKENDLOG(0, "*****   Backend Handler App.   *****\n");
-    BACKENDLOG(0, "*********************************\n");
+//     BACKENDLOG(0, "*********************************\n");
+//     BACKENDLOG(0, "*****   Backend Handler App.   *****\n");
+//     BACKENDLOG(0, "*********************************\n");
 
-    /* Signal handling */
-    signal(SIGKILL, sigExit_main);
-    signal(SIGTERM, sigExit_main);
-    signal(SIGSEGV, sigExit_main);
-    signal(SIGINT, sigExit_main);
+//     /* Signal handling */
+//     signal(SIGKILL, sigExit_main);
+//     signal(SIGTERM, sigExit_main);
+//     signal(SIGSEGV, sigExit_main);
+//     signal(SIGINT, sigExit_main);
 
-    /* init value */
+//     /* init value */
 
-    /* create a thread for exteranl MQTT subscriber */
-    ret = pthread_create(&thread1, nullptr, backend_mqtt_sub, nullptr);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 1 !!\n");
-        exit(1);
-    }
+//     /* create a thread for exteranl MQTT subscriber */
+//     ret = pthread_create(&thread1, nullptr, backend_mqtt_sub, nullptr);
+//     if (ret < 0)
+//     {
+//         perror("Cannot create thread 1 !!\n");
+//         exit(1);
+//     }
 
-    usleep(50000);
+//     usleep(50000);
 
-    bool iEnbLoopRunninig = 0;
+//     bool iEnbLoopRunninig = 0;
 
-    while (1)
-    {
+//     while (1)
+//     {
 
-        // if (iEnbLoopRunninig) {
+//         // if (iEnbLoopRunninig) {
 
-        //	sleep(2);
+//         //	sleep(2);
 
-        //	////////////////////////////////////////////////
-        //	//// Streaming testing === === >>>
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// Streaming testing === === >>>
+//         //	////////////////////////////////////////////////
 
-        //	camera_para_json_streaming(buf, 0);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_para_json_streaming(buf, 0);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(5);
+//         //	sleep(5);
 
-        //	////////////////////////////////////////////////
-        //	//// Strwaming testing <<< === ===
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// Strwaming testing <<< === ===
+//         //	////////////////////////////////////////////////
 
-        //	////////////////////////////////////////////////
-        //	//// GigE camera testing === === >>>
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// GigE camera testing === === >>>
+//         //	////////////////////////////////////////////////
 
-        //	camera_para_json_initializa(buf);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_para_json_initializa(buf);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(2);
+//         //	sleep(2);
 
-        //	camera_status_json_inquiry(buf);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_status_json_inquiry(buf);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(2);
+//         //	sleep(2);
 
-        //	camera_cnfg_json_create(buf, 0);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_cnfg_json_create(buf, 0);
+//         //	backend_mqtt_publisher(buf);
 
-        //	camera_para_json_capture(buf, 0);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_para_json_capture(buf, 0);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(2);
+//         //	sleep(2);
 
-        //	camera_para_json_release(buf);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_para_json_release(buf);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(5);
+//         //	sleep(5);
 
-        //	////////////////////////////////////////////////
-        //	//// GigE camera testing <<< === ===
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// GigE camera testing <<< === ===
+//         //	////////////////////////////////////////////////
 
-        //	////////////////////////////////////////////////
-        //	//// Streaming testing === === >>>
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// Streaming testing === === >>>
+//         //	////////////////////////////////////////////////
 
-        //	camera_para_json_streaming(buf, 1);
-        //	backend_mqtt_publisher(buf);
+//         //	camera_para_json_streaming(buf, 1);
+//         //	backend_mqtt_publisher(buf);
 
-        //	sleep(20);
+//         //	sleep(20);
 
-        //	////////////////////////////////////////////////
-        //	//// Strwaming testing <<< === ===
-        //	////////////////////////////////////////////////
+//         //	////////////////////////////////////////////////
+//         //	//// Strwaming testing <<< === ===
+//         //	////////////////////////////////////////////////
 
-        //}
+//         //}
 
-        if (kbhit())
-        {
-            fflush(stdin);
-            fgets(a, 10, stdin);
-            fflush(stdin);
-            BACKENDLOG(2, "backend receive command string = %s\n", a);
-            switch (a[0])
-            {
-            case '0': {
-                char ch;
-                bool iEnbLoopRunninig = 0;
-                ios_readjsonfile1(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 1\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//         if (kbhit())
+//         {
+//             fflush(stdin);
+//             fgets(a, 10, stdin);
+//             fflush(stdin);
+//             BACKENDLOG(2, "backend receive command string = %s\n", a);
+//             switch (a[0])
+//             {
+//             case '0': {
+//                 char ch;
+//                 bool iEnbLoopRunninig = 0;
+//                 ios_readjsonfile1(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 1\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
 
-                ios_readjsonfile1_1(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 1-1\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile1_1(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 1-1\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile2(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 2\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile2(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 2\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile3(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 3\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile3(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 3\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile4(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 4\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile4(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 4\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile5(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 5\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile5(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 5\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile6(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 6\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile6(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 6\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile7(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 7\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile7(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 7\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile8(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 8\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile8(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 8\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile9(buf);  
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 9\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile9(buf);  
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 9\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile10(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 10\n", __FUNCTION__, __LINE__);
-                ch = getchar();
+//                 ios_readjsonfile10(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 10\n", __FUNCTION__, __LINE__);
+//                 ch = getchar();
                 
-                ios_readjsonfile11(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 11\n", __FUNCTION__, __LINE__);
+//                 ios_readjsonfile11(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 11\n", __FUNCTION__, __LINE__);
                 
-                ios_readjsonfile12(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 12\n", __FUNCTION__, __LINE__);
+//                 ios_readjsonfile12(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 12\n", __FUNCTION__, __LINE__);
                 
-                ios_readjsonfile13(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 13\n", __FUNCTION__, __LINE__);
+//                 ios_readjsonfile13(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 13\n", __FUNCTION__, __LINE__);
                 
-                ios_readjsonfile14(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 14\n", __FUNCTION__, __LINE__);
+//                 ios_readjsonfile14(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 14\n", __FUNCTION__, __LINE__);
                 
-                ios_readjsonfile15(buf); 
-                backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
-                backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
-                fprintf(stderr, "%s()%d: 15\n", __FUNCTION__, __LINE__);
+//                 ios_readjsonfile15(buf); 
+//                 backend_mqtt_publisher_Dual(buf, 0);    usleep(100000);
+//                 backend_mqtt_publisher_Dual(buf, 1);    usleep(100000);
+//                 fprintf(stderr, "%s()%d: 15\n", __FUNCTION__, __LINE__);
                    
-                break;
-            }
-            case '1': {
-                ios_readjsonfile_ng(buf); //backend_mqtt_publisher(buf);    usleep(500000);
-                break;
-            }
-            case '2': {
-                ios_readjsonfile_pass(buf); //backend_mqtt_publisher(buf);    usleep(500000);
-                break;
-            }
-            case '3':
-                ios_readjsonfile11(buf); //backend_mqtt_publisher(buf);    usleep(500000);
-                break;
-            case '4':
-                ios_readjsonfile41(buf); //backend_mqtt_publisher(buf);    usleep(500000);
-                break;
-            case 'y': // Loop running
-                if (!iEnbLoopRunninig)
-                {
-                    iEnbLoopRunninig = 1;
-                }
-                else
-                {
-                    iEnbLoopRunninig = 0;
-                }
-                break;
-
-            case 'a':
-                ios_dio_get_status_json_create(buf);
-                break;
-            case 'b':
-                ios_din_set_mode_json_create(buf);
-                break;
-            // case 'c':
-            //   ios_led_set_mode_json_create(buf);
-            // break;
-            case 'd':
-                ios_dout_manual_control_json_create(buf);
-                break;
-            case 'f':
-                ios_light_get_mode_json_create(buf);
-                break;
-
-            case 'i':
-                camera_status_json_inquiry(buf);
-                break;
-            case 'l':
-                camera_status_json_streaming_prepare(buf);
-                break;
-            case 'g':
-                camera_status_json_streaming_start(buf);
-                break;
-            case 't':
-                camera_status_json_streaming_stop(buf);
-                break;
-            case 'c':
-                camera_status_json_streaming_close(buf);
-                break;
-
-            case 's':
-                camera_cnfg_json_create_ExposureTime(buf, 0, 0, 99999.0);
-                break;
-
-            case 'e':
-                camera_cnfg_json_create_ExposureTime(buf, 1, 1, 30000.0);
-                break;
-
-            case 'h':
-                 //camera_autorunning_json_create_TESTING(buf);  //Annulus
-                camera_autorunning_RECT_create_TESTING(buf); // Rectanle
-                break;
-
-            case 'v':
-                camera_enable_triggermode_json_create(buf);
-                break;
-
-            case 'p':
-                camera_para_json_capture(buf, 0);
-
-                 //pattern_match_json_create(buf);
-                 //backend_mqtt_publisher(buf);
-
-                 //detect_circle_json_create(buf);
-
-                break;
-
-            //case 'p':
-
-                //////////////////////////////////////////////
-                // [Large MQTT package] Auto Running_Continue testing  ====== >
-                //////////////////////////////////////////////
-
-                // camera_autorunning_json_create_TESTING(buf);
-                // camera_autorunning_json_create_TESTING_3(buf);
-
-                /*
-                                backend_mqtt_publisher(buf);
-
-                                camera_enable_triggermode_json_create(buf);
-                /*				backend_mqtt_publisher(buf);
-
-                                camera_enable_triggermode_json_create(buf);
-                                backend_mqtt_publisher(buf);
+//                 break;
+//             }
+//             case '1': {
+//                 ios_readjsonfile_ng(buf); //backend_mqtt_publisher(buf);    usleep(500000);
+//                 break;
+//             }
+//             case '2': {
+//                 ios_readjsonfile_pass(buf); //backend_mqtt_publisher(buf);    usleep(500000);
+//                 break;
+//             }
+//             case '3':
+//                 ios_readjsonfile11(buf); //backend_mqtt_publisher(buf);    usleep(500000);
+//                 break;
+//             case '4':
+//                 ios_readjsonfile41(buf); //backend_mqtt_publisher(buf);    usleep(500000);
+//                 break;
+//             case 'y': // Loop running
+//                 if (!iEnbLoopRunninig)
+//                 {
+//                     iEnbLoopRunninig = 1;
+//                 }
+//                 else
+//                 {
+//                     iEnbLoopRunninig = 0;
+//                 }
+//                 break;
+
+//             case 'a':
+//                 ios_dio_get_status_json_create(buf);
+//                 break;
+//             case 'b':
+//                 ios_din_set_mode_json_create(buf);
+//                 break;
+//             // case 'c':
+//             //   ios_led_set_mode_json_create(buf);
+//             // break;
+//             case 'd':
+//                 ios_dout_manual_control_json_create(buf);
+//                 break;
+//             case 'f':
+//                 ios_light_get_mode_json_create(buf);
+//                 break;
+
+//             case 'i':
+//                 camera_status_json_inquiry(buf);
+//                 break;
+//             case 'l':
+//                 camera_status_json_streaming_prepare(buf);
+//                 break;
+//             case 'g':
+//                 camera_status_json_streaming_start(buf);
+//                 break;
+//             case 't':
+//                 camera_status_json_streaming_stop(buf);
+//                 break;
+//             case 'c':
+//                 camera_status_json_streaming_close(buf);
+//                 break;
+
+//             case 's':
+//                 camera_cnfg_json_create_ExposureTime(buf, 0, 0, 99999.0);
+//                 break;
+
+//             case 'e':
+//                 camera_cnfg_json_create_ExposureTime(buf, 1, 1, 30000.0);
+//                 break;
+
+//             case 'h':
+//                  //camera_autorunning_json_create_TESTING(buf);  //Annulus
+//                 camera_autorunning_RECT_create_TESTING(buf); // Rectanle
+//                 break;
+
+//             case 'v':
+//                 camera_enable_triggermode_json_create(buf);
+//                 break;
+
+//             case 'p':
+//                 camera_para_json_capture(buf, 0);
+
+//                  //pattern_match_json_create(buf);
+//                  //backend_mqtt_publisher(buf);
+
+//                  //detect_circle_json_create(buf);
+
+//                 break;
+
+//             //case 'p':
+
+//                 //////////////////////////////////////////////
+//                 // [Large MQTT package] Auto Running_Continue testing  ====== >
+//                 //////////////////////////////////////////////
+
+//                 // camera_autorunning_json_create_TESTING(buf);
+//                 // camera_autorunning_json_create_TESTING_3(buf);
+
+//                 /*
+//                                 backend_mqtt_publisher(buf);
+
+//                                 camera_enable_triggermode_json_create(buf);
+//                 /*				backend_mqtt_publisher(buf);
+
+//                                 camera_enable_triggermode_json_create(buf);
+//                                 backend_mqtt_publisher(buf);
 
-                                camera_enable_triggermode_json_create(buf);
+//                                 camera_enable_triggermode_json_create(buf);
 
-                                //*/
+//                                 //*/
 
-                //////////////////////////////////////////////
-                // [Large MQTT package] Auto Running_Continue testing < ======
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // [Large MQTT package] Auto Running_Continue testing < ======
+//                 //////////////////////////////////////////////
 
-                //////////////////////////////////////////////
-                // Auto Running_Continue testing ====== >
-                //////////////////////////////////////////////
-                /*
-                camera_autorunning_json_create_True(buf);
-                backend_mqtt_publisher(buf);
+//                 //////////////////////////////////////////////
+//                 // Auto Running_Continue testing ====== >
+//                 //////////////////////////////////////////////
+//                 /*
+//                 camera_autorunning_json_create_True(buf);
+//                 backend_mqtt_publisher(buf);
 
-                //camera_para_json_create(buf);
-                //backend_mqtt_publisher(buf);
+//                 //camera_para_json_create(buf);
+//                 //backend_mqtt_publisher(buf);
 
-                pattern_match_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 pattern_match_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
 
-                ibox_annulus_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 ibox_annulus_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                calcCoord_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 calcCoord_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                cropimg_annulus_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 cropimg_annulus_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                threshold_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 threshold_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                moophology_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 moophology_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                noiseremoval_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 noiseremoval_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                gluewidth_measure_annulus_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 gluewidth_measure_annulus_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                camera_autorunning_json_create_False(buf);
-                //*/
+//                 camera_autorunning_json_create_False(buf);
+//                 //*/
 
-                //////////////////////////////////////////////
-                // Auto Running_Continue testing < ======
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Auto Running_Continue testing < ======
+//                 //////////////////////////////////////////////
 
-                //////////////////////////////////////////////
-                // Step by Step testing ====== >
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Step by Step testing ====== >
+//                 //////////////////////////////////////////////
 
-                //////////////////////////////////////////////
-                // Streaming testing === === >>>
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Streaming testing === === >>>
+//                 //////////////////////////////////////////////
 
-                // camera_para_json_streaming(buf, 0);
-                // backend_mqtt_publisher(buf);
+//                 // camera_para_json_streaming(buf, 0);
+//                 // backend_mqtt_publisher(buf);
 
-                // sleep(5);
+//                 // sleep(5);
 
-                //////////////////////////////////////////////
-                // Strwaming testing <<< === ===
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Strwaming testing <<< === ===
+//                 //////////////////////////////////////////////
 
-                // camera_para_json_initializa(buf);
-                // backend_mqtt_publisher(buf);
+//                 // camera_para_json_initializa(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                //camera_status_json_inquiry(buf);
-                //backend_mqtt_publisher(buf);
+//                 //camera_status_json_inquiry(buf);
+//                 //backend_mqtt_publisher(buf);
 
-                //camera_cnfg_json_create(buf, 0);
-                //backend_mqtt_publisher(buf);
+//                 //camera_cnfg_json_create(buf, 0);
+//                 //backend_mqtt_publisher(buf);
 
-                //camera_para_json_capture(buf, 0);
-                // backend_mqtt_publisher(buf);
+//                 //camera_para_json_capture(buf, 0);
+//                 // backend_mqtt_publisher(buf);
 
-                // sleep(1);
+//                 // sleep(1);
 
-                // camera_para_json_release(buf);
-                ////backend_mqtt_publisher(buf);
+//                 // camera_para_json_release(buf);
+//                 ////backend_mqtt_publisher(buf);
 
-                // sleep(5);
+//                 // sleep(5);
 
-                //////////////////////////////////////////////
-                // Streaming testing === === >>>
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Streaming testing === === >>>
+//                 //////////////////////////////////////////////
 
-                // camera_para_json_streaming(buf, 1);
+//                 // camera_para_json_streaming(buf, 1);
 
-                // sleep(8);
+//                 // sleep(8);
 
-                //////////////////////////////////////////////
-                // Strwaming testing <<< === ===
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Strwaming testing <<< === ===
+//                 //////////////////////////////////////////////
 
-                // image_calibration_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // image_calibration_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // crop_template_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // crop_template_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // pattern_match_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // pattern_match_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // find_profile_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // find_profile_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // detect_circle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // detect_circle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // ibox_annulus_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // ibox_annulus_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // ibox_rectangle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // ibox_rectangle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // ibox_circle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // ibox_circle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // calcCoord_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // calcCoord_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // cropimg_annulus_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // cropimg_annulus_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // cropimg_rectangle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // cropimg_rectangle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // cropimg_circle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // cropimg_circle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // histogram_annulus_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // histogram_annulus_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // histogram_rectangle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // histogram_rectangle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // histogram_circle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // histogram_circle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // threshold_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // threshold_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // moophology_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // moophology_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // noiseremoval_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // noiseremoval_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // dataaugmentation_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // dataaugmentation_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // gluewidth_measure_annulus_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // gluewidth_measure_annulus_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // gluewidth_measure_rectangle_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // gluewidth_measure_rectangle_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // ais_elic_initialize_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // ais_elic_initialize_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                // ais_elic_inference_json_create(buf);
-                // backend_mqtt_publisher(buf);
+//                 // ais_elic_inference_json_create(buf);
+//                 // backend_mqtt_publisher(buf);
 
-                //////////////////////////////////////////////
-                // Step by Step testing < ======
-                //////////////////////////////////////////////
+//                 //////////////////////////////////////////////
+//                 // Step by Step testing < ======
+//                 //////////////////////////////////////////////
 
-                //break;
+//                 //break;
 
-            // case 'l':
-            //	ios_light_set_json_create(buf);
-            //	break;
-            case 'm':
-                ios_light_get_json_create(buf);
-                break;
-            case 'r':
-                ios_trigger_set_json_create(buf);
-                break;
-            // case 's':
-            //	ios_trigger_get_json_create(buf);
-            //	break;
-            // case 't':
-            //	ios_di_set_json_create(buf);
-            //	break;
-            case 'u':
-                ios_di_get_json_create(buf);
-                break;
-            // case 'v':
-            //     ios_led_set_json_create(buf);
-            //     break;
-            case 'w':
-                ios_led_get_json_create(buf);
-                break;
-            case 'x':
-                ios_get_status_json_create(buf);
-                break;
-            case 'z':
-                /* kill all processing ??memory ??$)Aq#O */
-                exit(1);
-                break;
-                // memset(ch,0,500);
-            }
+//             // case 'l':
+//             //	ios_light_set_json_create(buf);
+//             //	break;
+//             case 'm':
+//                 ios_light_get_json_create(buf);
+//                 break;
+//             case 'r':
+//                 ios_trigger_set_json_create(buf);
+//                 break;
+//             // case 's':
+//             //	ios_trigger_get_json_create(buf);
+//             //	break;
+//             // case 't':
+//             //	ios_di_set_json_create(buf);
+//             //	break;
+//             case 'u':
+//                 ios_di_get_json_create(buf);
+//                 break;
+//             // case 'v':
+//             //     ios_led_set_json_create(buf);
+//             //     break;
+//             case 'w':
+//                 ios_led_get_json_create(buf);
+//                 break;
+//             case 'x':
+//                 ios_get_status_json_create(buf);
+//                 break;
+//             case 'z':
+//                 /* kill all processing ??memory ??$)Aq#O */
+//                 exit(1);
+//                 break;
+//                 // memset(ch,0,500);
+//             }
 
-            // backend_mqtt_publisher(buf);
-            backend_mqtt_publisher_Dual(buf, 0);
-            backend_mqtt_publisher_Dual(buf, 1);
-        }
+//             // backend_mqtt_publisher(buf);
+//             backend_mqtt_publisher_Dual(buf, 0);
+//             backend_mqtt_publisher_Dual(buf, 1);
+//         }
 
-        //////////////////////////////////
-        // gpio control
-        /////////////////////////////////
+//         //////////////////////////////////
+//         // gpio control
+//         /////////////////////////////////
 
-#if (End_GpioCtrl)
+// #if (End_GpioCtrl)
 
-        // memset((void*)fdset, 0, sizeof(fdset));
-        // fdset[0].fd = STDIN_FILENO;
-        // fdset[0].events = POLLIN;
-        // fdset[1].fd = gpio_fd;
-        // fdset[1].events = POLLPRI;
+//         // memset((void*)fdset, 0, sizeof(fdset));
+//         // fdset[0].fd = STDIN_FILENO;
+//         // fdset[0].events = POLLIN;
+//         // fdset[1].fd = gpio_fd;
+//         // fdset[1].events = POLLPRI;
 
-        rc = poll(fdset, nfds, timeout);
-        printf("rc=%d\n", rc);
+//         rc = poll(fdset, nfds, timeout);
+//         printf("rc=%d\n", rc);
 
-        if (rc == 0)
-        {
-            printf(".");
-        }
-        if (fdset[1].revents & POLLPRI)
-        {
+//         if (rc == 0)
+//         {
+//             printf(".");
+//         }
+//         if (fdset[1].revents & POLLPRI)
+//         {
 
-            len = read(fdset[1].fd, buf, MAX_BUF);
-            printf("\npoll() GPIO %d interrupt occurred\n", gpio);
+//             len = read(fdset[1].fd, buf, MAX_BUF);
+//             printf("\npoll() GPIO %d interrupt occurred\n", gpio);
 
-            if (index == 0)
-            {
+//             if (index == 0)
+//             {
 
-                printf("gpio set to high\n");
+//                 printf("gpio set to high\n");
 
-                camera_enable_triggermode_json_create(buf);
-                backend_mqtt_publisher(buf);
+//                 camera_enable_triggermode_json_create(buf);
+//                 backend_mqtt_publisher(buf);
 
-                index = 1;
-            }
-            else
-            {
+//                 index = 1;
+//             }
+//             else
+//             {
 
-                printf("gpio set to low\n");
+//                 printf("gpio set to low\n");
 
-                index = 0;
-            }
-        }
-        if (fdset[0].revents & POLLIN)
-        {
-            (void)read(fdset[0].fd, buf, 1);
-            printf("\npoll() stdin read 0x%2.2X\n", (unsigned int)buf[0]);
-        }
-        fflush(stdout);
+//                 index = 0;
+//             }
+//         }
+//         if (fdset[0].revents & POLLIN)
+//         {
+//             (void)read(fdset[0].fd, buf, 1);
+//             printf("\npoll() stdin read 0x%2.2X\n", (unsigned int)buf[0]);
+//         }
+//         fflush(stdout);
 
-#endif
+// #endif
 
-        /////////////////////////////////
+//         /////////////////////////////////
 
-        sleep(1);
-    };
+//         sleep(1);
+//     };
 
-#if (End_GpioCtrl)
+// #if (End_GpioCtrl)
 
-    gpio_fd_close(gpio_fd);
+//     gpio_fd_close(gpio_fd);
 
-#endif
+// #endif
 
-    return 0;
-}
+//     return 0;
+// }

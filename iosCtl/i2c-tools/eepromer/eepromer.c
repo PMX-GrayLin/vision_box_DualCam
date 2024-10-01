@@ -80,130 +80,130 @@ void help(void)
 
 
 
-int main(int argc, char *argv[]){
+// int main(int argc, char *argv[]){
 
-	int i, file, addr;
-	int  action; //in this variable will be (-r,-w,-e)
-	char device[45];
-	int force;
+// 	int i, file, addr;
+// 	int  action; //in this variable will be (-r,-w,-e)
+// 	char device[45];
+// 	int force;
 
-	p_ind=&m_ind;
-	force=0;
-
-
-
-	
-	for(i=1; i < argc;i++){
-	
-		
-		if(!strcmp("-r",argv[i])) {
-			 action=READ;
-			 break;
-		}	 
-		if(!strcmp("-e",argv[i])) {
-			 action=ERASE;
-			 break;
-		}	 
-		if(!strcmp("-w",argv[i])) { 
-			action=WRITE;
-			break;
-		}
-		if(!strcmp("-p",argv[i])) { 
-			action=PHEADER;
-			break;
-		}	
-		if(!strcmp("-force",argv[i])) { 
-			force=FORCE;
-			break;
-		}	
-		if(!strcmp("-v",argv[i])) { 
-			fprintf(stderr,VER);
-			exit(0);
-			break;
-		}	
-		else {
-		
-			fprintf(stderr,"Error: No action specified !\n");
-			help();
-			exit(1);
-		}
-
-	}	
+// 	p_ind=&m_ind;
+// 	force=0;
 
 
-#ifdef  WARNINC
-	
-	if(force!=FORCE) warn();
-	
-#endif
-	
-
-	if(argc < 5) {
-		fprintf(stderr,"Error: No i2c address specified !\n");
-		help();
-		exit(1);
-	
-	}
 
 	
-	for(i=1; i < argc;i++){
+// 	for(i=1; i < argc;i++){
 	
 		
-		if(!strcmp("-f",argv[i])) {
-			 strcpy(device,argv[i+1]);	 
-			 break;
-		}	 
-
-	}	
-
-	if(!strlen(device)) {
-
-			fprintf(stderr,"Error: No device specified !\n");
-			help();
-			exit(1);
-	}
-
-
-	if(! (addr=strtol(argv[4],NULL,16))) {
-	
-		fprintf(stderr,"Error: Bad device address !\n");
-		help();
-		exit(1);
-	}
-
-	if(! (file=init(device,addr))){
-	
-		fprintf(stderr,"Error: Init failed !\n");
-		exit(1);
-	}	
-
-
-	switch(action){
-	
-		case READ:  
-						content_read(file,addr);
-						break;
+// 		if(!strcmp("-r",argv[i])) {
+// 			 action=READ;
+// 			 break;
+// 		}	 
+// 		if(!strcmp("-e",argv[i])) {
+// 			 action=ERASE;
+// 			 break;
+// 		}	 
+// 		if(!strcmp("-w",argv[i])) { 
+// 			action=WRITE;
+// 			break;
+// 		}
+// 		if(!strcmp("-p",argv[i])) { 
+// 			action=PHEADER;
+// 			break;
+// 		}	
+// 		if(!strcmp("-force",argv[i])) { 
+// 			force=FORCE;
+// 			break;
+// 		}	
+// 		if(!strcmp("-v",argv[i])) { 
+// 			fprintf(stderr,VER);
+// 			exit(0);
+// 			break;
+// 		}	
+// 		else {
 		
-		case WRITE: 
-						content_write(file,addr);
-						break;
+// 			fprintf(stderr,"Error: No action specified !\n");
+// 			help();
+// 			exit(1);
+// 		}
+
+// 	}	
+
+
+// #ifdef  WARNINC
+	
+// 	if(force!=FORCE) warn();
+	
+// #endif
+	
+
+// 	if(argc < 5) {
+// 		fprintf(stderr,"Error: No i2c address specified !\n");
+// 		help();
+// 		exit(1);
+	
+// 	}
+
+	
+// 	for(i=1; i < argc;i++){
+	
 		
-		case ERASE: 	erase(file,addr,EEPROM_SIZE);
-						break;
-		case PHEADER: 	pheader(file,addr);
-						break;			
+// 		if(!strcmp("-f",argv[i])) {
+// 			 strcpy(device,argv[i+1]);	 
+// 			 break;
+// 		}	 
+
+// 	}	
+
+// 	if(!strlen(device)) {
+
+// 			fprintf(stderr,"Error: No device specified !\n");
+// 			help();
+// 			exit(1);
+// 	}
+
+
+// 	if(! (addr=strtol(argv[4],NULL,16))) {
+	
+// 		fprintf(stderr,"Error: Bad device address !\n");
+// 		help();
+// 		exit(1);
+// 	}
+
+// 	if(! (file=init(device,addr))){
+	
+// 		fprintf(stderr,"Error: Init failed !\n");
+// 		exit(1);
+// 	}	
+
+
+// 	switch(action){
+	
+// 		case READ:  
+// 						content_read(file,addr);
+// 						break;
+		
+// 		case WRITE: 
+// 						content_write(file,addr);
+// 						break;
+		
+// 		case ERASE: 	erase(file,addr,EEPROM_SIZE);
+// 						break;
+// 		case PHEADER: 	pheader(file,addr);
+// 						break;			
 					
-		default:
-			fprintf(stderr,"Internal error!\n");
-			exit(1); break;
+// 		default:
+// 			fprintf(stderr,"Internal error!\n");
+// 			exit(1); break;
 	
-	}
+// 	}
 
 
-	close(file);
-	exit(0);
+// 	close(file);
+// 	exit(0);
 
-}
+// }
 
 
 

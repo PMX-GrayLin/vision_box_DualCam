@@ -150,110 +150,110 @@ static int confirm(const char *filename, int address, int size, int daddress,
 	return 1;
 }
 
-int main(int argc, char *argv[])
-{
-	char *end;
-	int res, i2cbus, address, size, file;
-	int daddress;
-	char filename[20];
-	int pec = 0;
-	int flags = 0;
-	int force = 0, yes = 0, version = 0;
+// int main(int argc, char *argv[])
+// {
+// 	char *end;
+// 	int res, i2cbus, address, size, file;
+// 	int daddress;
+// 	char filename[20];
+// 	int pec = 0;
+// 	int flags = 0;
+// 	int force = 0, yes = 0, version = 0;
 
-	/* handle (optional) flags first */
-	while (1+flags < argc && argv[1+flags][0] == '-') {
-		switch (argv[1+flags][1]) {
-		case 'V': version = 1; break;
-		case 'f': force = 1; break;
-		case 'y': yes = 1; break;
-		default:
-			fprintf(stderr, "Error: Unsupported option "
-				"\"%s\"!\n", argv[1+flags]);
-			help();
-			exit(1);
-		}
-		flags++;
-	}
+// 	/* handle (optional) flags first */
+// 	while (1+flags < argc && argv[1+flags][0] == '-') {
+// 		switch (argv[1+flags][1]) {
+// 		case 'V': version = 1; break;
+// 		case 'f': force = 1; break;
+// 		case 'y': yes = 1; break;
+// 		default:
+// 			fprintf(stderr, "Error: Unsupported option "
+// 				"\"%s\"!\n", argv[1+flags]);
+// 			help();
+// 			exit(1);
+// 		}
+// 		flags++;
+// 	}
 
-	if (version) {
-		fprintf(stderr, "i2cget version %s\n", VERSION);
-		exit(0);
-	}
+// 	if (version) {
+// 		fprintf(stderr, "i2cget version %s\n", VERSION);
+// 		exit(0);
+// 	}
 
-	if (argc < flags + 3)
-		help();
+// 	if (argc < flags + 3)
+// 		help();
 
-	i2cbus = lookup_i2c_bus(argv[flags+1]);
-	if (i2cbus < 0)
-		help();
+// 	i2cbus = lookup_i2c_bus(argv[flags+1]);
+// 	if (i2cbus < 0)
+// 		help();
 
-	address = parse_i2c_address(argv[flags+2]);
-	if (address < 0)
-		help();
+// 	address = parse_i2c_address(argv[flags+2]);
+// 	if (address < 0)
+// 		help();
 
-	if (argc > flags + 3) {
-		size = I2C_SMBUS_BYTE_DATA;
-		daddress = strtol(argv[flags+3], &end, 0);
-		if (*end || daddress < 0 || daddress > 0xff) {
-			fprintf(stderr, "Error: Data address invalid!\n");
-			help();
-		}
-	} else {
-		size = I2C_SMBUS_BYTE;
-		daddress = -1;
-	}
+// 	if (argc > flags + 3) {
+// 		size = I2C_SMBUS_BYTE_DATA;
+// 		daddress = strtol(argv[flags+3], &end, 0);
+// 		if (*end || daddress < 0 || daddress > 0xff) {
+// 			fprintf(stderr, "Error: Data address invalid!\n");
+// 			help();
+// 		}
+// 	} else {
+// 		size = I2C_SMBUS_BYTE;
+// 		daddress = -1;
+// 	}
 
-	if (argc > flags + 4) {
-		switch (argv[flags+4][0]) {
-		case 'b': size = I2C_SMBUS_BYTE_DATA; break;
-		case 'w': size = I2C_SMBUS_WORD_DATA; break;
-		case 'c': size = I2C_SMBUS_BYTE; break;
-		default:
-			fprintf(stderr, "Error: Invalid mode!\n");
-			help();
-		}
-		pec = argv[flags+4][1] == 'p';
-	}
+// 	if (argc > flags + 4) {
+// 		switch (argv[flags+4][0]) {
+// 		case 'b': size = I2C_SMBUS_BYTE_DATA; break;
+// 		case 'w': size = I2C_SMBUS_WORD_DATA; break;
+// 		case 'c': size = I2C_SMBUS_BYTE; break;
+// 		default:
+// 			fprintf(stderr, "Error: Invalid mode!\n");
+// 			help();
+// 		}
+// 		pec = argv[flags+4][1] == 'p';
+// 	}
 
-	file = open_i2c_dev(i2cbus, filename, sizeof(filename), 0);
-	if (file < 0
-	 || check_funcs(file, size, daddress, pec)
-	 || set_slave_addr(file, address, force))
-		exit(1);
+// 	file = open_i2c_dev(i2cbus, filename, sizeof(filename), 0);
+// 	if (file < 0
+// 	 || check_funcs(file, size, daddress, pec)
+// 	 || set_slave_addr(file, address, force))
+// 		exit(1);
 
-	if (!yes && !confirm(filename, address, size, daddress, pec))
-		exit(0);
+// 	if (!yes && !confirm(filename, address, size, daddress, pec))
+// 		exit(0);
 
-	if (pec && ioctl(file, I2C_PEC, 1) < 0) {
-		fprintf(stderr, "Error: Could not set PEC: %s\n",
-			strerror(errno));
-		close(file);
-		exit(1);
-	}
+// 	if (pec && ioctl(file, I2C_PEC, 1) < 0) {
+// 		fprintf(stderr, "Error: Could not set PEC: %s\n",
+// 			strerror(errno));
+// 		close(file);
+// 		exit(1);
+// 	}
 
-	switch (size) {
-	case I2C_SMBUS_BYTE:
-		if (daddress >= 0) {
-			res = i2c_smbus_write_byte(file, daddress);
-			if (res < 0)
-				fprintf(stderr, "Warning - write failed\n");
-		}
-		res = i2c_smbus_read_byte(file);
-		break;
-	case I2C_SMBUS_WORD_DATA:
-		res = i2c_smbus_read_word_data(file, daddress);
-		break;
-	default: /* I2C_SMBUS_BYTE_DATA */
-		res = i2c_smbus_read_byte_data(file, daddress);
-	}
-	close(file);
+// 	switch (size) {
+// 	case I2C_SMBUS_BYTE:
+// 		if (daddress >= 0) {
+// 			res = i2c_smbus_write_byte(file, daddress);
+// 			if (res < 0)
+// 				fprintf(stderr, "Warning - write failed\n");
+// 		}
+// 		res = i2c_smbus_read_byte(file);
+// 		break;
+// 	case I2C_SMBUS_WORD_DATA:
+// 		res = i2c_smbus_read_word_data(file, daddress);
+// 		break;
+// 	default: /* I2C_SMBUS_BYTE_DATA */
+// 		res = i2c_smbus_read_byte_data(file, daddress);
+// 	}
+// 	close(file);
 
-	if (res < 0) {
-		fprintf(stderr, "Error: Read failed\n");
-		exit(2);
-	}
+// 	if (res < 0) {
+// 		fprintf(stderr, "Error: Read failed\n");
+// 		exit(2);
+// 	}
 
-	printf("0x%0*x\n", size == I2C_SMBUS_WORD_DATA ? 4 : 2, res);
+// 	printf("0x%0*x\n", size == I2C_SMBUS_WORD_DATA ? 4 : 2, res);
 
-	exit(0);
-}
+// 	exit(0);
+// }

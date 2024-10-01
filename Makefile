@@ -17,12 +17,10 @@ VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_AddTimestamp_DEBUG
 VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_SpeedOptimization_DEBUG
 VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
 
-# GG
 # PP = aarch64-linux-gnu-g++
-PP = ${CXX}
 # CXXFLAGS += "-std=c++11"
 
-HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
+# HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
 		
 TARGET=vision_box_DualCam
 
@@ -81,6 +79,7 @@ INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
 # gray
+PP = ${CXX}
 INCLUDE += -I${BB_INCDIR}/json-c
 INCLUDE += -I${BB_INCDIR}/modbus
 INCLUDE += -I${BB_INCDIR}/opencv4

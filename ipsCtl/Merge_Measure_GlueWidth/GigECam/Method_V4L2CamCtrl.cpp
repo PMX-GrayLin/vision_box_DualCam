@@ -174,7 +174,7 @@ int CMethod_V4L2CamCtrl::GigeCam_Init()
 	nRet = ioctl(m_pCam, VIDIOC_QUERYCAP, &m_Caps);
 	if (nRet < 0) {
 
-		IPSLOG(0, "failed to get device m_Caps for %s (%d = %s)\n", m_strDeviceName, errno, strerror(errno));
+		// IPSLOG(0, "failed to get device m_Caps for %s (%d = %s)\n", m_strDeviceName, errno, strerror(errno));
 		v4l2_close_device();
 		return -1;
 	}
