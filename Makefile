@@ -92,6 +92,9 @@ CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
 LDFLAG += -L${BB_LIBDIR}
 LDFLAG += -ldl -lc -lm -lrt -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
+LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
+		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
+		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
 
 # LDFLAG = 
 # LDFLAG += -L -ldl -lc -lm -lrt -lpthread
@@ -108,20 +111,20 @@ LDFLAG += -ldl -lc -lm -lrt -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
 ################################################################################
 
 # OpenCV Library FLAG
-OCVLDFLAG = -Wl,-Bdynamic
-OCVLDFLAG +=-L /usr/local/lib/opencv451 -L/home/user/primax/lib
-OCVLDFLAG +=-lopencv_core 
-OCVLDFLAG +=-lopencv_imgproc
-OCVLDFLAG +=-lopencv_features2d
-OCVLDFLAG +=-lopencv_video 
-OCVLDFLAG +=-lopencv_videoio 
-OCVLDFLAG +=-lopencv_imgcodecs 
-OCVLDFLAG +=-lopencv_objdetect 
-OCVLDFLAG +=-lopencv_highgui 
-OCVLDFLAG +=-lopencv_photo 
-OCVLDFLAG +=-lopencv_flann
-OCVLDFLAG +=-lopencv_ml
-OCVLDFLAG +=-lopencv_dnn
+# OCVLDFLAG = -Wl,-Bdynamic
+# OCVLDFLAG +=-L /usr/local/lib/opencv451 -L/home/user/primax/lib
+# OCVLDFLAG +=-lopencv_core 
+# OCVLDFLAG +=-lopencv_imgproc
+# OCVLDFLAG +=-lopencv_features2d
+# OCVLDFLAG +=-lopencv_video 
+# OCVLDFLAG +=-lopencv_videoio 
+# OCVLDFLAG +=-lopencv_imgcodecs 
+# OCVLDFLAG +=-lopencv_objdetect 
+# OCVLDFLAG +=-lopencv_highgui 
+# OCVLDFLAG +=-lopencv_photo 
+# OCVLDFLAG +=-lopencv_flann
+# OCVLDFLAG +=-lopencv_ml
+# OCVLDFLAG +=-lopencv_dnn
 
 # Spinnaker deps
 # SPINNAKER_LIB = -Wl,-Bdynamic
@@ -186,7 +189,7 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 
 # OBJ_MLDL << no use
 all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-	$(PP) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) -o $(TARGET) 
+	$(PP) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) $(LDFLAG) -o $(TARGET) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
