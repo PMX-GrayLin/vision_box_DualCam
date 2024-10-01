@@ -97,8 +97,8 @@ LDFLAG += -L/usr/lib -lmodbus
 LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/i2cbusses.o
 LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/util.o
 LDFLAG += $(shell pwd)/iosCtl/i2c-tools/lib/smbus.o
-LDFLAG += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
-LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
+# LDFLAG += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
+# LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
 ################################################################################
 # Dependencies
