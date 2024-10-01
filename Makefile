@@ -90,13 +90,16 @@ CFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
-LDFLAG= 
-LDFLAG += -L -ldl -lc -lm -lrt -lpthread
-LDFLAG += -L /usr/local/lib/ -L /usr/lib/aarch64-linux-gnu/ -lmosquitto -ljson-c -lpython3.10 -lcurl
-LDFLAG += -L/usr/lib -lmodbus
-LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/i2cbusses.o
-LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/util.o
-LDFLAG += $(shell pwd)/iosCtl/i2c-tools/lib/smbus.o
+LDFLAG += -L${BB_LIBDIR}
+LDFLAG += -ldl -lc -lm -lrt -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
+
+# LDFLAG = 
+# LDFLAG += -L -ldl -lc -lm -lrt -lpthread
+# LDFLAG += -L /usr/local/lib/ -L /usr/lib/aarch64-linux-gnu/ -lmosquitto -ljson-c -lpython3.10 -lcurl
+# LDFLAG += -L/usr/lib -lmodbus
+# LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/i2cbusses.o
+# LDFLAG += $(shell pwd)/iosCtl/i2c-tools/tools/util.o
+# LDFLAG += $(shell pwd)/iosCtl/i2c-tools/lib/smbus.o
 # LDFLAG += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
 # LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
