@@ -52,13 +52,11 @@ int yuyv2rgb_converter::Run_CPU(const unsigned char* pYuyv, cv::Mat& matDst)
     start = std::chrono::high_resolution_clock::now();
 
     // # func()
-    unsigned char* img_data_ptr = pYuyv;
+    const unsigned char* img_data_ptr = pYuyv;
     tmp_mat = cv::Mat(m_height, m_width, CV_8UC2, img_data_ptr);
-
 
     cv::cvtColor(tmp_mat, matDst, cv::COLOR_YUV2BGR_YUYV); //<-- Good~~
     //cv::cvtColor(tmp_mat, matDst, cv::COLOR_YUV2RGBA_YUYV); //
-
 
     // # cycletime_end <<
     end = std::chrono::high_resolution_clock::now();
@@ -66,7 +64,6 @@ int yuyv2rgb_converter::Run_CPU(const unsigned char* pYuyv, cv::Mat& matDst)
     strtmp = std::to_string(duration.count());
 
     std::cout << " # 02 _ YuYv2RGB _ CycleTime_( CPU ) : " << strtmp.c_str() << " (ms)" << endl;
-
 
     //if (!tmp_mat.empty()) {
     //    tmp_mat.release();
