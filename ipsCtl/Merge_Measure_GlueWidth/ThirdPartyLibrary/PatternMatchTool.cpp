@@ -49,8 +49,8 @@ inline int IM_Conv_SIMD(unsigned char* pCharKernel, unsigned char* pCharConv, in
 
 	for (int Y = 0; Y < Block * iBlockSize; Y += iBlockSize)
 	{
-		int8x16_t SrcK = vld1q_s8(pCharKernel + Y);
-		int8x16_t SrcC = vld1q_s8(pCharConv + Y);
+		int8x16_t SrcK = vld1q_s8(pCharKernel + (unsigned char)Y);
+		int8x16_t SrcC = vld1q_s8(pCharConv + (unsigned char)Y);
 		int16x8_t SrcK_L = vmovl_s8(vget_low_s8(SrcK));
 		int16x8_t SrcK_H = vmovl_s8(vget_high_s8(SrcK));
 		int16x8_t SrcC_L = vmovl_s8(vget_low_s8(SrcC));
