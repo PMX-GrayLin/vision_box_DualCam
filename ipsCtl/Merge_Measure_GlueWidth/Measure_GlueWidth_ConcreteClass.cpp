@@ -1,6 +1,8 @@
 #include "Measure_GlueWidth_ConcreteClass.h"
 #include <string>
 #define CVUI_IMPLEMENTATION
+
+// ?? gray : temp remove for no cvui support at yocto
 // #include "cvui.h"
 
 
