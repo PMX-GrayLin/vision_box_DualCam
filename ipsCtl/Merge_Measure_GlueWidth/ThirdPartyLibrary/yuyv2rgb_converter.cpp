@@ -5,11 +5,13 @@
 using namespace std;
 using namespace cv;
 
+int yuyv2rgb_converter::m_Pre_W = 0;
+int yuyv2rgb_converter::m_Pre_H = 0;
+int yuyv2rgb_converter::m_Pre_C = 0;
 
-
-static int yuyv2rgb_converter::m_Pre_W(0);
-static int yuyv2rgb_converter::m_Pre_H(0);
-static int yuyv2rgb_converter::m_Pre_C(0);
+// static int yuyv2rgb_converter::m_Pre_W(0);
+// static int yuyv2rgb_converter::m_Pre_H(0);
+// static int yuyv2rgb_converter::m_Pre_C(0);
 
 yuyv2rgb_converter::yuyv2rgb_converter()
     : m_width(0)
@@ -27,7 +29,6 @@ yuyv2rgb_converter::~yuyv2rgb_converter()
 
 int yuyv2rgb_converter::Init(const int w, const int h)
 {
-
     return 0;
 }
 

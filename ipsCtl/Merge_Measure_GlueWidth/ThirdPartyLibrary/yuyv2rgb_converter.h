@@ -70,11 +70,6 @@ __kernel void yuv422_to_bgr(__global uchar* yuv, __global uchar* bgr, int width,
 }
 )";
 
-    static int m_Pre_W;
-    static int m_Pre_H;
-    static int m_Pre_C;
-
-
 private:
     int m_width;
     int m_height;
@@ -85,6 +80,11 @@ private:
     std::vector<unsigned char> m_rgb_data;
 
 public:
+
+    static int m_Pre_W;
+    static int m_Pre_H;
+    static int m_Pre_C;
+
     yuyv2rgb_converter();
     ~yuyv2rgb_converter();
     int Init(const int w, const int h);
