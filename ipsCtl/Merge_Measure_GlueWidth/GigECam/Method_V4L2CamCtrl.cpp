@@ -1847,8 +1847,7 @@ int CMethod_V4L2CamCtrl::AcquireImages(const int pCam, string strFilePath)
 			IPSLOG(1, "  buffer.index = %02d\n", m_Buffer.index);
 
 			IPSLOG(1, "yuyv2rgb_cvtr.RunCPU(..Path..)\n");
-			//yuyv2rgb_cvtr.RunCPU(m_vecData[m_Buffer.index], , strFilePath.c_str());
-			yuyv2rgb_cvtr.RunCPU(m_vecData[m_Buffer.index], strFilePath.c_str());
+			yuyv2rgb_cvtr.RunCPU(static_cast<const unsigned char*>(m_vecData[m_Buffer.index]), strFilePath.c_str());
 
 
 			IPSLOG(1, "@_@!! VIDIOC_QBUF ; v4l2_buffer  === === >>>\n");
@@ -1914,8 +1913,7 @@ int CMethod_V4L2CamCtrl::AcquireImages(const int pCam, cv::Mat& matImg)
 			IPSLOG(1, "  buffer.index = %02d\n", m_Buffer.index);
 
 			IPSLOG(1, "yuyv2rgb_cvtr.RunCPU(..cv::Mat..)\n");
-			//yuyv2rgb_cvtr.RunCPU(yuv_data, mat_img);
-			yuyv2rgb_cvtr.RunCPU(m_vecData[m_Buffer.index], mat_img);
+			yuyv2rgb_cvtr.RunCPU(static_cast<const unsigned char*>(m_vecData[m_Buffer.index]), mat_img);
 
 			matImg = mat_img.clone();
 
