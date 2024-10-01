@@ -39,7 +39,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
-#include "RuntimeAPI.h"
+// #include "RuntimeAPI.h"
 #include "Types.h"
 
 
