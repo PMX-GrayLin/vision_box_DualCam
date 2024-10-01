@@ -97,12 +97,13 @@ typedef enum {
 	ETH_DISCONNECTED,
 }RESPONSE_TYPE;
 
-typedef unsigned char UINT8;
-typedef char INT8;
-typedef unsigned short UINT16;
-typedef short INT16;
-typedef unsigned int UINT32;
-typedef int INT32;
+// gray
+// typedef unsigned char UINT8;
+// typedef char INT8;
+// typedef unsigned short UINT16;
+// typedef short INT16;
+// typedef unsigned int UINT32;
+// typedef int INT32;
 typedef bool BOOL;
 
 typedef enum __QNAME__
