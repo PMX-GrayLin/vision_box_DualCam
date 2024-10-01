@@ -254,7 +254,19 @@ private:
     cv::VideoCapture cap_uvc;
 };
 
+// gray
+enum MDLACoreOptions {
+    Single,
+    Multi
+};
 
+struct EnvOptions {
+    int deviceKind;
+    MDLACoreOptions MDLACoreOption;
+    int CPUThreadNum;
+    bool suppressInputConversion;
+    bool suppressOutputConversion;
+};
 
 class DL_Model 
 {
