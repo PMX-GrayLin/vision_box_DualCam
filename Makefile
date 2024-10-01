@@ -83,6 +83,7 @@ DFLAG += $(VERSION_FLAG)
 # gray
 INCLUDE += -I${BB_INCDIR}/json-c
 INCLUDE += -I${BB_INCDIR}/modbus
+INCLUDE += -I${BB_INCDIR}/opencv4
 
 CFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -Wall -Wcomment -pipe -MMD
