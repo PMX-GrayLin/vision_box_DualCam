@@ -67,15 +67,6 @@ typedef struct __MSGBUF__
     char mtext[MAX_MSG_SIZE];
 } MSGBUF;
 
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-	extern UINT32 mcMsgQParser(char* buf);
-#ifdef __cplusplus
-}
-#endif
-#endif
 
 // static UINT32 mainDebugLevel = 0;
 // #define BACKENDLOG(level, format, b...)     if ( (mainDebugLevel+1) >= (level+1) )  printf(BLUE format NONE, ##b)

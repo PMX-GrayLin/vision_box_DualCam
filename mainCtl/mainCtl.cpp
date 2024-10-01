@@ -55,15 +55,6 @@
 #define IOS_SEND_MSGQ (int)3
 #define IPS_SEND_MSGQ (int)4
 
-#if 0
-#ifdef __cplusplus
-	extern "C" {
-#endif
-extern UINT32 mcMsgQParser(char *buf);
-#ifdef __cplusplus
-}
-#endif
-#endif
 
 /* MACRO DECLARATIONS ---------------------------------------------------------------- */
 #define VERSION_PRINT(...) printf("\e[1;34m[%s]\e[m", VSB_VERSION);
