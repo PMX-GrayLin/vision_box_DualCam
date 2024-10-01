@@ -36,10 +36,10 @@ DFLAG += $(DBG_PRINT_FLAG)
 DFLAG += $(VERSION_FLAG)
 
 # CPP compile FLAG
-CPPFLAG=
+# CPPFLAG=
 # CPPFLAG += -std=c++14 -O0 -g 
-CPPFLAG += -Wall -Wcomment -pipe -MMD
-CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
+# CPPFLAG += -Wall -Wcomment -pipe -MMD
+# CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 # CPPFLAG += -I/usr/include/modbus
 
 # Include 
@@ -80,14 +80,13 @@ CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 # INCLUDE +=-I /home/ubuntu/primax/image/usr/include
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
-# INCLUDE += -I${STAGING_INCDIR}/json-c
-# INCLUDE += -I$/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/primax/1.0-r0/recipe-sysroot/usr/include/json-c
-# INCLUDE += -I/usr/include/json-c
+# gray
 INCLUDE += -I${BB_INCDIR}/json-c
-
-# INCLUDE += -I${BUILD_DIR}/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
-# INCLUDE += -I/home/gray.lin/iot-yocto-mtk/build/tmp/work/armv8a-poky-linux/libmodbus/3.1.7-r0/libmodbus-3.1.7/src
 INCLUDE += -I${BB_INCDIR}/modbus
+
+CFLAGS += -Wall -Wcomment -pipe -MMD
+CPPFLAGS += -Wall -Wcomment -pipe -MMD
+CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
 LDFLAG= 
 LDFLAG += -L -ldl -lc -lm -lrt -lpthread
@@ -217,7 +216,7 @@ tof_lib:
 %.o: %.c
 	@echo ""
 	@echo Compiling $< ...
-	$(CC) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CC) $(DFLAG) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
 	rm -f *.o *.d *.opp $(TARGET) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
