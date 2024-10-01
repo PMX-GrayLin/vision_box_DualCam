@@ -90,7 +90,7 @@ CPPFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
 LDFLAG += -L${BB_LIBDIR}
-LDFLAG += -ldl -lc -lm -lrt -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
+LDFLAG += -ldl -lc -lm -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
