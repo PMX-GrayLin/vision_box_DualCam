@@ -23,7 +23,6 @@ bool compareMatchResultByPos(const s_SingleTargetMatch& lhs, const s_SingleTarge
 		return lhs.ptCenter.x < rhs.ptCenter.x;
 	else
 		return lhs.ptCenter.y < rhs.ptCenter.y;
-
 };
 
 #if(1)
