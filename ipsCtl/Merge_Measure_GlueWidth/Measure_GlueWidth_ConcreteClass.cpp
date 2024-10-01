@@ -2,7 +2,7 @@
 #include <string>
 #define CVUI_IMPLEMENTATION
 // ?? gray : temp remove for no cvui support at yocto
-// #include "cvui.h"
+#include "cvui.h"
 
 using namespace std;
 
@@ -580,14 +580,14 @@ int PTWDLL_C_GlueWidth::vbs_Align_FindProfile(void* pSrcImg,
 			std::vector<double>::size_type aHowManyValues = values.size();
 
 			// ?? gray : temp remove for no cvui support at yocto
-			// cvui::cvui_block_t theBlock;
-			// theBlock.where = cv::Mat(frame);
+			cvui::cvui_block_t theBlock;
+			theBlock.where = cv::Mat(frame);
 
-			// double aMax, aMin;
-			// if (aHowManyValues >= 2) {
-			// 	cvui::internal::findMinMax(values, &aMin, &aMax);
-			// 	cvui::render::sparkline(theBlock, values, aRect, aMin, aMax, 0xff0000);
-			// }
+			double aMax, aMin;
+			if (aHowManyValues >= 2) {
+				cvui::internal::findMinMax(values, &aMin, &aMax);
+				cvui::render::sparkline(theBlock, values, aRect, aMin, aMax, 0xff0000);
+			}
 
 			cv::imwrite(strSavePath, frame);
 
