@@ -186,7 +186,7 @@ CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -ldl -lc -lm -lpthread
-# LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
+LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
 # LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
 # 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
