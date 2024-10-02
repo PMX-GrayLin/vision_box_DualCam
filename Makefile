@@ -191,8 +191,10 @@ LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 # 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
 # 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
 
-all: $(IOS_OBJS)
-	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(IOS_OBJS) 
+OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
+
+all: $(OBJ_BUILD)
+	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
