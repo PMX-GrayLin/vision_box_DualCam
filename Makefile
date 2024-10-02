@@ -177,7 +177,7 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # gray
 INCLUDE += -I$(BB_INCDIR)/json-c
 INCLUDE += -I$(BB_INCDIR)/modbus
-INCLUDE += -I$(BB_INCDIR)/opencv4
+INCLUDE += -I$(BB_INCDIR)/opencv4 -I$(BB_INCDIR)/opencv4/opencv
 INCLUDE += -I$(BB_INCDIR)/neuron/api
 
 CFLAGS += -Wall -Wcomment -pipe -MMD
