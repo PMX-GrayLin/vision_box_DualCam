@@ -44,10 +44,10 @@ DFLAG += $(VERSION_FLAG)
 # INCLUDE= 
 # INCLUDE +=-I .
 # INCLUDE +=-I $(shell pwd)
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn
-INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn
+# INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
 # INCLUDE +=-I /usr/include
 # INCLUDE +=-I /usr/include/opencv2
 # INCLUDE +=-I /home/user/primax/include/opencv4
@@ -207,32 +207,32 @@ tof_lib:
 %.o: $(SRC_TPL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_GIGE)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_IPL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_MLDL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: %.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: %.c
 	@echo ""
 	@echo Compiling $< ...
-	$(CC) $(DFLAG) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
 	rm -f *.o *.d *.opp $(TARGET) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
