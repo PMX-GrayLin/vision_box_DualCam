@@ -78,22 +78,6 @@ INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
 # INCLUDE +=-I /home/ubuntu/primax/image/usr/include
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
-# gray
-INCLUDE += -I$(BB_INCDIR)/json-c
-INCLUDE += -I$(BB_INCDIR)/modbus
-INCLUDE += -I$(BB_INCDIR)/opencv4
-INCLUDE += -I$(BB_INCDIR)/neuron/api
-
-CFLAGS += -Wall -Wcomment -pipe -MMD
-CPPFLAGS += -Wall -Wcomment -pipe -MMD
-CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
-
-LDFLAG += -L$(BB_LIBDIR)
-# LDFLAG += -ldl -lc -lm -lpthread
-LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
-LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
-		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
-		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
 
 # LDFLAG = 
 # LDFLAG += -L -ldl -lc -lm -lrt -lpthread
@@ -189,6 +173,24 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # OBJ_MLDL << no use
 # all: $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 # 	$(CXX) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) $(LDFLAG) -o $(TARGET) 
+
+# gray
+INCLUDE += -I$(BB_INCDIR)/json-c
+INCLUDE += -I$(BB_INCDIR)/modbus
+INCLUDE += -I$(BB_INCDIR)/opencv4
+INCLUDE += -I$(BB_INCDIR)/neuron/api
+
+CFLAGS += -Wall -Wcomment -pipe -MMD
+CPPFLAGS += -Wall -Wcomment -pipe -MMD
+CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
+
+LDFLAG += -L$(BB_LIBDIR)
+LDFLAG += -ldl -lc -lm -lpthread
+LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
+# LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
+# 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
+# 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
+
 all: $(IOS_OBJS)
 	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(IOS_OBJS) 
 
