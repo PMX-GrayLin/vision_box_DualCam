@@ -79,7 +79,6 @@ INCLUDE +=-I $(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
 
 # gray
-PP = $(CXX)
 INCLUDE += -I$(BB_INCDIR)/json-c
 INCLUDE += -I$(BB_INCDIR)/modbus
 INCLUDE += -I$(BB_INCDIR)/opencv4
@@ -90,7 +89,8 @@ CPPFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
 LDFLAG += -L$(BB_LIBDIR)
-LDFLAG += -ldl -lc -lm -lpthread -ljson-c -lmodbus -lmosquitto -lcurl
+# LDFLAG += -ldl -lc -lm -lpthread
+LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
@@ -183,14 +183,14 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 
 # all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
 # 	@echo ""
-# 	$(PP) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL) $(LDFLAG) $(OCVLDFLAG) $(SPINNAKER_LIB) $(ARAVIS_LIB) $(HIK_LIB) $(BASLER_LIB) $(OPT_LIB) -o $(TARGET) 
+# 	$(CXX) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL) $(LDFLAG) $(OCVLDFLAG) $(SPINNAKER_LIB) $(ARAVIS_LIB) $(HIK_LIB) $(BASLER_LIB) $(OPT_LIB) -o $(TARGET) 
 # 	ls -l $(TARGET)
 
 # OBJ_MLDL << no use
 # all: $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-# 	$(PP) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) $(LDFLAG) -o $(TARGET) 
+# 	$(CXX) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) $(LDFLAG) -o $(TARGET) 
 all: $(MAIN_OBJS)
-	$(PP) $(CPPFLAG) $(MAIN_OBJS) $(LDFLAG) -o $(TARGET) 
+	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(MAIN_OBJS) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
@@ -201,27 +201,27 @@ tof_lib:
 %.o: $(SRC_TPL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_GIGE)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_IPL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: $(SRC_MLDL)%.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: %.cpp
 	@echo ""
 	@echo Compiling $< ...
-	$(PP) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DFLAG) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 %.o: %.c
 	@echo ""
