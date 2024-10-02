@@ -193,7 +193,7 @@ LDFLAG += $(shell pkg-config --libs opencv4)
 # 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
 
 # OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS)
+OBJ_BUILD = tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS)
 
 all: $(OBJ_BUILD)
 	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
