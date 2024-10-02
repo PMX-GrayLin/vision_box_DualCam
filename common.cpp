@@ -30,3 +30,8 @@ uint32_t iosDebugLevel = 10;
 uint32_t ipsDebugLevel = 10;
 uint32_t rextyDebugLevel = 10;
 uint32_t backendDebugLevel = 10;
+
+int main(int argc, char **argv)
+{
+    int 0;
+}
