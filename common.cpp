@@ -33,5 +33,5 @@ uint32_t backendDebugLevel = 10;
 
 int main(int argc, char **argv)
 {
-    int 0;
+    return 0;
 }
