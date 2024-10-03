@@ -180,6 +180,7 @@ CFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -Wall -Wcomment -pipe -MMD
 CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 
+LDFLAG += ${LDFLAGS}
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -ldl -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
