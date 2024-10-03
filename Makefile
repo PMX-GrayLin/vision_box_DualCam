@@ -170,10 +170,6 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 # 	$(CXX) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL) $(LDFLAG) $(OCVLDFLAG) $(SPINNAKER_LIB) $(ARAVIS_LIB) $(HIK_LIB) $(BASLER_LIB) $(OPT_LIB) -o $(TARGET) 
 # 	ls -l $(TARGET)
 
-# OBJ_MLDL << no use
-# all: $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-# 	$(CXX) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) $(LDFLAG) -o $(TARGET) 
-
 # gray
 INCLUDE += -I$(BB_INCDIR)/json-c
 INCLUDE += -I$(BB_INCDIR)/modbus
@@ -187,16 +183,12 @@ CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -ldl -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
-# LDFLAG += $(shell pkg-config --libs opencv4)
-# LDFLAG += -lopencv_core -lopencv_imgproc -lopencv_features2d -lopencv_video \
-# 		  -lopencv_videoio -lopencv_imgcodecs -lopencv_objdetect -lopencv_highgui \
-# 		  -lopencv_photo -lopencv_flann -lopencv_ml -lopencv_dnn
+LDFLAG += $(shell pkg-config --libs opencv4)
 
-# OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 
 all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
+	$(CXX) $(DFLAG) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
