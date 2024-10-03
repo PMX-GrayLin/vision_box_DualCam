@@ -176,15 +176,17 @@ INCLUDE += -I$(BB_INCDIR)/modbus
 INCLUDE += -I$(BB_INCDIR)/opencv4 -I$(BB_INCDIR)/opencv4/opencv
 INCLUDE += -I$(BB_INCDIR)/neuron/api
 
-CFLAGS += -Wall -Wcomment -pipe -MMD
-CPPFLAGS += -Wall -Wcomment -pipe -MMD
-CPPFLAGS += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
+CFLAG += -Wall -Wcomment -pipe -MMD
+CFLAG += ${CFLAGS}
+CPPFLAG += -Wall -Wcomment -pipe -MMD
+CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
+CPPFLAG += ${CXXFLAGS}
 
-LDFLAG += ${LDFLAGS}
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -ldl -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
+LDFLAG += ${LDFLAGS}
 
 OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 
@@ -225,7 +227,7 @@ tof_lib:
 %.o: %.c
 	@echo ""
 	@echo Compiling $< ...
-	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	$(CC) $(CFLAG) $(INCLUDE) -c $< -o $@
 
 clean:
 	rm -f *.o *.d *.opp $(TARGET) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
