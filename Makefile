@@ -176,10 +176,9 @@ INCLUDE += -I$(BB_INCDIR)/modbus
 INCLUDE += -I$(BB_INCDIR)/opencv4 -I$(BB_INCDIR)/opencv4/opencv
 INCLUDE += -I$(BB_INCDIR)/neuron/api
 
-# CFLAG += -Wall -Wcomment -pipe -MMD
+CFLAG += -Wall
 CFLAG += ${CFLAGS}
-# CPPFLAG += -Wall -Wcomment -pipe -MMD
-# CPPFLAG += -fpermissive -Wwrite-strings -Wreturn-type -Wunused-variable
+CPPFLAG += -Wall
 CPPFLAG += ${CXXFLAGS}
 
 LDFLAG += -L$(BB_LIBDIR)
