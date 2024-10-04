@@ -9,7 +9,6 @@
 #include "IPS_MethodStructureDef.h"
 #include "GigECamDataStructureDef.h"
 
-
 /* EXPORTED SUBPROGRAM SPECIFICATION ------------------------------------------------- */
 #ifdef __cplusplus
 extern "C" {
