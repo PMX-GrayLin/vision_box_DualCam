@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
+#include "common.h"
 
 /****************************************************************
  *  * Constants
@@ -52,16 +53,22 @@ int gpio_export(unsigned int gpio)
     char buf[MAX_BUF];
 
     fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
-    if (fd < 0)
-    {
-        perror("gpio/export");
-        return fd;
+    if (fd < 0) {
+      print("gpio_export open fail");
+      close(fd);
+      return fd;
     }
 
     len = snprintf(buf, sizeof(buf), "%d", gpio);
     write(fd, buf, len);
-    close(fd);
+    ssize_t bytes_written = write(fd, buf, len);
+    if (bytes_written != len) {
+      print("gpio_export write fail");
+      close(fd);
+      return fd;
+    }
 
+    close(fd);
     return 0;
 }
 
