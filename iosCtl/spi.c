@@ -458,7 +458,7 @@ uint16_t ios_readExtLightAttribute(__LIGHT_MANUFACTURER__ manufacturer) {
 *********************************************************************/
 int ios_setAiLightLevel(uint16_t level){
   unsigned char PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x4F,0x50,0x54,0xFF,0x01,0x01,0x00,0x11,0x00};
-  unsigned char PWM_MAIN_TX_Data[MAX_FORMAT_LEN]={0x11,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x00};
+  // unsigned char PWM_MAIN_TX_Data[MAX_FORMAT_LEN]={0x11,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x00};
   unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN]={0x22,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x64,0x00};
 
   if(level > MAX_AI_LIGHT_LEVEL) return -1;
@@ -492,6 +492,8 @@ int ios_setMainLightLevel(uint16_t level){
     printf("[0x%x] ", PWM_MAIN_TX_Data[i]);
   }
   printf("\r\n");
+
+  return 0;
 }
 /*******************************************************************
 *   Function : ios_setAiLightLevel_withEnable()
@@ -543,6 +545,8 @@ int spi_gpio_set_value(unsigned int gpio, unsigned int value){
       printf("[0x%x] ", TX_Data[i]);
     }
     printf("\r\n");
+
+    return 0;
 }
 
 int spi_gpio_do_get_value(unsigned int gpio, unsigned int *value){
@@ -645,7 +649,7 @@ int spi_main(int argc, char **argv){
   // uint16_t level, model_num;
   return 0;
 
-  int i;
+  // int i;
   SPI_Open();
   for(;;){
     /* SPI testing */

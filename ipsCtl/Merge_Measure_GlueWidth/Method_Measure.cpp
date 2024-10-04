@@ -269,20 +269,20 @@ int CMethod_Measure::Algo_GlueWidth_RangeSetting(seAnnulus roiAnnuls, double dbS
 
 	cv::Point second_begin, second_end; //刻度的起點，终點 
 	double scale_long(0.0);				//刻度的長度 
-	int scale_width(2);					//刻度的寬度 
+	// int scale_width(2);					//刻度的寬度 
 
 
 //#ifdef _RexTY_DEBUG
 
 	//Circle
 	//Scalar color = Scalar(0, 255, 255); //BGR
-	Scalar color = Scalar(0, 255, 0); //BGR
+	// Scalar color = Scalar(0, 255, 0); //BGR
 	//Center
-	Scalar color_Center = Scalar(0, 0, 255);
+	// Scalar color_Center = Scalar(0, 0, 255);
 	//Scale
-	Scalar color_Scale = Scalar(0, 0, 255);
+	// Scalar color_Scale = Scalar(0, 0, 255);
 	//Glue
-	Scalar color_Glue = Scalar(255, 0, 0);
+	// Scalar color_Glue = Scalar(255, 0, 0);
 
 
 	cv::Point center(roiAnnuls.cX, roiAnnuls.cY);
@@ -468,13 +468,13 @@ int CMethod_Measure::Algo_GlueWidth_RangeSetting(seBoundingBox roiRect, double d
 
 	//Circle
 	//Scalar color = Scalar(0, 255, 255); //BGR
-	Scalar color = Scalar(0, 255, 0); //BGR
+	// Scalar color = Scalar(0, 255, 0); //BGR
 	//Center
-	Scalar color_Center = Scalar(0, 0, 255);
+	// Scalar color_Center = Scalar(0, 0, 255);
 	//Scale
-	Scalar color_Scale = Scalar(0, 0, 255);
+	// Scalar color_Scale = Scalar(0, 0, 255);
 	//Glue
-	Scalar color_Glue = Scalar(255, 0, 0);
+	// Scalar color_Glue = Scalar(255, 0, 0);
 
 
 	//drawing center
@@ -602,11 +602,11 @@ int CMethod_Measure::Algo_GlueWidth_MeasureLength_GetPosistion(const cv::Mat& ma
 	int iSel1 = 0, iSel2 = 0;
 	int ifilter_LH[3] = { 000, 255, 255 };
 	int ifilter_HL[3] = { 255, 255, 000 };
-	for (int x = 0; x < vecVal_AllPixels.size(); x++) {
+	for (size_t x = 0; x < vecVal_AllPixels.size(); x++) {
 
 		iSel1 = iSel2 = 0;
 
-		for (int i = 0; i < vecVal_AllPixels[x].size() - 3; i++) {
+		for (size_t i = 0; i < vecVal_AllPixels[x].size() - 3; i++) {
 
 			if ((vecVal_AllPixels[x].at(i + 0) == ifilter_LH[0]) &&
 				(vecVal_AllPixels[x].at(i + 1) > ifilter_LH[0]) &&
@@ -617,7 +617,7 @@ int CMethod_Measure::Algo_GlueWidth_MeasureLength_GetPosistion(const cv::Mat& ma
 			}
 		}
 
-		for (int i = vecVal_AllPixels[x].size()-3; i > 0; i--) {
+		for (size_t i = vecVal_AllPixels[x].size()-3; i > 0; i--) {
 
 			if ((vecVal_AllPixels[x].at(i + 0) > ifilter_HL[2]) &&
 				(vecVal_AllPixels[x].at(i + 1) > ifilter_HL[2]) &&

@@ -180,8 +180,7 @@ int gpio_get_value(unsigned int gpio, unsigned int *value) {
  *  * gpio_set_edge
  *   ****************************************************************/
 
-int gpio_set_edge(unsigned int gpio, char *edge)
-{
+int gpio_set_edge(unsigned int gpio, char *edge) {
   int fd;
   char buf[MAX_BUF];
 
@@ -194,7 +193,14 @@ int gpio_set_edge(unsigned int gpio, char *edge)
     return fd;
   }
 
-  write(fd, edge, strlen(edge) + 1);
+  size_t len = strlen(edge) + 1;
+  ssize_t bytes_written = write(fd, edge, strlen(edge) + 1);
+  if (bytes_written != len) {
+    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+  
   close(fd);
   return 0;
 }

@@ -196,13 +196,13 @@ static string send_char_arr(char* memblock, long size)
 
 static string send_mat(cv::Mat mat)
 {
-	clock_t start, end;
-	double elapsed = 0.0;
+	// clock_t start, end;
+	// double elapsed = 0.0;
 	string strtmp;
-	int nRet = 0;
+	// int nRet = 0;
 
 	//cycletime_start
-	start = clock();
+	// start = clock();
 
 	string strRet = "";
 
@@ -223,17 +223,13 @@ static string send_mat(cv::Mat mat)
 
 	strRet = send_char_arr(memblock, size);
 
-
 	//// # cycletime_end
 	//end = clock();
 	//elapsed = double(end - start) / CLOCKS_PER_SEC;
 	//strtmp = std::to_string(elapsed);
 	//cout << "2. --.--> Send_char_arr() Cycle time : " << strtmp.c_str() << " (seconds)" << endl;
 
-
-
 	return strRet;
-
 }
 
 

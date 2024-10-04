@@ -1,4 +1,5 @@
 #include "common.h"
+#include "global.h"
 
 MAIN_PROCESS main_process;
 CAMERA_GRAB camera_grab;
@@ -33,5 +34,6 @@ uint32_t backendDebugLevel = 10;
 
 int main(int argc, char **argv)
 {
+    xlog("%s:%d, \n\r", __func__, __LINE__);
     return 0;
 }
