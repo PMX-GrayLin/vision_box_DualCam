@@ -1,5 +1,5 @@
 #include "common.h"
-#include "global.h"
+#include "global.hpp"
 
 MAIN_PROCESS main_process;
 CAMERA_GRAB camera_grab;
