@@ -18,8 +18,8 @@
 #define YELLOW "\033[1;33m"
 #define LIGHT_GRAY "\033[0;37m"
 #define WHITE "\033[1;37m"
-static uint32_t DebugLevel = 0;
-#define LOG(level, format, b...)     if ( (DebugLevel+1) >= (level+1) )  printf(GREEN format NONE, ##b)
+// static uint32_t DebugLevel = 0;
+// #define LOG(level, format, b...)     if ( (DebugLevel+1) >= (level+1) )  printf(GREEN format NONE, ##b)
 
 /* related external lighting controller definition */
 /* SPI transfer command field*/
