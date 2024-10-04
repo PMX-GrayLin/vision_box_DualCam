@@ -46,29 +46,29 @@
 /****************************************************************
  *  * gpio_export
  *   ****************************************************************/
-int gpio_export(unsigned int gpio)
-{
-    int fd, len;
-    char buf[MAX_BUF];
+int gpio_export(unsigned int gpio) {
+  int fd, len;
+  char buf[MAX_BUF];
 
-    fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
-    if (fd < 0) {
-      print("gpio_export open fail");
-      close(fd);
-      return fd;
-    }
-
-    len = snprintf(buf, sizeof(buf), "%d", gpio);
-    write(fd, buf, len);
-    ssize_t bytes_written = write(fd, buf, len);
-    if (bytes_written != len) {
-      print("gpio_export write fail");
-      close(fd);
-      return fd;
-    }
-
+  fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
+  if (fd < 0) {
+    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
+    print("gpio_export open fail");
     close(fd);
-    return 0;
+    return fd;
+  }
+
+  len = snprintf(buf, sizeof(buf), "%d", gpio);
+  write(fd, buf, len);
+  ssize_t bytes_written = write(fd, buf, len);
+  if (bytes_written != len) {
+    print("gpio_export write fail");
+    close(fd);
+    return fd;
+  }
+
+  close(fd);
+  return 0;
 }
 
 /****************************************************************
