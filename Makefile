@@ -195,7 +195,7 @@ LDFLAG += ${LDFLAGS}
 OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 
 all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(DFLAG) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
+	$(CXX) $(VERSION_FLAG) $(DFLAG) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
