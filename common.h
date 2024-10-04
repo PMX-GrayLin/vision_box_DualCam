@@ -333,13 +333,13 @@ typedef enum _CAMERA_PARA_{
   EVERY_IMAGE,
 }CAMERA_PARA;
 
-static const char* camera_paraStr[] = {
-    "no define",
-    "mono",
-    "color",
-    "software",
-    "hardware",
-    "every image"};
+// static const char* camera_paraStr[] = {
+//     "no define",
+//     "mono",
+//     "color",
+//     "software",
+//     "hardware",
+//     "every image"};
 
 typedef enum __IPS_CMD__ {
   NO_IP_CMD = 0,

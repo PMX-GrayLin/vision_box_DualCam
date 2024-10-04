@@ -110,10 +110,10 @@ int ips_json_parse(char * payload, uint8_t *setFunc, uint8_t *response_string){
       IPSLOG(0, "[IPS] : response=%s\n", json_object_get_string(j_response));
       strcpy(response, json_object_get_string(j_response));
 
-      IPSLOG(0, "type=%s\n", camera_paraStr[camera_grab.type]);
-      IPSLOG(0, "triggerMode=%s\n", camera_paraStr[camera_grab.triggerMode]);
+      // IPSLOG(0, "type=%s\n", camera_paraStr[camera_grab.type]);
+      // IPSLOG(0, "triggerMode=%s\n", camera_paraStr[camera_grab.triggerMode]);
+      // IPSLOG(0, "SaveImgOpt=%s\n", camera_paraStr[camera_grab.saveImgOpt]);
       IPSLOG(0, "exposureTime=%d\n", camera_grab.exposureTime);
-      IPSLOG(0, "SaveImgOpt=%s\n", camera_paraStr[camera_grab.saveImgOpt]);
       IPSLOG(0, "path=%s\n", camera_grab.saveImgPath);
       ips_new_job = TRIGGER_SET_PROCESS;
       if(response_string != NULL){
