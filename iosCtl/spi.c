@@ -255,28 +255,36 @@ unsigned char xor_checksum(unsigned char *data, int length) {
 *   Arrgument : uint16_t level
 *   Return : OK 0, Error -1
 *********************************************************************/
-int ios_setExtLightLevel_withChannel(__LIGHT_MANUFACTURER__  manufacturer, uint16_t level, uint8_t channel){
-  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN+2]={0x00,0x00,0x00,0x00,0xFF,0x01,0x00,0x00,0x64,0x00,0x0D,0x0A};
-  unsigned char checksum, factory[3], RxBuf[100];
+int ios_setExtLightLevel_withChannel(__LIGHT_MANUFACTURER__ manufacturer, uint16_t level, uint8_t channel) {
+  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN + 2] = {0x00, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x64, 0x00, 0x0D, 0x0A};
+  unsigned char RxBuf[100];
 
-  if(level > MAX_MAIN_LIGHT_LEVEL) return -1;
+  if (level > MAX_MAIN_LIGHT_LEVEL) return -1;
   PWM_TX_Data[TYPE] = LIGHTING_CONTROL;
-  
-  switch(manufacturer){
-    case OPT:
-      strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
-    break;
+
+  // switch(manufacturer){
+  //   case OPT:
+  //     strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
+  //   break;
+  // }
+
+  // OPT >> 0x4F, 0x50, 0x54
+  if (manufacturer == OPT) {
+    PWM_TX_Data[MAUNFACTURER] = 0x4F;      // O
+    PWM_TX_Data[MAUNFACTURER + 1] = 0x50;  // P
+    PWM_TX_Data[MAUNFACTURER + 2] = 0x54;  // T
   }
+
   PWM_TX_Data[EXT_LIGHT_CH] = channel;
   PWM_TX_Data[LIGHT_LEVEL] = level;
-  PWM_TX_Data[CHECKSUM] = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN-1);
+  PWM_TX_Data[CHECKSUM] = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN - 1);
 
   printf("%s()%d: PWM_TX_Data=", __FUNCTION__, __LINE__);
-  for(int i=0;i<MAX_FORMAT_LEN;i++) {
+  for (int i = 0; i < MAX_FORMAT_LEN; i++) {
     printf("[0x%x] ", PWM_TX_Data[i]);
   }
   printf("\r\n");
-  
+
   SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN + 2);
   return 0;
 }
@@ -287,49 +295,56 @@ int ios_setExtLightLevel_withChannel(__LIGHT_MANUFACTURER__  manufacturer, uint1
 *   Arrgument : manufacturer, uint18_t channel
 *   Return : OK=uint16_t level, Error=-1
 *********************************************************************/
-uint16_t ios_readExtLightLevel_withChannel(__LIGHT_MANUFACTURER__  manufacturer, uint8_t channel){
-  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x00,0x00,0x00,0xFF,0x01,0x00,0x00,0x64,0x00};
-  unsigned char checksum, factory[3], RxBuf[10], count=0;
+uint16_t ios_readExtLightLevel_withChannel(__LIGHT_MANUFACTURER__ manufacturer, uint8_t channel) {
+  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN] = {0x00, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x64, 0x00};
+  unsigned char checksum, RxBuf[10], count = 0;
   uint16_t level;
 
-  switch(manufacturer){
-    case OPT:
-      strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
-    break;
+  // switch(manufacturer){
+  //   case OPT:
+  //     strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
+  //   break;
+  // }
+
+  // OPT >> 0x4F, 0x50, 0x54
+  if (manufacturer == OPT) {
+    PWM_TX_Data[MAUNFACTURER] = 0x4F;      // O
+    PWM_TX_Data[MAUNFACTURER + 1] = 0x50;  // P
+    PWM_TX_Data[MAUNFACTURER + 2] = 0x54;  // T
   }
+
   PWM_TX_Data[TYPE] = EXT_LIGHT_READ;
   PWM_TX_Data[EXT_LIGHT_CH] = channel;
   PWM_TX_Data[EXT_LIGHT_CMD] = READ_LIGHT_LEVEL;
-  checksum = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN-1);
-  printf("%s()%d: checksum=%x\r\n", __FUNCTION__, __LINE__,checksum);
+  checksum = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN - 1);
+  printf("%s()%d: checksum=%x\r\n", __FUNCTION__, __LINE__, checksum);
   PWM_TX_Data[CHECKSUM] = checksum;
   SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN + 2);
   usleep(100000);
-  //SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN);
-  while((RxBuf[TYPE] != EXT_LIGHT_READ) || (RxBuf[EXT_LIGHT_CMD] != READ_LIGHT_LEVEL)){
+  // SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN);
+  while ((RxBuf[TYPE] != EXT_LIGHT_READ) || (RxBuf[EXT_LIGHT_CMD] != READ_LIGHT_LEVEL)) {
     memset(RxBuf, 0xff, sizeof(RxBuf));
-    SPI_Read(RxBuf,MAX_FORMAT_LEN);
-    
+    SPI_Read(RxBuf, MAX_FORMAT_LEN);
+
     printf("%s()%d: RxBuf=", __FUNCTION__, __LINE__);
-    for(int i=0;i<MAX_FORMAT_LEN;i++)
+    for (int i = 0; i < MAX_FORMAT_LEN; i++)
       printf("0x%x ", RxBuf[i]);
     printf("\r\n");
-    
-    usleep(100000);  
-    if(count++ > 100){
+
+    usleep(100000);
+    if (count++ > 100) {
       printf("%s()%d: SPI reading timeout\r\n", __FUNCTION__, __LINE__);
       return -1;
     }
   }
-  level = RxBuf[LIGHT_LEVEL-1] << 8 | RxBuf[LIGHT_LEVEL];
+  level = RxBuf[LIGHT_LEVEL - 1] << 8 | RxBuf[LIGHT_LEVEL];
   printf("READ ext lighting channel %d, level=%d\r\n", channel, level);
   return level;
-  
 }
 
 uint16_t readtest(__LIGHT_MANUFACTURER__  manufacturer, uint8_t channel){
-  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x00,0x00,0x00,0xFF,0x01,0x00,0x00,0x64,0x00};
-  unsigned char checksum, factory[3], RxBuf[10], count=0;
+  // static uint8_t PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x00,0x00,0x00,0xFF,0x01,0x00,0x00,0x64,0x00};
+  unsigned char RxBuf[10], count=0;
   uint16_t level;
 
 
@@ -388,44 +403,51 @@ int ios_setStatusLed(uint8_t channel , uint8_t value){
 *   Arrgument : manufacturer
 *   Return : OK = version number, Error = -1
 *********************************************************************/
-uint16_t ios_readExtLightAttribute(__LIGHT_MANUFACTURER__  manufacturer){
-  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x00,0x00,0x00,0xFF,0x01,0x00,0x00,0x64,0x00};
-  unsigned char checksum, factory[3], RxBuf[10], count=0;
+uint16_t ios_readExtLightAttribute(__LIGHT_MANUFACTURER__ manufacturer) {
+  static uint8_t PWM_TX_Data[MAX_FORMAT_LEN] = {0x00, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x64, 0x00};
+  unsigned char checksum, RxBuf[10], count = 0;
   uint16_t model_num;
 
-  switch(manufacturer){
-    case OPT:
-      strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
-    break;
+  // switch(manufacturer){
+  //   case OPT:
+  //     strncpy(&PWM_TX_Data[MAUNFACTURER],"OPT", 3);
+  //   break;
+  // }
+
+  // OPT >> 0x4F, 0x50, 0x54
+  if (manufacturer == OPT) {
+    PWM_TX_Data[MAUNFACTURER] = 0x4F;      // O
+    PWM_TX_Data[MAUNFACTURER + 1] = 0x50;  // P
+    PWM_TX_Data[MAUNFACTURER + 2] = 0x54;  // T
   }
+
   PWM_TX_Data[TYPE] = EXT_LIGHT_READ;
   PWM_TX_Data[DATA_FIELD] = MODEL_NUM;
   PWM_TX_Data[EXT_LIGHT_CMD] = READ_LIGHT_ATTRIBUTE;
-  checksum = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN-1);
-  printf("checksum=%x\r\n",checksum);
+  checksum = xor_checksum(PWM_TX_Data, MAX_FORMAT_LEN - 1);
+  printf("checksum=%x\r\n", checksum);
   PWM_TX_Data[CHECKSUM] = checksum;
   SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN + 2);
   usleep(100000);
-  //SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN);
-  //memset(RxBuf, 0xff, sizeof(RxBuf));
-  while((RxBuf[TYPE] != EXT_LIGHT_READ) || (RxBuf[EXT_LIGHT_CMD] != READ_LIGHT_ATTRIBUTE)){
-    SPI_Read(RxBuf,MAX_FORMAT_LEN);
-    
+  // SPI_Transfer(PWM_TX_Data, RxBuf, MAX_FORMAT_LEN);
+  // memset(RxBuf, 0xff, sizeof(RxBuf));
+  while ((RxBuf[TYPE] != EXT_LIGHT_READ) || (RxBuf[EXT_LIGHT_CMD] != READ_LIGHT_ATTRIBUTE)) {
+    SPI_Read(RxBuf, MAX_FORMAT_LEN);
+
     printf("RxBuf=");
-    for(int i=0;i<MAX_FORMAT_LEN;i++)
+    for (int i = 0; i < MAX_FORMAT_LEN; i++)
       printf("0x%x", RxBuf[i]);
     printf("\r\n");
-    
-    usleep(500000);  
-    if(count++ > 100){
+
+    usleep(500000);
+    if (count++ > 100) {
       printf("SPI reading timeout\r\n");
       return -1;
     }
   }
-  model_num = RxBuf[DATA_FIELD-1] << 8 | RxBuf[DATA_FIELD];
+  model_num = RxBuf[DATA_FIELD - 1] << 8 | RxBuf[DATA_FIELD];
   printf("READ ext lighting model number: %x\r\n", model_num);
   return model_num;
-  
 }
 
 /*******************************************************************
@@ -438,8 +460,6 @@ int ios_setAiLightLevel(uint16_t level){
   unsigned char PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x4F,0x50,0x54,0xFF,0x01,0x01,0x00,0x11,0x00};
   unsigned char PWM_MAIN_TX_Data[MAX_FORMAT_LEN]={0x11,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x00};
   unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN]={0x22,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x64,0x00};
-  uint8_t RxBuf[10]={0}, checksum;
-  uint16_t model_num;
 
   if(level > MAX_AI_LIGHT_LEVEL) return -1;
   PWM_AI_TX_Data[LIGHT_LEVEL] = level;
@@ -618,14 +638,14 @@ int spi_gpio_di_get_value(unsigned int gpio, unsigned int *value){
 *   Return : OK 0, Error -1
 *********************************************************************/
 int spi_main(int argc, char **argv){
-  unsigned char PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x4F,0x50,0x54,0xFF,0x01,0x01,0x00,0x11,0x00};
-  unsigned char PWM_MAIN_TX_Data[MAX_FORMAT_LEN]={0x11,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x00};
-  unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN]={0x22,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x64,0x00};
-  uint8_t RxBuf[10]={0}, checksum;
-  uint16_t level, model_num;
+  // unsigned char PWM_TX_Data[MAX_FORMAT_LEN]={0x00,0x4F,0x50,0x54,0xFF,0x01,0x01,0x00,0x11,0x00};
+  // unsigned char PWM_MAIN_TX_Data[MAX_FORMAT_LEN]={0x11,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x00};
+  // unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN]={0x22,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x64,0x00};
+  // uint8_t RxBuf[10]={0}, checksum;
+  // uint16_t level, model_num;
+  return 0;
 
   int i;
- 
   SPI_Open();
   for(;;){
     /* SPI testing */
