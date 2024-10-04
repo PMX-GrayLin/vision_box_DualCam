@@ -188,7 +188,7 @@ LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
 LDFLAG += ${LDFLAGS}
 
-OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
+OBJ_BUILD =  $(MAIN_OBJS) $(CPPOBJECTS) $(COBJECTS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 
 all: tof_lib $(OBJ_BUILD)
 	$(CXX) $(DFLAG) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
