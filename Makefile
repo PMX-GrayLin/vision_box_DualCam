@@ -230,5 +230,8 @@ tof_lib:
 
 clean:
 	rm -f *.o *.d *.opp $(TARGET) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
+	(cd mainCtl; rm -f *.d)
+	(cd iosCtl; rm -f *.d)
+	(cd ipsCtl; rm -f *.d)
 	(cd iosCtl/i2c-tools/; make clean)
 	(cd iosCtl/tof_lib/; make clean)
