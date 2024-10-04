@@ -499,7 +499,6 @@ int32_t backend_mqtt_subscriber()
     }
     mosquitto_log_callback_set(backend_mosq, backend_log_callback);
     mosquitto_subscribe_callback_set(backend_mosq, backend_subscribe_callback);
-    // mosquitto_connect_callback_set(backend_mosq, backend_connect_callback);  
     mosquitto_connect_callback_set(backend_mosq, backend_connect_callback_Dual);
     mosquitto_message_callback_set(backend_mosq, backend_message_callback);
     rc = mosquitto_connect(backend_mosq, backend_cfg->host, backend_cfg->port, backend_cfg->keepalive);

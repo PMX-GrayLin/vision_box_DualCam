@@ -182,7 +182,6 @@ CPPFLAG += -Wall
 CPPFLAG += ${CXXFLAGS}
 
 LDFLAG += -L$(BB_LIBDIR)
-# LDFLAG += -ldl -lc -lm -lpthread
 LDFLAG += -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)

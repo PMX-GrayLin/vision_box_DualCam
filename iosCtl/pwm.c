@@ -101,10 +101,15 @@ int pwm_read_duty_cycle(int channel_num)
     }
 
     char duty_cycle_str[16];
-    fgets(&duty_cycle_str[0], sizeof(duty_cycle_str), duty_cycle_fd);
+    // fgets(&duty_cycle_str[0], sizeof(duty_cycle_str), duty_cycle_fd);
+    if (fgets(duty_cycle_str, sizeof(duty_cycle_str), duty_cycle_fd) == NULL) {
+      // Handle the error, for example by printing an error message
+      printf("Error reading duty cycle from file");
+      fclose(duty_cycle_fd);
+      return -1;
+    }
 
     fclose(duty_cycle_fd);
-
     //printf("PWM channel %d duty cycle set to %d\n", channel_num, duty_cycle);
 
     return strtol(&duty_cycle_str[0], NULL, 10);
