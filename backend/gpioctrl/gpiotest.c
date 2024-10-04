@@ -45,99 +45,125 @@
   
 /**************************************************************** 
  *  * gpio_export 
- *   ****************************************************************/  
-int gpio_export(unsigned int gpio)  
-{  
-  int fd, len;  
-  char buf[MAX_BUF];  
-  
-  fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);  
-    if (fd < 0) {  
+ *   ****************************************************************/
+int gpio_export(unsigned int gpio) {
+  int fd, len;
+  char buf[MAX_BUF];
+
+  fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
+  if (fd < 0) {
     xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
-        return fd;  
-      }  
-  
-  len = snprintf(buf, sizeof(buf), "%d", gpio);  
-  write(fd, buf, len);  
-  close(fd);  
-      
-  return 0;  
-}  
-  
+    return fd;
+  }
+
+  len = snprintf(buf, sizeof(buf), "%d", gpio);
+  ssize_t bytes_written = write(fd, buf, len);
+  if (bytes_written != len) {
+    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  close(fd);
+  return 0;
+}
+
 /**************************************************************** 
  *  * gpio_unexport 
- *   ****************************************************************/  
-int gpio_unexport(unsigned int gpio)  
-{  
-  int fd, len;  
-  char buf[MAX_BUF];  
-  
-  fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);  
-  if (fd < 0) {  
+ *   ****************************************************************/
+int gpio_unexport(unsigned int gpio) {
+  int fd, len;
+  char buf[MAX_BUF];
+
+  fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
+  if (fd < 0) {
     xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
-    return fd;  
-  }  
-   
-  len = snprintf(buf, sizeof(buf), "%d", gpio);  
-  write(fd, buf, len);  
-  close(fd);  
-  return 0;  
-}  
-  
+    return fd;
+  }
+
+  len = snprintf(buf, sizeof(buf), "%d", gpio);
+  ssize_t bytes_written = write(fd, buf, len);
+  if (bytes_written != len) {
+    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  close(fd);
+  return 0;
+}
+
 /**************************************************************** 
  *  * gpio_set_dir 
- *   ****************************************************************/  
-int gpio_set_dir(unsigned int gpio, unsigned int out_flag)  
-{  
-  int fd, len;  
-  char buf[MAX_BUF];  
-  
-  len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);  
-      
-  fd = open(buf, O_WRONLY);  
-  if (fd < 0) {  
+ *   ****************************************************************/
+int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
+  int fd, len;
+  char buf[MAX_BUF];
+
+  len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
+
+  fd = open(buf, O_WRONLY);
+  if (fd < 0) {
     xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
-    return fd;  
-  }  
-  
-  if (out_flag)  
-    write(fd, "out", 4);  
-  else  
-    write(fd, "in", 3);  
-    
-  close(fd);  
-  return 0;  
-}  
-  
+    return fd;
+  }
+
+  ssize_t bytes_written = 0;
+  size_t len = 0;
+  if (out_flag) {
+    len = 4;
+    bytes_written = write(fd, "out", len);
+  } else {
+    len = 3;
+    bytes_written = write(fd, "in", len);
+  }
+
+  if (bytes_written != len) {
+    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  close(fd);
+  return 0;
+}
+
 /**************************************************************** 
  *  * gpio_set_value 
- *   ****************************************************************/  
-int gpio_set_value(unsigned int gpio, unsigned int value)  
-{  
-  int fd, len;  
-  char buf[MAX_BUF];  
-  
-  len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);  
-      
-  fd = open(buf, O_WRONLY);  
-  if (fd < 0) {  
+ *   ****************************************************************/
+int gpio_set_value(unsigned int gpio, unsigned int value) {
+  int fd, len;
+  char buf[MAX_BUF];
+
+  len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+
+  fd = open(buf, O_WRONLY);
+  if (fd < 0) {
     xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
-    return fd;  
-  }  
-  
-  if (value)  
-    write(fd, "1", 2);  
-  else  
-    write(fd, "0", 2);  
-    
-  close(fd);  
-  return 0;  
-}  
-  
+    return fd;
+  }
+
+  ssize_t bytes_written = 0;
+  size_t len = 2;
+  if (value)
+    bytes_written = write(fd, "1", len);
+  else
+    bytes_written = write(fd, "0", len);
+
+  if (bytes_written != len) {
+    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  close(fd);
+  return 0;
+}
+
 /**************************************************************** 
  *  * gpio_get_value 
  *   ****************************************************************/  

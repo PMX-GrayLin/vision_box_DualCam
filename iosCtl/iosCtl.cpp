@@ -301,19 +301,18 @@ int ios_modbus_init(void)
  *	Param 		: NONE
  *	Return		: integer value
  *************************************************************/
-int ios_WriteBuftoKernel()
-{
+int ios_WriteBuftoKernel() {
   uint8_t retry = 3;
   int ret;
 
   while (retry > 0) {
-        ret =  write(fd, (char *)wbuf, IOS_BUF_SIZE);
+    ret = write(fd, (char *)wbuf, IOS_BUF_SIZE);
     if (ret >= 0) {
       retry = 0;
     } else {
       retry--;
     }
-        usleep(50000); /* delay 50  ms */
+    usleep(50000); /* delay 50  ms */
   }
   return ret;
 }

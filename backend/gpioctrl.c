@@ -113,7 +113,6 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
 
   ssize_t bytes_written = 0;
   size_t len = 0;
-
   if (out_flag) {
     len = 4;
     bytes_written = write(fd, "out", len);

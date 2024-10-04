@@ -95,33 +95,28 @@ int SPI_Transfer(const uint8_t *TxBuf, uint8_t *RxBuf, int len)
 ??????$)AEK?0 ???
 * ????????Lzy 2013????2
 */
-int SPI_Write(uint8_t *TxBuf, int len)
-{
-    int ret;
-    int fd = g_SPI_Fd;
+int SPI_Write(uint8_t *TxBuf, int len) {
+  int ret;
+  int fd = g_SPI_Fd;
 
-
-    ret = write(fd, TxBuf, len);
-    if (ret < 0)
-        perror("SPI Write error\n");
-    else
-    {
+  ret = write(fd, TxBuf, len);
+  if (ret < 0)
+    perror("SPI Write error\n");
+  else {
 #if SPI_DEBUG
-        int i;
-        printf("SPI Write [Len:%d]: \n", len);
-        for (i = 0; i < len; i++)
-        {
-            if (i % 8 == 0)
-                printf("\n\t");
-            printf("0x%02X \n", TxBuf[i]);
-        }
-        printf("\n");
-#endif
+    int i;
+    printf("SPI Write [Len:%d]: \n", len);
+    for (i = 0; i < len; i++) {
+      if (i % 8 == 0)
+        printf("\n\t");
+      printf("0x%02X \n", TxBuf[i]);
     }
+    printf("\n");
+#endif
+  }
 
-    return ret;
+  return ret;
 }
-
 
 /**
 * ???$)AuW??$)A=;??$)A`&?
