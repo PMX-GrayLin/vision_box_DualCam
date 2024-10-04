@@ -373,7 +373,6 @@ typedef struct __PROCESS_NODE__{
   uint16_t Brightness[2];
 }PROCESS_NODE;
 
-
 typedef struct __IOS_RTC_SET_MODE__{
     bool use_ntp;
     struct tm local_time;
@@ -421,8 +420,6 @@ extern IOS_TOF_GET_MODE ios_tof;
 #ifdef __cplusplus
 }
 #endif
-
-
 
 
 #define CLRMEM(x) \
@@ -478,22 +475,22 @@ extern uint32_t backendDebugLevel;
 #ifdef __cplusplus
 	extern "C" {
 #endif
-extern int msgQ_send(uint8_t  *msg);
-extern int msgQ_rec(uint8_t *msg);
-extern int msqQ_remove(void);
-extern int msgQ_init();
-extern int msgQ_iosSend(uint8_t  *msg);
-extern int msgQ_ipsSend(uint8_t  *msg);
-extern int msgQ_recIos(uint8_t *msg);
-extern int msgQ_recIps(uint8_t *msg);
+// extern int msgQ_send(uint8_t  *msg);
+// extern int msgQ_rec(uint8_t *msg);
+// extern int msqQ_remove(void);
+// extern int msgQ_init();
+// extern int msgQ_iosSend(uint8_t  *msg);
+// extern int msgQ_ipsSend(uint8_t  *msg);
+// extern int msgQ_recIos(uint8_t *msg);
+// extern int msgQ_recIps(uint8_t *msg);
 
-extern unsigned int mcMsgQParser(char *buf);
+// extern unsigned int mcMsgQParser(char *buf);
 
-extern int iosCtl_init();
-extern int ipsCtl_init();
-extern int cmsCtl_init();
+// extern int iosCtl_init();
+// extern int ipsCtl_init();
+// extern int cmsCtl_init();
 // extern int aisCtl_init();
-extern int otasCtl_init();
+// extern int otasCtl_init();
 
 extern int innerQ_Main_Init();
 extern int innerQ_Main_EnQ(std::string msg);
@@ -520,7 +517,6 @@ extern int innerQ_IOS_EnQ(std::string msg);
 extern int innerQ_IOS_DeQ(std::string* msg);
 extern bool innerQ_IOS_IsEmpty();
 extern void innerQ_IOS_Destory();
-
 
 
 #ifdef __cplusplus
