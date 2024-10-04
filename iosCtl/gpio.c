@@ -146,8 +146,7 @@ int gpio_set_value(unsigned int gpio, unsigned int value)
 /****************************************************************
  *  * gpio_get_value
  *   ****************************************************************/
-int gpio_get_value(unsigned int gpio, unsigned int *value)
-{
+int gpio_get_value(unsigned int gpio, unsigned int *value) {
   int fd;
   char buf[MAX_BUF];
   char ch;
@@ -160,8 +159,13 @@ int gpio_get_value(unsigned int gpio, unsigned int *value)
     return fd;
   }
 
-  read(fd, &ch, 1);
-  
+  ssize_t bytes_read = read(fd, &ch, 1);
+  if (bytes_read != 1) {
+    xlog("%s:%d, read fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
   if (ch != '0') {
     *value = 1;
   } else {
@@ -171,7 +175,6 @@ int gpio_get_value(unsigned int gpio, unsigned int *value)
   close(fd);
   return 0;
 }
-
 
 /****************************************************************
  *  * gpio_set_edge

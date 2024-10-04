@@ -166,34 +166,38 @@ int gpio_set_value(unsigned int gpio, unsigned int value) {
 
 /**************************************************************** 
  *  * gpio_get_value 
- *   ****************************************************************/  
-int gpio_get_value(unsigned int gpio, unsigned int *value)  
-{  
-  int fd, len;  
-  char buf[MAX_BUF];  
-  char ch;  
-    
-  len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);  
-  
-  fd = open(buf, O_RDONLY);  
-  if (fd < 0) {  
-    perror("gpio/get-value");  
-    return fd;  
-  }  
-  
-  read(fd, &ch, 1);  
-    
-  if (ch != '0') {  
-    *value = 1;  
-  } else {  
-    *value = 0;  
-  }  
-  
-  close(fd);  
-  return 0;  
-}  
-  
-  
+ *   ****************************************************************/
+int gpio_get_value(unsigned int gpio, unsigned int *value) {
+  int fd;
+  char buf[MAX_BUF];
+  char ch;
+
+  snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+
+  fd = open(buf, O_RDONLY);
+  if (fd < 0) {
+    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  ssize_t bytes_read = read(fd, &ch, 1);
+  if (bytes_read != 1) {
+    xlog("%s:%d, read fail \n\r", __func__, __LINE__);
+    close(fd);
+    return fd;
+  }
+
+  if (ch != '0') {
+    *value = 1;
+  } else {
+    *value = 0;
+  }
+
+  close(fd);
+  return 0;
+}
+
 /**************************************************************** 
  *  * gpio_set_edge 
  *   ****************************************************************/  
