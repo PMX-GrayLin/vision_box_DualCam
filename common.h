@@ -29,6 +29,13 @@
 #include <string>
 #include <ctime>
 
+#define DEBUGX
+#ifndef DEBUGX
+#define xlog(...) ((void)0)
+#else
+#define xlog(...) printf(__VA_ARGS__)
+#endif
+
 /* define the tty color */
 #define NONE          "\033[m"
 #define RED           "\033[0;32;31m"

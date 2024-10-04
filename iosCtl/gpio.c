@@ -100,6 +100,7 @@ int gpio_set_value(unsigned int gpio, unsigned int value)
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
     printf("gpio/set-value\r\n");
+    xlog("%s:%d, fail \n\r", __func__, __LINE__);
     return fd;
   }
 
