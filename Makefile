@@ -185,6 +185,7 @@ CFLAG += -Wall
 CFLAG += ${CFLAGS}
 CPPFLAG += -Wall
 CPPFLAG += ${CXXFLAGS}
+CPPFLAG += ${DFLAG}
 
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -lc -lm -lpthread
@@ -195,7 +196,7 @@ LDFLAG += ${LDFLAGS}
 OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 
 all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(DFLAG) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
+	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)
