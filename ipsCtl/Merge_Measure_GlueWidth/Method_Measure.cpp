@@ -269,14 +269,14 @@ int CMethod_Measure::Algo_GlueWidth_RangeSetting(seAnnulus roiAnnuls, double dbS
 
 	cv::Point second_begin, second_end; //刻度的起點，终點 
 	double scale_long(0.0);				//刻度的長度 
-	// int scale_width(2);					//刻度的寬度 
+	int scale_width(2);					//刻度的寬度 
 
 
 //#ifdef _RexTY_DEBUG
 
 	//Circle
 	//Scalar color = Scalar(0, 255, 255); //BGR
-	// Scalar color = Scalar(0, 255, 0); //BGR
+	Scalar color = Scalar(0, 255, 0); //BGR
 	//Center
 	Scalar color_Center = Scalar(0, 0, 255);
 	//Scale
@@ -468,7 +468,7 @@ int CMethod_Measure::Algo_GlueWidth_RangeSetting(seBoundingBox roiRect, double d
 
 	//Circle
 	//Scalar color = Scalar(0, 255, 255); //BGR
-	// Scalar color = Scalar(0, 255, 0); //BGR
+	Scalar color = Scalar(0, 255, 0); //BGR
 	//Center
 	Scalar color_Center = Scalar(0, 0, 255);
 	//Scale
