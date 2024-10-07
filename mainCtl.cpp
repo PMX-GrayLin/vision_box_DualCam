@@ -44,7 +44,6 @@
 #include "IPLAlgoDataStructureDef.h"
 #include "iosCtl/IOS_CompFunction.h"
 #include "spi.h"
-#include "iosCtl.h"
 #include "ext_mqtt_client.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
