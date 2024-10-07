@@ -8,3 +8,6 @@
 #else
 #define xlog(...) printf(__VA_ARGS__)
 #endif
+
+extern int iosCtl_init();
+extern int ios_readVersionFile(char *jstring);

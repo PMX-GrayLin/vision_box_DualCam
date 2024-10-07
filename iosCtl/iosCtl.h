@@ -180,5 +180,3 @@ const char ios_buf_init[IOS_BUF_SIZE] = {
   0,    0,    0,    0,    0,    0,    0,    0
 };
 
-extern int iosCtl_init();
-extern int ios_readVersionFile(char *jstring);
