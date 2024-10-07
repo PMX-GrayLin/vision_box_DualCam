@@ -231,6 +231,11 @@ tof_lib:
 	@echo Compiling $< ...
 	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
+%.o: $(IOS_SRC)%.cpp
+	@echo ""
+	@echo Compiling $< ...
+	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+
 %.o: %.cpp
 	@echo ""
 	@echo Compiling $< ...
