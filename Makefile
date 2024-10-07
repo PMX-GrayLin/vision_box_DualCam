@@ -172,7 +172,9 @@ OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 
 # gray
 INCLUDE += -I$(shell pwd)
+INCLUDE += -I$(shell pwd)/mainCtl
 INCLUDE += -I$(shell pwd)/iosCtl
+INCLUDE += -I$(shell pwd)/ipsCtl
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn

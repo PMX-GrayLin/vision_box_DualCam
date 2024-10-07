@@ -43,8 +43,9 @@
 #include "ipsCtl/IPS_MethodStructureDef.h"
 #include "IPLAlgoDataStructureDef.h"
 #include "iosCtl/IOS_CompFunction.h"
-#include "iosCtl/spi.h"
+#include "spi.h"
 #include "iosCtl.h"
+#include "ext_mqtt_client.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type
@@ -211,7 +212,7 @@ extern int IO_SetLocalTime(bool use_ntp, struct tm *new_tm, char *timezone);
 extern int ios_readEthAddr(char *eth, char *jstring);
 extern int ios_readVersionFile(char *jstring);
 extern void setStatus_mp(int pStatus);
-extern int32_t ext_mqtt_subscriber_Dual();
+// extern int32_t ext_mqtt_subscriber_Dual();
 extern int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc);
 extern int sfcCtl_serial_port;
 extern int tofReadDistance(void);
