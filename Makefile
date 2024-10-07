@@ -193,6 +193,7 @@ CPPFLAG += ${CXXFLAGS}
 CPPFLAG += ${DFLAG}
 
 LDFLAG += -L$(BB_LIBDIR)
+LDFLAG += -L$(shell pwd)
 LDFLAG += -L$(shell pwd)/iosCtl
 LDFLAG += -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
