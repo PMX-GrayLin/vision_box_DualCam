@@ -213,8 +213,8 @@ OBJ_BUILD += $(IPS_OBJS)
 OBJ_BUILD += $(OBJ_IPL)
 OBJ_BUILD += $(OBJ_GIGE)
 OBJ_BUILD += $(OBJ_TPL)
-# OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
-# OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
+OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
+OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
 all: tof_lib $(OBJ_BUILD)
 	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(LDFLAG) 
