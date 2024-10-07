@@ -101,10 +101,12 @@ int main(int argc, char **argv)
 
 	status = VL53L1X_SensorInit(Dev);
 	/* status += VL53L1X_SetInterruptPolarity(Dev, 0); */
-	status += VL53L1X_SetDistanceMode(Dev, 2); /* 1=short, 2=long */
-	status += VL53L1X_SetTimingBudgetInMs(Dev, 100);
-	status += VL53L1X_SetInterMeasurementInMs(Dev, 100);
-	status += VL53L1X_StartRanging(Dev);
+
+	// ??
+	// status += VL53L1X_SetDistanceMode(Dev, 2); /* 1=short, 2=long */
+	// status += VL53L1X_SetTimingBudgetInMs(Dev, 100);
+	// status += VL53L1X_SetInterMeasurementInMs(Dev, 100);
+	// status += VL53L1X_StartRanging(Dev);
 
 	/* read and display data loop */
 	while (1) {

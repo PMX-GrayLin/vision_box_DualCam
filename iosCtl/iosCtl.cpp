@@ -1773,10 +1773,12 @@ int tof_init(void)
 
 	status = VL53L1X_SensorInit(tof_Dev);
 	/* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
-	status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
-	status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
-	status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
-	status += VL53L1X_StartRanging(tof_Dev);
+
+  // ??
+	// status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+	// status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
+	// status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
+	// status += VL53L1X_StartRanging(tof_Dev);
 
 
 }
