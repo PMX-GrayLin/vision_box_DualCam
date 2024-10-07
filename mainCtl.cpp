@@ -41,13 +41,13 @@
 #include "ipsCtl/IPS_CompFunction.h"
 #include "ipsCtl/IPS_MethodStructureDef.h"
 #include "IPLAlgoDataStructureDef.h"
-#include "iosCtl/IOS_CompFunction.h"
-#include "spi.h"
 
+#include "spi.h"
 #include "mainCtl.hpp"
 #include "ext_mqtt_client.h"
 #include "global.hpp"
 #include "iosCtl.h"
+#include "IOS_CompFunction.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type
