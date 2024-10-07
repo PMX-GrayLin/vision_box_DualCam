@@ -38,7 +38,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "i2cbusses.h"
+// #include "i2cbusses.h"
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 
