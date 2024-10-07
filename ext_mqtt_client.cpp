@@ -12,7 +12,6 @@
  */
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
-#include "ext_mqtt_client.h"
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -41,6 +40,7 @@
 #include <chrono>
 #include <ctime>
 
+#include "ext_mqtt_client.h"
 #include "common.h"
 #include "mainCtl.hpp"
 #include "global.hpp"
