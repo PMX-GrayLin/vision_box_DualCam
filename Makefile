@@ -1,5 +1,3 @@
-# TOPDIR is where phoenix_genericlinux/ is located
-#include ../config.mk
 
 # Version
 VERSION_FLAG=
@@ -16,20 +14,15 @@ VERSION_FLAG += -DIOS_VERSION="\"IOS.0.0.4\""
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_AddTimestamp_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_SpeedOptimization_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
-
-# PP = aarch64-linux-gnu-g++
-# CXXFLAGS += "-std=c++11"
-
-# HOMEPATH=~/rextyw/vision_box-merge/ipsCtl/Merge_Measure_GlueWidth
 		
 TARGET=vision_box_DualCam
 
 # Debug print format FLAG
-DBG_PRINT_FLAG=
+DBG_PRINT_FLAG =
 DBG_PRINT_FLAG += -DENB_VSB_AUTORUN_MODE
 
 # Debug FLAG
-DFLAG= 
+DFLAG = 
 DFLAG += $(DBG_PRINT_FLAG) 
 DFLAG += $(VERSION_FLAG)
 
@@ -66,18 +59,14 @@ DFLAG += $(VERSION_FLAG)
 # INCLUDE +=-I /opt/pylon/include
 # INCLUDE +=-I /opt/OPT/OPTCameraDemo/include
 # INCLUDE +=-I /opt/spinnaker/include
-
 # INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/tools
 # INCLUDE += -I$(shell pwd)/iosCtl/i2c-tools/include
 # INCLUDE += -I$(shell pwd)/iosCtl/tof_lib
 # INCLUDE += -I$(shell pwd)/iosCtl/tof_lib/core
-
 # INCLUDE +=-I/home/ubuntu/primax/image/usr/include/opencv4
 # INCLUDE +=-I/home/ubuntu/primax/image/usr/include/neuron/api
-
 # INCLUDE +=-I /home/ubuntu/primax/image/usr/include
 # LDFLAG += -L /home/ubuntu/primax/image/usr/lib
-
 
 # LDFLAG = 
 # LDFLAG += -L -ldl -lc -lm -lrt -lpthread
@@ -93,56 +82,8 @@ DFLAG += $(VERSION_FLAG)
 # Dependencies
 ################################################################################
 
-# OpenCV Library FLAG
-# OCVLDFLAG = -Wl,-Bdynamic
-# OCVLDFLAG +=-L /usr/local/lib/opencv451 -L/home/user/primax/lib
-# OCVLDFLAG +=-lopencv_core 
-# OCVLDFLAG +=-lopencv_imgproc
-# OCVLDFLAG +=-lopencv_features2d
-# OCVLDFLAG +=-lopencv_video 
-# OCVLDFLAG +=-lopencv_videoio 
-# OCVLDFLAG +=-lopencv_imgcodecs 
-# OCVLDFLAG +=-lopencv_objdetect 
-# OCVLDFLAG +=-lopencv_highgui 
-# OCVLDFLAG +=-lopencv_photo 
-# OCVLDFLAG +=-lopencv_flann
-# OCVLDFLAG +=-lopencv_ml
-# OCVLDFLAG +=-lopencv_dnn
-
-# Spinnaker deps
-# SPINNAKER_LIB = -Wl,-Bdynamic
-# SPINNAKER_LIB +=-L /usr/local/lib/spinnaker140
-# SPINNAKER_LIB +=-L /opt/spinnaker/lib
-# SPINNAKER_LIB +=-lSpinnaker
-
-# HikVision deps
-# HIK_LIB = -Wl,-Bdynamic
-# HIK_LIB +=-L /opt/MVS/lib/aarch64
-# HIK_LIB +=-lFormatConversion
-# HIK_LIB +=-lMVGigEVisionSDK
-# HIK_LIB +=-lMvCameraControl
-# HIK_LIB +=-lMVRender
-# HIK_LIB +=-lMediaProcess
-
-# Baseler(pylon) deps
-# BASLER_LIB = -Wl,-Bdynamic
-# BASLER_LIB +=-L /opt/pylon/lib -L/opt/OPT/OPTCameraDemo/lib/GenICam/bin/
-# BASLER_LIB +=-lpylonbase
-# BASLER_LIB +=-lpylonutility
-# BASLER_LIB +=-lGenApi_gcc_v3_1_Basler_pylon
-# BASLER_LIB +=-lGCBase_gcc_v3_1_Basler_pylon
-# BASLER_LIB +=-lGenApi_gcc485_v3_0
-
-# OPT deps
-# OPT_LIB = -Wl,-Bdynamic
-# OPT_LIB +=-L /opt/OPT/OPTCameraDemo/lib
-# OPT_LIB +=-lOPTSDK
-# OPT_LIB +=-lImageConvert
-# OPT_LIB +=-llog4cpp
-# OPT_LIB +=-lRecordVideo
-
-CSOURCEFILE = $(wildcard *.c)
-COBJECTS = $(patsubst %.c,%.o,$(CSOURCEFILE))
+# CSOURCEFILE = $(wildcard *.c)
+# COBJECTS = $(patsubst %.c,%.o,$(CSOURCEFILE))
 
 CPPSOURCEFILE = $(wildcard *.cpp)
 CPPOBJECTS = $(patsubst %.cpp,%.o,$(CPPSOURCEFILE))
@@ -164,6 +105,10 @@ OBJ_GIGE = $(patsubst %.cpp,%.o,$(SRC_GIGE))
 
 SRC_TPL = $(wildcard ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary/*.cpp)
 OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
+
+SRC_TOF = $(wildcard iosCtl/tof_lib/core/*.cpp)
+SRC_TOF += $(wildcard iosCtl/tof_lib/*.cpp)
+OBJ_TOF = $(patsubst %.cpp,%.o,$(SRC_TOF))
 
 # all: i2ctools tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
 # 	@echo ""
@@ -213,19 +158,16 @@ OBJ_BUILD += $(IPS_OBJS)
 OBJ_BUILD += $(OBJ_IPL)
 OBJ_BUILD += $(OBJ_GIGE)
 OBJ_BUILD += $(OBJ_TPL)
+OBJ_BUILD += $(OBJ_TOF)
 
-OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
-OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
+# OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
+# OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
-all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(OBJ_BUILD2) $(LDFLAG) 
+all: $(OBJ_BUILD)
+	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(LDFLAG) 
 
-# OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-# all: tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
-# 	$(CXX) $(CPPFLAG) $(LDFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) -o $(TARGET) 
-
-i2ctools:
-	(cd iosCtl/i2c-tools/; make)
+# i2ctools:
+# 	(cd iosCtl/i2c-tools/; make)
 
 tof_lib:
 	(cd iosCtl/tof_lib/; make clean; make)
