@@ -1771,7 +1771,8 @@ int tof_init(void)
 	// }
 	IOSLOG(0, "Chip booted\n");
 
-	status = VL53L1X_SensorInit(tof_Dev);
+  // ??
+	// status = VL53L1X_SensorInit(tof_Dev);
 	/* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
   // ??
@@ -1789,21 +1790,23 @@ int tofReadDistance(void)
     VL53L1X_Result_t Results;
     int status = 0;
 
+    // ??
     /* Get the data the new way */
-    status += VL53L1X_GetResult(tof_Dev, &Results);
+    // status += VL53L1X_GetResult(tof_Dev, &Results);
 
     IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
 			Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
 
+    // ??
     /* trigger next ranging */
-    status += VL53L1X_ClearInterrupt(tof_Dev);
-    if (first_range) {
-    	/* very first measurement shall be ignored
-    	 * thus requires twice call
-    	 */
-    	status += VL53L1X_ClearInterrupt(tof_Dev);
-    	first_range = 0;
-    }
+    // status += VL53L1X_ClearInterrupt(tof_Dev);
+    // if (first_range) {
+    // 	/* very first measurement shall be ignored
+    // 	 * thus requires twice call
+    // 	 */
+    // 	status += VL53L1X_ClearInterrupt(tof_Dev);
+    // 	first_range = 0;
+    // }
     
     return Results.Distance;
 }
