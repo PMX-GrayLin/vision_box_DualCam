@@ -87,7 +87,6 @@
 		extern "C" {
 	#endif
 
-
 		int printHelloworld(void* pObj, unsigned char* pBuf);
 
 		//int Initiation();
