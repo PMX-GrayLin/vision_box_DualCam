@@ -36,7 +36,7 @@
 #include <deque>
 #include <string>
 #include "common.h"
-#include "mainCtl.h"
+#include "mainCtl.hpp"
 #include <semaphore.h>
 #include "ipsCtl/IPS_CompAlgorithm.h"
 #include "ipsCtl/IPS_CompFunction.h"
@@ -45,6 +45,7 @@
 #include "iosCtl/IOS_CompFunction.h"
 #include "spi.h"
 #include "ext_mqtt_client.h"
+#include "global.hpp"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type

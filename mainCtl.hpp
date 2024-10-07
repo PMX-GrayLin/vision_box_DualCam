@@ -8,8 +8,6 @@
 #include <linux/types.h>
 #include <stdbool.h>
 
-#include "ext_mqtt_client.h"
-#include "global.hpp"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 #define COMMAND_BUFFER_SIZE		128
