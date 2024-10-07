@@ -1,11 +1,14 @@
 #CC=gcc
 #CCPREFIX=/home/user/rpi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
-CC=$(CCPREFIX)gcc
 
+# CC=$(CCPREFIX)gcc
+CC=$(CXX)
 
 INC_CFLAGS=-I.
 CORE=core
 CFLAGS+=$(INC_CFLAGS) -I$(CORE) -Wall -g -D_LINUX_ 
+CFLAGS+=${CXXFLAGS}
+
 
 ifdef POLLING
 	CFLAGS+=-D POLLING
