@@ -232,7 +232,7 @@ tof_lib:
 	@echo Compiling $< ...
 	$(CXX) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
-$(IOS_OBJS): $(IOS_SRC)
+%.o: $(IOS_SRC)%.cpp
 	@echo ""
 	@echo Compiling $< ...
 	$(CXX) $(CPPFLAG) -c $< -o $@
