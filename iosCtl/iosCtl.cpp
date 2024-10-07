@@ -67,6 +67,9 @@ extern "C" {
 }
 #endif
 
+volatile char rbuf[IOS_BUF_SIZE];
+volatile char wbuf[IOS_BUF_SIZE];
+
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 pthread_t iosThread;
 pthread_t didoThread;

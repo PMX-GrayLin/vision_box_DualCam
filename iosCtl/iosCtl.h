@@ -161,9 +161,6 @@ enum{
   Unknown_trigger = 0x8000,
 };
 
-volatile char rbuf[IOS_BUF_SIZE];
-volatile char wbuf[IOS_BUF_SIZE];
-
 const char ios_buf_init[IOS_BUF_SIZE] = {
   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
