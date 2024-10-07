@@ -2396,7 +2396,7 @@ void *ips_process_Dual(void *argu)
  *	Param       : void *argu --> none
  *	Return      : NONE
  *************************************************************/
-void ios_process(void *argu)
+void* ios_process(void *argu)
 {
     uint8_t rec_data[MAX_MSG_SIZE];
     char job_t[4096] = {'\0'}; /* need to define this buffer size */
@@ -2848,7 +2848,7 @@ void ios_process(void *argu)
     }
 
     MAINLOG(0, " ## exit of ios_process ##\n");
-
+    return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
