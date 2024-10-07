@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <cstdint>
+
 #define DEBUGX
 #ifndef DEBUGX
 #define xlog(...) ((void)0)

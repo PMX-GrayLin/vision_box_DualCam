@@ -1,5 +1,7 @@
 #pragma once
 
+#include "global.hpp"
+
 #ifndef __EXT_MQTT_CLIENT_H__
 #define __EXT_MQTT_CLIENT_H__
 
