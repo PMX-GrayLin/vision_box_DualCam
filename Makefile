@@ -181,6 +181,7 @@ INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/GigECam
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/PlugIn
 INCLUDE += -I$(shell pwd)/ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary
+INCLUDE += -I$(BB_INCDIR)
 INCLUDE += -I$(BB_INCDIR)/json-c
 INCLUDE += -I$(BB_INCDIR)/modbus
 INCLUDE += -I$(BB_INCDIR)/opencv4 -I$(BB_INCDIR)/opencv4/opencv
@@ -209,12 +210,12 @@ LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
 OBJ_BUILD += $(IPS_OBJS)
-# OBJ_BUILD += $(OBJ_IPL)
-# OBJ_BUILD += $(OBJ_GIGE)
-# OBJ_BUILD += $(OBJ_TPL)
+OBJ_BUILD += $(OBJ_IPL)
+OBJ_BUILD += $(OBJ_GIGE)
+OBJ_BUILD += $(OBJ_TPL)
 
 all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(CPPFLAG) $(LDFLAG) $(OBJ_BUILD) -o $(TARGET) 
+	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(LDFLAG) 
 
 # OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 # all: tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
