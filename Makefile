@@ -153,8 +153,8 @@ MAIN_OBJS = $(patsubst %.c,%.o,$(MAIN_SRC))
 IOS_SRC = $(wildcard iosCtl/*.cpp)
 IOS_OBJS = $(patsubst %.cpp,%.o,$(IOS_SRC))
 
-IPS_SRC = $(wildcard ipsCtl/*.c)
-IPS_OBJS = $(patsubst %.c,%.o,$(IPS_SRC))
+IPS_SRC = $(wildcard ipsCtl/*.cpp)
+IPS_OBJS = $(patsubst %.cpp,%.o,$(IPS_SRC))
 
 SRC_IPL = $(wildcard ipsCtl/Merge_Measure_GlueWidth/*.cpp)
 OBJ_IPL = $(patsubst %.cpp,%.o,$(SRC_IPL))
@@ -201,6 +201,7 @@ LDFLAG += ${LDFLAGS}
 
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
+OBJ_BUILD += $(IPS_OBJS)
 # OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
 all: tof_lib $(OBJ_BUILD)
 	$(CXX) $(CPPFLAG) $(LDFLAG) $(OBJ_BUILD) -o $(TARGET) 
