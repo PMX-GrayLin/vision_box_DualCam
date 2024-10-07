@@ -4,7 +4,7 @@
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
 #include <linux/types.h>
 #include <stdbool.h>
-#include "mainCtl/ext_mqtt_client.h"
+#include "ext_mqtt_client.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 #define COMMAND_BUFFER_SIZE		128
