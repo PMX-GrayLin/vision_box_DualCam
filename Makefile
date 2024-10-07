@@ -204,8 +204,8 @@ LDFLAG += -L$(shell pwd)/ipsCtl
 LDFLAG += -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl -li2c
 LDFLAG += $(shell pkg-config --libs opencv4)
-# LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/
-# LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/core/
+LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/
+LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/core/
 
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
@@ -216,7 +216,7 @@ OBJ_BUILD += $(OBJ_TPL)
 # OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
 # OBJ_BUILD += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
-all: $(OBJ_BUILD)
+all: tof_lib $(OBJ_BUILD)
 	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(LDFLAG) 
 
 # OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
