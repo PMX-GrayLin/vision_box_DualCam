@@ -470,11 +470,11 @@ int CMethod_Measure::Algo_GlueWidth_RangeSetting(seBoundingBox roiRect, double d
 	//Scalar color = Scalar(0, 255, 255); //BGR
 	// Scalar color = Scalar(0, 255, 0); //BGR
 	//Center
-	// Scalar color_Center = Scalar(0, 0, 255);
+	Scalar color_Center = Scalar(0, 0, 255);
 	//Scale
-	// Scalar color_Scale = Scalar(0, 0, 255);
+	Scalar color_Scale = Scalar(0, 0, 255);
 	//Glue
-	// Scalar color_Glue = Scalar(255, 0, 0);
+	Scalar color_Glue = Scalar(255, 0, 0);
 
 
 	//drawing center
