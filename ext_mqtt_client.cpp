@@ -42,7 +42,8 @@
 #include <ctime>
 
 #include "common.h"
-#include "mainCtl.h"
+#include "mainCtl.hpp"
+#include "global.hpp"
 
 /* GLOBAL VARIABLE DECLARATIONS ------------------------------------------------------- */
 extern WIFI_AP_PARA wifi;
