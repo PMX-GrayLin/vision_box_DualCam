@@ -2413,7 +2413,7 @@ void ios_process(void *argu)
         {
             seIO_JsonInfo seInfo;
             IO_JsonQ_DeQ(&seInfo);
-            strcpy(rec_data, seInfo.szCmd);
+            strcpy((char *)rec_data, seInfo.szCmd);
             MAINLOG(0, YELLOW " @@@ === >>> IO_JsonQ_DeQ() = [%d][%s]\n", seInfo.emAlgoId, seInfo.szCmd);
             
             if (seInfo.emAlgoId == TRIGGER_SET_PROCESS) {
@@ -2492,7 +2492,7 @@ void ios_process(void *argu)
                 MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
             } else if (seInfo.emAlgoId == LED_SET_MODE) {
                 MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LED_SET_MODE]);
-                MAINLOG(0, "%d ios_setLedMode.Indication = %d\n", __LINE__, strlen(ios_setLedMode.Indication));
+                // MAINLOG(0, "%d ios_setLedMode.Indication = %d\n", __LINE__, strlen(ios_setLedMode.Indication));
                 MAINLOG(0, "%d ios_setLedMode.Indication = %s\n", __LINE__, ios_setLedMode.Indication);
                 if (strlen((char *)ios_setLedMode.Indication) != 0)
                 {
@@ -2668,9 +2668,9 @@ void ios_process(void *argu)
                         strcpy((char *)Process_Node_Dual.Dout4selectMode, (char *)ios_doutMode.selectMode);
                     }
                 }
-                ios_Control_Dout_Handler_Dual(ios_doutMode.selectMode, TRUE, ios_doutMode.CameraId);
+                ios_Control_Dout_Handler_Dual((char* )ios_doutMode.selectMode, TRUE, ios_doutMode.CameraId);
                 usleep(50000);
-                ios_Control_Dout_Handler_Dual(ios_doutMode.selectMode, FALSE, ios_doutMode.CameraId);
+                ios_Control_Dout_Handler_Dual((char* )ios_doutMode.selectMode, FALSE, ios_doutMode.CameraId);
                 ios_response_json_create(job_t, ios_respStr[DOUT_SET_MODE], (char *)ios_CmdInfo);
                 ext_mqtt_publisher_Dual(job_t, ios_doutMode.CameraId);
                 MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DOUT_SET_MODE]);
