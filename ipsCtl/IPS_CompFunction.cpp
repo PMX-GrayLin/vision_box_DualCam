@@ -28,7 +28,7 @@
 #include <time.h>
 #include <semaphore.h>
 #include <json.h>
-#include "../common.h"
+#include "common.hpp"
 
 #include <string>
 #include <deque>

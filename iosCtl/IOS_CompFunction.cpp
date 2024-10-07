@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h> /* memset */
 #include <json.h>
-#include "../common.h"
 
 #include <chrono>
 #include <ctime>
@@ -12,6 +11,8 @@
 #include <unordered_map>
 #include <vector>
 #include <mutex>
+
+#include "common.hpp"
 #include "IOS_CompFunction.h"
 #include "spi.h"
 

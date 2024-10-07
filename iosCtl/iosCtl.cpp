@@ -47,7 +47,7 @@
 #include <chrono>
 #include <ctime>
 #include <ifaddrs.h>
-#include "common.h"
+#include "common.hpp"
 #include "gpio.h"
 #include "pwm.h"
 #include "spi.h"

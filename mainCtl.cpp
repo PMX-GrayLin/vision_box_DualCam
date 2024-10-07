@@ -35,15 +35,15 @@
 #include <chrono>
 #include <deque>
 #include <string>
-#include "common.h"
 #include <semaphore.h>
 #include "ipsCtl/IPS_CompAlgorithm.h"
 #include "ipsCtl/IPS_CompFunction.h"
 #include "ipsCtl/IPS_MethodStructureDef.h"
 #include "IPLAlgoDataStructureDef.h"
 
-#include "spi.h"
+#include "common.hpp"
 #include "mainCtl.hpp"
+#include "spi.h"
 #include "ext_mqtt_client.h"
 #include "global.hpp"
 #include "iosCtl.h"

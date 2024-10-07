@@ -31,7 +31,7 @@
 #include <mosquitto.h>
 #include <json.h>
 #include "../client_shared.h"
-#include "../common.h"
+#include "common.hpp"
 #include "ips_mqtt_client.h"
 #include "../iosCtl/IOS_MethodStructureDef.h"
 

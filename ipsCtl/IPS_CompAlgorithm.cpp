@@ -29,8 +29,8 @@
 #include <semaphore.h>
 #include <json.h>
 #include <time.h>
-#include "../common.h"
-#include "../mainCtl/ext_mqtt_client.h"
+#include "common.hpp"
+#include "ext_mqtt_client.h"
 
 #include <list>
 #include <vector>

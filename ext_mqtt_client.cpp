@@ -41,7 +41,7 @@
 #include <ctime>
 
 #include "ext_mqtt_client.h"
-#include "common.h"
+#include "common.hpp"
 #include "mainCtl.hpp"
 #include "global.hpp"
 

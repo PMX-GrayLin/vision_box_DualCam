@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 #include "global.hpp"
 
 MAIN_PROCESS main_process;
