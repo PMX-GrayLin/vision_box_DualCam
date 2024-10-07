@@ -4,6 +4,8 @@
 
 ******************************************************/
 
+#pragma once
+
 /* MCU define */
 #define PWM_PERIOD_COUNT                        1200            /* PLL=24MHz, PWM freq=20KHz, 1200 = 24MHz/20KHz */
 #define PWM_ONE_STEP                            4.6875          /* 1200 / 256 step, one step = 4.6875 */
