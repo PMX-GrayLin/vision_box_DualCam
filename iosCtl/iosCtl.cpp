@@ -1764,10 +1764,11 @@ int tof_init(void)
 	IOSLOG(0, "VL53L1X Module_Type: %X\n", byteData);
 	status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
 	IOSLOG(0, "VL53L1X: %X\n", wordData);
-	while (sensorState == 0) {
-		status += VL53L1X_BootState(tof_Dev, &sensorState);
-		VL53L1_WaitMs(tof_Dev, 2);
-	}
+  // ??
+	// while (sensorState == 0) {
+	// 	status += VL53L1X_BootState(tof_Dev, &sensorState);
+	// 	VL53L1_WaitMs(tof_Dev, 2);
+	// }
 	IOSLOG(0, "Chip booted\n");
 
 	status = VL53L1X_SensorInit(tof_Dev);

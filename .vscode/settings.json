@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "string": "cpp",
-        "common.h": "c"
+        "common.h": "c",
+        "vl53l1_types.h": "c"
     }
 }
