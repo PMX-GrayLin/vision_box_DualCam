@@ -14,6 +14,8 @@ Contributors:
    Roger Light - initial implementation and documentation.
 */
 
+#pragma once
+
 #ifndef _CLIENT_CONFIG_H
 #define _CLIENT_CONFIG_H
 

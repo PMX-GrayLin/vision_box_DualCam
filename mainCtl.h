@@ -1,3 +1,6 @@
+
+#pragma once
+
 #ifndef __MAIN_HANDLER_H__
 #define __MAIN_HANDLER_H__
 

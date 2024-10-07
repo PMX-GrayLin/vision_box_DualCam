@@ -13,6 +13,8 @@
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
 
+#include "iosCtl.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -46,7 +48,6 @@
 #include <ctime>
 #include <ifaddrs.h>
 #include "common.h"
-#include "iosCtl.h"
 #include "gpio.h"
 #include "pwm.h"
 #include "spi.h"
