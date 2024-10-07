@@ -210,7 +210,7 @@ extern int ios_Control_Dout_Handler(const char *selectmode, uint8_t Enable);
 extern int ios_Control_Dout_Handler_Dual(char *selectmode, uint8_t Enable, uint8_t CameraId);
 extern int IO_SetLocalTime(bool use_ntp, struct tm *new_tm, char *timezone);
 extern int ios_readEthAddr(char *eth, char *jstring);
-extern int ios_readVersionFile(char *jstring);
+// extern int ios_readVersionFile(char *jstring);
 extern void setStatus_mp(int pStatus);
 // extern int32_t ext_mqtt_subscriber_Dual();
 extern int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc);
