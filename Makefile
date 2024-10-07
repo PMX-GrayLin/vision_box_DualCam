@@ -147,8 +147,8 @@ COBJECTS = $(patsubst %.c,%.o,$(CSOURCEFILE))
 CPPSOURCEFILE = $(wildcard *.cpp)
 CPPOBJECTS = $(patsubst %.cpp,%.o,$(CPPSOURCEFILE))
 
-MAIN_SRC = $(wildcard mainCtl/*.c)
-MAIN_OBJS = $(patsubst %.c,%.o,$(MAIN_SRC))
+# MAIN_SRC = $(wildcard mainCtl/*.c)
+# MAIN_OBJS = $(patsubst %.c,%.o,$(MAIN_SRC))
 
 IOS_SRC = $(wildcard iosCtl/*.cpp)
 IOS_OBJS = $(patsubst %.cpp,%.o,$(IOS_SRC))
