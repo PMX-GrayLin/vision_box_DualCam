@@ -20,7 +20,7 @@ extern "C"
     extern int IO_JsonQ_IsEmpty();
 
     extern const int IO_AlgoParam_TblCnt;
-    extern seIO_AlgoParamReg gIO_AlgoParamReg[];
+    // extern seIO_AlgoParamReg gIO_AlgoParamReg[];
 
     extern int createHashMap_IO_Param();
     extern int compareHashMap_IO_Param(std::string strKey);

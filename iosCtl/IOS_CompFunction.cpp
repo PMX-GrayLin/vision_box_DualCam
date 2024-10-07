@@ -129,7 +129,7 @@ int IO_MqttParse_TRIGGER_SET_PROCESS(const char *pCmd, const void *pJson_Obj, vo
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : inMode = %s\n", json_object_get_string(j_param));
-            strcpy(ios_trigger.inMode, json_object_get_string(j_param));
+            strcpy((char *)ios_trigger.inMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "outPin");
         if (j_param != nullptr)
@@ -212,7 +212,7 @@ int IO_MqttParse_DIN_SET_PROCESS(const char *pCmd, const void *pJson_Obj, void *
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : inMode = %s\n", json_object_get_string(j_param));
-            strcpy(ios_di.inMode, json_object_get_string(j_param));
+            strcpy((char *)ios_di.inMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "inControlMode");
         if (j_param != nullptr)
@@ -236,7 +236,7 @@ int IO_MqttParse_DIN_SET_PROCESS(const char *pCmd, const void *pJson_Obj, void *
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : outMode = %s\n", json_object_get_string(j_param));
-            strcpy(ios_di.outMode, json_object_get_string(j_param));
+            strcpy((char *)ios_di.outMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "outControlMode");
         if (j_param != nullptr)
@@ -403,13 +403,13 @@ int IO_MqttParse_LED_SET_PROCESS(const char *pCmd, const void *pJson_Obj, void *
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : outMode = %s\n", json_object_get_string(j_param));
-            strcpy(ios_setled.outMode, json_object_get_string(j_param));
+            strcpy((char *)ios_setled.outMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "outStatus");
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : outStatus = %s\n", json_object_get_string(j_param));
-            strcpy(ios_setled.outStatus, json_object_get_string(j_param));
+            strcpy((char *)ios_setled.outStatus, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "outBlinkDelay");
         if (j_param != nullptr)
@@ -581,13 +581,13 @@ int IO_MqttParse_DOUT_SET_MODE(const char *pCmd, const void *pJson_Obj, void *pP
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : DoutActive = %s\n", json_object_get_string(j_param));
-            strcpy(ios_doutMode.polarity, json_object_get_string(j_param));
+            strcpy((char *)ios_doutMode.polarity, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "SelectMode");
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : SelectMode = %s\n", json_object_get_string(j_param));
-            strcpy(ios_doutMode.selectMode, json_object_get_string(j_param));
+            strcpy((char *)ios_doutMode.selectMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "CameraId");
         if (j_param != nullptr)
@@ -626,7 +626,7 @@ int IO_MqttParse_DOUT_MANUAL_CONTROL(const char *pCmd, const void *pJson_Obj, vo
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : DoutActive = %s\n", json_object_get_string(j_param));
-            strcpy(ios_dout.outMode, json_object_get_string(j_param));
+            strcpy((char *)ios_dout.outMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "onoffSetting");
         if (j_param != nullptr)
@@ -638,7 +638,7 @@ int IO_MqttParse_DOUT_MANUAL_CONTROL(const char *pCmd, const void *pJson_Obj, vo
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : SelectMode = %s\n", json_object_get_string(j_param));
-            snprintf(&ios_dout.SelectMode[0], sizeof(ios_dout.SelectMode), "%s", json_object_get_string(j_param));
+            snprintf((char *)ios_dout.SelectMode, sizeof(ios_dout.SelectMode), "%s", json_object_get_string(j_param));
             // ** = json_object_get_int(j_param); => Do nothing Now. 2022/08/25 Jack Hung
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "OneShotPeriod");
@@ -707,7 +707,7 @@ int IO_MqttParse_LIGHT_SET_BRIGHTNESS(const char *pCmd, const void *pJson_Obj, v
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : Switch = %s\n", json_object_get_string(j_param));
-            strcpy(ios_setpwm.LightSwitch, json_object_get_string(j_param));
+            strcpy((char *)ios_setpwm.LightSwitch, json_object_get_string(j_param));
         }
     }
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
@@ -867,7 +867,7 @@ int IO_MqttParse_TRIGGER_SET_MODE(const char *pCmd, const void *pJson_Obj, void 
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : TriggerActive = %s\n", json_object_get_string(j_param));
-            strcpy(ios_trigger.inMode, json_object_get_string(j_param));
+            strcpy((char *)ios_trigger.inMode, json_object_get_string(j_param));
         }
         j_param = (struct json_object *)json_object_object_get(j_args, "LightSource");
         if (j_param != nullptr)
@@ -907,7 +907,7 @@ int IO_MqttParse_REPORT_TEST_RESULT(const char *pCmd, const void *pJson_Obj, voi
         if (j_param != nullptr)
         {
             MAINLOG(0, "[MAIN] : Result = %s\n", json_object_get_string(j_param));
-            strcpy(Process_Node.TestResult, json_object_get_string(j_param));
+            strcpy((char *)Process_Node.TestResult, json_object_get_string(j_param));
         }
                 
         j_param = (struct json_object *)json_object_object_get(j_args, "CameraId");
@@ -918,11 +918,11 @@ int IO_MqttParse_REPORT_TEST_RESULT(const char *pCmd, const void *pJson_Obj, voi
             if(CameraId == 1) {
                 j_param = (struct json_object *)json_object_object_get(j_args, "Result");
                 MAINLOG(0, "[MAIN] : Result = %s\n", json_object_get_string(j_param));
-                strcpy(Process_Node_Dual.TestResult, json_object_get_string(j_param));
+                strcpy(char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
             } else if(CameraId == 2) {
                 j_param = (struct json_object *)json_object_object_get(j_args, "Result");
                 MAINLOG(0, "[MAIN] : Result = %s\n", json_object_get_string(j_param));
-                strcpy(Process_Node_Dual.TestResult, json_object_get_string(j_param));
+                strcpy(char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
             } else {
                 MAINLOG(0, "[MAIN] : Unknow CameraId [%d] fail.\n", CameraId);
             }
