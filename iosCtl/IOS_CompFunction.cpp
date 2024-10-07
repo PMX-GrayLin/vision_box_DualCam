@@ -918,11 +918,11 @@ int IO_MqttParse_REPORT_TEST_RESULT(const char *pCmd, const void *pJson_Obj, voi
             if(CameraId == 1) {
                 j_param = (struct json_object *)json_object_object_get(j_args, "Result");
                 MAINLOG(0, "[MAIN] : Result = %s\n", json_object_get_string(j_param));
-                strcpy(char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
+                strcpy((char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
             } else if(CameraId == 2) {
                 j_param = (struct json_object *)json_object_object_get(j_args, "Result");
                 MAINLOG(0, "[MAIN] : Result = %s\n", json_object_get_string(j_param));
-                strcpy(char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
+                strcpy((char *)Process_Node_Dual.TestResult, json_object_get_string(j_param));
             } else {
                 MAINLOG(0, "[MAIN] : Unknow CameraId [%d] fail.\n", CameraId);
             }
