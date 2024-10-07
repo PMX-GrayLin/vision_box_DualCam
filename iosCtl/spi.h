@@ -99,7 +99,7 @@ int spi_gpio_di_get_value(unsigned int gpio, unsigned int *value);
 int ios_setExtLightLevel(__LIGHT_MANUFACTURER__  manufacturer, uint16_t level, uint8_t channel);
 int ios_setAiLightLevel(uint16_t level);
 int ios_setAiLightLevel_withEnable(uint16_t levle, uint8_t channel);
-extern uint16_t ios_readExtLightLevel_withChannel(__LIGHT_MANUFACTURER__  manufacturer, uint8_t channel);
+uint16_t ios_readExtLightLevel_withChannel(__LIGHT_MANUFACTURER__  manufacturer, uint8_t channel);
 uint16_t ios_readExtLightAttribute(__LIGHT_MANUFACTURER__  manufacturer);
 int ios_setMainLightLevel(uint16_t level);
 int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel);
