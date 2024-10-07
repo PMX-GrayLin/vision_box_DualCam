@@ -197,10 +197,12 @@ LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
 LDFLAG += ${LDFLAGS}
 
-OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
+# OBJ_BUILD = $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
+# all: tof_lib $(OBJ_BUILD)
+	# $(CXX) $(CPPFLAG) $(LDFLAG) $(OBJ_BUILD) -o $(TARGET) 
 
-all: tof_lib $(OBJ_BUILD)
-	$(CXX) $(CPPFLAG) -o $(TARGET) $(LDFLAG) $(OBJ_BUILD) 
+all: tof_lib $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL)
+	$(CXX) $(CPPFLAG) $(LDFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_TPL) -o $(TARGET) 
 
 i2ctools:
 	(cd iosCtl/i2c-tools/; make)

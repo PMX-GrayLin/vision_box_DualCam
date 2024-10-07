@@ -12,6 +12,7 @@
  */
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
+#include "ext_mqtt_client.h"
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -31,10 +32,7 @@
 #include <mqueue.h>
 #include <mosquitto.h>
 #include <json.h>
-#include "../client_shared.h"
-#include "../common.h"
-#include "ext_mqtt_client.h"
-#include "mainCtl.h"
+#include "client_shared.h"
 #include "ipsCtl/IPS_CompFunction.h"
 #include "ipsCtl/IPS_CompAlgorithm.h"
 #include "iosCtl/IOS_CompFunction.h"
@@ -43,6 +41,8 @@
 #include <chrono>
 #include <ctime>
 
+#include "common.h"
+#include "mainCtl.h"
 
 /* GLOBAL VARIABLE DECLARATIONS ------------------------------------------------------- */
 extern WIFI_AP_PARA wifi;
