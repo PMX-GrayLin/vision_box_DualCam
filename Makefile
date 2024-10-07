@@ -196,11 +196,12 @@ CPPFLAG += ${INCLUDE}
 
 LDFLAG += ${LDFLAGS}
 LDFLAG += -L$(BB_LIBDIR)
+LDFLAG += -L$(BB_LIBDIR)/json-c
 LDFLAG += -L$(shell pwd)
 LDFLAG += -L$(shell pwd)/iosCtl
 LDFLAG += -L$(shell pwd)/ipsCtl
 LDFLAG += -lc -lm -lpthread
-LDFLAG += -llibjson-c -lmodbus -lmosquitto -lcurl
+LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
 LDFLAG += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
 LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
