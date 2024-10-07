@@ -44,7 +44,7 @@
 #include "IPLAlgoDataStructureDef.h"
 #include "iosCtl/IOS_CompFunction.h"
 #include "iosCtl/spi.h"
-
+#include "iosCtl.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type
