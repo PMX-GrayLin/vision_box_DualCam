@@ -27,7 +27,7 @@
 #include <sys/msg.h>
 #include <time.h>
 #include <semaphore.h>
-#include <json.h>
+// #include <json.h>
 #include <time.h>
 #include "common.hpp"
 #include "ext_mqtt_client.hpp"
@@ -40,6 +40,7 @@
 #include "IPS_CompFunction.h"
 #include "IPS_CompAlgorithm.h"
 #include "IPLAlgoDataStructureDef.h"
+#include "json-c/json.h"
 
 using namespace std;
 

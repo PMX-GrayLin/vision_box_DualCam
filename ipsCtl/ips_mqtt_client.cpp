@@ -29,11 +29,12 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <mosquitto.h>
-#include <json.h>
-#include "../client_shared.h"
+// #include <json.h>
+#include "json-c/json.h"
+#include "client_shared.h"
 #include "common.hpp"
 #include "ips_mqtt_client.h"
-#include "../iosCtl/IOS_MethodStructureDef.h"
+#include "IOS_MethodStructureDef.h"
 
 /* EXPORTED SUBPROGRAM SPECIFICATION ------------------------------------------------- */
 extern ETH_PARA eth;

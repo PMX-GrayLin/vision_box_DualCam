@@ -30,7 +30,7 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <mosquitto.h>
-#include <json.h>
+// #include <json.h>
 #include "client_shared.h"
 #include "ipsCtl/IPS_CompFunction.h"
 #include "ipsCtl/IPS_CompAlgorithm.h"
@@ -44,6 +44,7 @@
 #include "common.hpp"
 #include "mainCtl.hpp"
 #include "global.hpp"
+#include "json-c/json.h"
 
 /* GLOBAL VARIABLE DECLARATIONS ------------------------------------------------------- */
 extern WIFI_AP_PARA wifi;

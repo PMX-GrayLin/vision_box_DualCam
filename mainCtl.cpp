@@ -30,7 +30,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <arpa/inet.h> //inet_addr
-#include <json.h>
+// #include <json.h>
 #include <ev.h>
 #include <chrono>
 #include <deque>
@@ -48,6 +48,8 @@
 #include "global.hpp"
 #include "iosCtl.h"
 #include "IOS_CompFunction.h"
+#include "json-c/json.h"
+
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type

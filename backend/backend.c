@@ -16,9 +16,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h> //inet_addr
 // #include <semaphore.h>
-#include <json.h>
-#include "../common.h"
+// #include <json.h>
+#include "common.hpp"
 // #include "mainCtl.h"
+#include "json-c/json.h"
 
 /* SW Add */
 #include <semaphore.h>
