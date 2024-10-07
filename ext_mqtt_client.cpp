@@ -40,7 +40,7 @@
 #include <chrono>
 #include <ctime>
 
-#include "ext_mqtt_client.h"
+#include "ext_mqtt_client.hpp"
 #include "common.hpp"
 #include "mainCtl.hpp"
 #include "global.hpp"

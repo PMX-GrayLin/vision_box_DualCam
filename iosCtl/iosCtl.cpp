@@ -57,7 +57,7 @@ extern "C" {
 #endif
     #include <i2c/smbus.h>
     // #include "i2cbusses.h"
-    #include "ext_mqtt_client.h"
+    #include "ext_mqtt_client.hpp"
 
     #include "VL53L1X_api.h"
     #include "VL53L1X_calibration.h"

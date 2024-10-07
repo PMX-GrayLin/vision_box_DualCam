@@ -12,7 +12,7 @@
  */
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
-#include "ext_mqtt_client.h"
+#include "ext_mqtt_client.hpp"
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>

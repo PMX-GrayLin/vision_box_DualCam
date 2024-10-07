@@ -30,7 +30,7 @@
 #include <json.h>
 #include <time.h>
 #include "common.hpp"
-#include "ext_mqtt_client.h"
+#include "ext_mqtt_client.hpp"
 
 #include <list>
 #include <vector>

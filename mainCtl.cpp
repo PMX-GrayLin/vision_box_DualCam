@@ -44,7 +44,7 @@
 #include "common.hpp"
 #include "mainCtl.hpp"
 #include "spi.h"
-#include "ext_mqtt_client.h"
+#include "ext_mqtt_client.hpp"
 #include "global.hpp"
 #include "iosCtl.h"
 #include "IOS_CompFunction.h"
