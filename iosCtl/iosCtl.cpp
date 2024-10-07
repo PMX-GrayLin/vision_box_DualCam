@@ -331,7 +331,7 @@ int ios_triggerSetProcess(IOS_TRIGGER_SET_PROCESS * ios_trigger)
   if((ios_trigger->inPin == TRIGGER_PIN_1) || (ios_trigger->inPin == TRIGGER_PIN_2)){
     IOSLOG(0, "[IOS](%s): new command is IOS_TRIGGER_SET_PROCESS. \n", __func__);
     IOSLOG(0, YELLOW "[IOS](%s): do something... \n", __func__);
-    if(!strncasecmp(ios_trigger->inMode, "High", sizeof("High")))
+    if(!strncasecmp((char *)ios_trigger->inMode, "High", sizeof("High")))
     {
       IOSLOG(0, "[IOS](%s): do something... \n", __func__);
     }
@@ -1093,7 +1093,7 @@ void ios_Control_Light_Handler(uint8_t LightPin, uint8_t Enable)
   usleep(50000); /* delay 50  ms */
   IOS_LIGHT_SET_PWM ios_setpwm_tmp;
   
-  snprintf(&ios_setpwm_tmp.LightSwitch[0], sizeof(ios_setpwm_tmp.LightSwitch), "%s", ios_setpwm.LightSwitch);
+  snprintf((char*)ios_setpwm_tmp.LightSwitch, sizeof(ios_setpwm_tmp.LightSwitch), "%s", ios_setpwm.LightSwitch);
 
   ios_setpwm_tmp.inLight = LightPin;
   if (Enable) {
@@ -1647,7 +1647,7 @@ void sfcCtl_init()
     // Check whether the serial port is opened successfully
     if (sfcCtl_serial_port < 0) {
         perror("Error opening serial port");
-        return 1;
+        return;
     }
 
     // Get the current serial port configuration
@@ -1655,7 +1655,7 @@ void sfcCtl_init()
     if (tcgetattr(sfcCtl_serial_port, &tty) != 0) {
         perror("Error getting serial port attributes");
         close(sfcCtl_serial_port);
-        return 1;
+        return;
     }
 
     // Setting the baud rate
@@ -1689,10 +1689,9 @@ void sfcCtl_init()
     if (tcsetattr(sfcCtl_serial_port, TCSANOW, &tty) != 0) {
         perror("Error setting serial port attributes");
         close(sfcCtl_serial_port);
-        return 1;
+        return;
     }
 
-    return 0;
 }
 
 int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc)
