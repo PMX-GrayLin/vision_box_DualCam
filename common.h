@@ -486,7 +486,7 @@ extern uint32_t backendDebugLevel;
 
 // extern unsigned int mcMsgQParser(char *buf);
 
-extern int iosCtl_init();
+// extern int iosCtl_init();
 // extern int ipsCtl_init();
 // extern int cmsCtl_init();
 // extern int aisCtl_init();
