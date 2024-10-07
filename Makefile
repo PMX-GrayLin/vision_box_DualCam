@@ -188,17 +188,21 @@ INCLUDE += -I$(BB_INCDIR)/neuron/api
 
 CFLAG += -Wall
 CFLAG += ${CFLAGS}
+
 CPPFLAG += -Wall
 CPPFLAG += ${CXXFLAGS}
 CPPFLAG += ${DFLAG}
 
+LDFLAG += ${LDFLAGS}
 LDFLAG += -L$(BB_LIBDIR)
 LDFLAG += -L$(shell pwd)
+LDFLAG += -L$(shell pwd)/iosCtl
 LDFLAG += -L$(shell pwd)/iosCtl
 LDFLAG += -lc -lm -lpthread
 LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl
 LDFLAG += $(shell pkg-config --libs opencv4)
-LDFLAG += ${LDFLAGS}
+LDFLAG += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
+LDFLAG += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
 
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
