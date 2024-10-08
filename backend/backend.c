@@ -19,7 +19,7 @@
 // #include <json.h>
 #include "common.hpp"
 // #include "mainCtl.h"
-#include "json-c/json.h"
+#include "json.h"
 
 /* SW Add */
 #include <semaphore.h>

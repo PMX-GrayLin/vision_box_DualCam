@@ -29,8 +29,8 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <mosquitto.h>
-// #include <json.h>
-#include "json-c/json.h"
+
+#include "json.h"
 #include "client_shared.h"
 #include "common.hpp"
 #include "ips_mqtt_client.h"

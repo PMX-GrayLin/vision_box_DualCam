@@ -40,7 +40,7 @@
 #include "IPS_CompFunction.h"
 #include "IPS_CompAlgorithm.h"
 #include "IPLAlgoDataStructureDef.h"
-#include "json-c/json.h"
+#include "json.h"
 
 using namespace std;
 

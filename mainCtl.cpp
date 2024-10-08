@@ -48,7 +48,7 @@
 #include "global.hpp"
 #include "iosCtl.h"
 #include "IOS_CompFunction.h"
-#include "json-c/json.h"
+#include "json.h"
 
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */

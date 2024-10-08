@@ -33,7 +33,7 @@ Contributors:
 // #include <json.h>
 #include "client_shared.h"
 #include "common.hpp"
-#include "json-c/json.h"
+#include "json.h"
 
 
 #include <chrono>

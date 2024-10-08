@@ -15,7 +15,7 @@
 #include "common.hpp"
 #include "IOS_CompFunction.h"
 #include "spi.h"
-#include "json-c/json.h"
+#include "json.h"
 
 pthread_mutex_t _IO_JsonQ_lock = PTHREAD_MUTEX_INITIALIZER;
 std::deque<seIO_JsonInfo> BufQueue_IO_Json;
