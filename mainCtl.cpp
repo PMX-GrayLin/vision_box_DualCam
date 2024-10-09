@@ -3040,12 +3040,12 @@ int main(int argc, char **argv)
 {
     int ret;
 
-    // std::string strFWVersion(FW_VERSION);
+    std::string strFWVersion(FW_VERSION);
     std::string strIPSVersion(VSB_VERSION);
     std::string strIOSVersion(IOS_VERSION);
 
     MAINLOG(0, "*******************************************\n");
-    // MAINLOG(0, "*****   Main Handler App. [%s]  *****\n", strFWVersion.c_str());
+    MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
     MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
     MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
     MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
