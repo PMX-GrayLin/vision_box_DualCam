@@ -1,11 +1,11 @@
 #pragma once 
 
 #include <cstdint>
-#include <iostream>
+// #include <iostream>
 
 #ifdef __cplusplus
 
-#define DEBUGX
+// #define DEBUGX
 
 void xlog(const std::string& message) {
     #ifdef DEBUGX
