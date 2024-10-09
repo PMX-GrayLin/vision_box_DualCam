@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
-#include "../global.hpp"
+#include "global.hpp"
 
  /****************************************************************
   *  * Constants

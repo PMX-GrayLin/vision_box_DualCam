@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "global.hpp"
 
 MAIN_PROCESS main_process;
 CAMERA_GRAB camera_grab;
