@@ -3040,7 +3040,8 @@ int main(int argc, char **argv)
 {
     int ret;
 
-
+    xlog("%s:%d \n\r", __func__, __LINE__);
+    
     std::string strFWVersion(FW_VERSION);
     std::string strIPSVersion(VSB_VERSION);
     std::string strIOSVersion(IOS_VERSION);
