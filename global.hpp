@@ -7,7 +7,7 @@
 
 #define DEBUGX
 
-void xlog(const std::string& message) {
+void xlog(std::string& message) {
     #ifdef DEBUGX
     // Log to console
     std::cout << message << std::endl;
