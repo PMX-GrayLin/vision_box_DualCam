@@ -443,8 +443,7 @@ void ExModeQ_Destory_Dual(const int iID)
  *************************************************************/
 int ipsComp_IPL_Init()
 {
-    int res = 0;
-return 0;
+    int res = 0;    
     if (pter_hdl_IPL == nullptr)
     {
         pter_hdl_IPL = static_cast<void *>(CreateObject_Labview());
