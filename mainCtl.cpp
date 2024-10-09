@@ -30,7 +30,6 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <arpa/inet.h> //inet_addr
-// #include <json.h>
 #include <ev.h>
 #include <chrono>
 #include <deque>
@@ -68,29 +67,6 @@
 
 #define COLOR_RED(...) printf("\e[1;31m[%s][%4d] =>\e[m", __func__, __LINE__);
 
-#ifdef ALL_MSG_DEBUG
-
-    #define COLOR_PRINT(...)     \
-        do                       \
-        {                        \
-            VERSION_PRINT();     \
-            COLOR_RED();         \
-            printf(__VA_ARGS__); \
-        } while (0)
-
-    #define COLOR_COUT(...)          \
-        do                           \
-        {                            \
-            VERSION_PRINT();         \
-            COLOR_RED();             \
-            COUT_MACRO(__VA_ARGS__); \
-        } while (0)
-#else
-
-    #define COLOR_PRINT(...)
-    #define COLOR_COUT(...)
-
-#endif
 
 /*********************************************************************
         Tools
@@ -3052,7 +3028,6 @@ int main(int argc, char **argv)
     MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
     MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
     MAINLOG(0, "*******************************************\n");
-    COLOR_PRINT("VisonBox_Version\n");
 
     /* Signal handling */
     signal(SIGKILL, sigExit_main);
@@ -3065,10 +3040,14 @@ int main(int argc, char **argv)
     jes.current_job = NO_SETFUNC;
     init_value_set_to_default();
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
+
     /* initial vailable */
     ipsComp_IPL_Init();
     ipsComp_Camera_Init_Dual(0);    //Dual camera >> Camera handle
     ipsComp_Camera_Init_Dual(1);    //Dual camera >> Camera handle
+
+    xlog("%s:%d \n\r", __func__, __LINE__);
 
     /* initial inner queue(std::deque)  */
     innerQ_Main_Init();
@@ -3077,6 +3056,8 @@ int main(int argc, char **argv)
     innerQ_IPS_Init_Dual(1);    //Dual camera
 
     innerQ_IOS_Init();
+
+    xlog("%s:%d \n\r", __func__, __LINE__);
 
     // /* initial IPS task queue(std::deque)  */
     //Dual camera for IPS_Dual
@@ -3087,11 +3068,15 @@ int main(int argc, char **argv)
     ExModeQ_Init_Dual(0);
     ExModeQ_Init_Dual(1);
     
+    xlog("%s:%d \n\r", __func__, __LINE__);
+
     // /* initial IOS task queue(std::deque)  */
     IO_JsonQ_Init();
 
     // /* initial AIS task queue(std::deque)  */
 
+
+    xlog("%s:%d \n\r", __func__, __LINE__);
     /* initial hash tabe of Mqtt parse and Method assign */
     createHashMap_Param();
     createHashMap_Method();
@@ -3100,11 +3085,13 @@ int main(int argc, char **argv)
 
     usleep(100000);
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
     /* internal Mqtt commmand for StreamingMode enable. */
     FW_Mqtt_PriorityPass_Internal(1);
 
     usleep(100000);
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
     /* create a thread for main handler  */
     ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
     if (ret < 0)
@@ -3120,6 +3107,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
     /* create a thread for IP process */
     int iCamId[2] = {0 ,1}; //dual camera
     fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
@@ -3148,6 +3136,7 @@ int main(int argc, char **argv)
         exit(1);
     }    
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
     /* init mcuCtl */
     ret = iosCtl_init();
     if (ret < 0)
@@ -3156,6 +3145,8 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+    xlog("%s:%d \n\r", __func__, __LINE__);
+    
     suspend_ip_Dual(0);
     suspend_ip_Dual(1);
     suspend_io();
