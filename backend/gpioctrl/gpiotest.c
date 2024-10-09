@@ -52,7 +52,6 @@ int gpio_export(unsigned int gpio) {
 
   fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -60,7 +59,6 @@ int gpio_export(unsigned int gpio) {
   len = snprintf(buf, sizeof(buf), "%d", gpio);
   ssize_t bytes_written = write(fd, buf, len);
   if (bytes_written != len) {
-    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -78,7 +76,6 @@ int gpio_unexport(unsigned int gpio) {
 
   fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -86,7 +83,6 @@ int gpio_unexport(unsigned int gpio) {
   len = snprintf(buf, sizeof(buf), "%d", gpio);
   ssize_t bytes_written = write(fd, buf, len);
   if (bytes_written != len) {
-    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -106,7 +102,6 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -122,7 +117,6 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
   }
 
   if (bytes_written != len) {
-    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -142,7 +136,6 @@ int gpio_set_value(unsigned int gpio, unsigned int value) {
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -155,7 +148,6 @@ int gpio_set_value(unsigned int gpio, unsigned int value) {
     bytes_written = write(fd, "0", len);
 
   if (bytes_written != len) {
-    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -176,14 +168,12 @@ int gpio_get_value(unsigned int gpio, unsigned int *value) {
 
   fd = open(buf, O_RDONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
 
   ssize_t bytes_read = read(fd, &ch, 1);
   if (bytes_read != 1) {
-    xlog("%s:%d, read fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -209,7 +199,6 @@ int gpio_set_edge(unsigned int gpio, char *edge) {
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    xlog("%s:%d, open fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }
@@ -217,7 +206,6 @@ int gpio_set_edge(unsigned int gpio, char *edge) {
   size_t len = strlen(edge) + 1;
   ssize_t bytes_written = write(fd, edge, strlen(edge) + 1);
   if (bytes_written != len) {
-    xlog("%s:%d, write fail \n\r", __func__, __LINE__);
     close(fd);
     return fd;
   }

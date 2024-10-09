@@ -32,8 +32,3 @@ uint32_t ipsDebugLevel = 10;
 uint32_t rextyDebugLevel = 10;
 uint32_t backendDebugLevel = 10;
 
-// int main(int argc, char **argv)
-// {
-//     xlog("%s:%d, \n\r", __func__, __LINE__);
-//     return 0;
-// }
