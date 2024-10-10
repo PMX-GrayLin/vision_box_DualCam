@@ -3015,8 +3015,6 @@ void init_value_set_to_default()
 int main(int argc, char **argv)
 {
     int ret;
-
-    xlog("%s:%d \n\r", __func__, __LINE__);
     
     std::string strFWVersion(FW_VERSION);
     std::string strIPSVersion(VSB_VERSION);
@@ -3146,7 +3144,7 @@ int main(int argc, char **argv)
     }
 
     xlog("%s:%d \n\r", __func__, __LINE__);
-    
+
     suspend_ip_Dual(0);
     suspend_ip_Dual(1);
     suspend_io();
