@@ -48,6 +48,7 @@
 #include <ctime>
 #include <ifaddrs.h>
 #include "common.hpp"
+#include "global.hpp"
 #include "gpio.h"
 #include "pwm.h"
 #include "spi.h"
@@ -1815,38 +1816,42 @@ int iosPWM_init(int channel_num)
 {
     int ret = 0;
 
-    /*if ((ret = pwm_unexport(channel_num)) != 0) {
-        printf("[IOS](%s)%d: pwm_unexport ret=[%d] fail.\n", __func__, __LINE__, ret);
-    }*/
-
     if ((ret = pwm_export(channel_num)) != 0) {
         //printf("[IOS](%s)%d: pwm_export ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_export fail \n\r", __func__, __LINE__);
+        return -1;
     }
     
     if ((ret = pwm_write_enable(channel_num, 0)) != 0) {
-        printf("[IOS](%s)%d: pwm_write_enable ret=[%d] fail.\n", __func__, __LINE__, ret);
+        // printf("[IOS](%s)%d: pwm_write_enable ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_write_enable fail \n\r", __func__, __LINE__);
         return -1;
     }
     
     if ((ret = pwm_write_period(channel_num, AILED_MAX_LEVEL)) != 0) {
-        printf("[IOS](%s)%d: pwm_export ret=[%d] fail.\n", __func__, __LINE__, ret);
+        // printf("[IOS](%s)%d: pwm_export ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_write_period fail \n\r", __func__, __LINE__);
         return -1;
     }
 
     if ((ret = pwm_write_duty_cycle(channel_num, 0)) != 0) {
-        printf("[IOS](%s)%d: pwm_write_duty_cycle ret=[%d] fail.\n", __func__, __LINE__, ret);
+        // printf("[IOS](%s)%d: pwm_write_duty_cycle ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_write_duty_cycle fail \n\r", __func__, __LINE__);
         return -1;
     }
 
     if ((ret = pwm_write_polarity(channel_num, (char *)"normal")) != 0) {
-        printf("[IOS](%s)%d: pwm_write_polarity ret=[%d] fail.\n", __func__, __LINE__, ret);
+        // printf("[IOS](%s)%d: pwm_write_polarity ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_write_polarity fail \n\r", __func__, __LINE__);
         return -1;
     }
 
     if ((ret = pwm_write_enable(channel_num, 1)) != 0) {
-        printf("[IOS](%s)%d: pwm_write_enable ret=[%d] fail.\n", __func__, __LINE__, ret);
+        // printf("[IOS](%s)%d: pwm_write_enable ret=[%d] fail.\n", __func__, __LINE__, ret);
+        xlog("%s:%d, pwm_write_enable fail \n\r", __func__, __LINE__);
         return -1;
     }
+
     return ret;
 }
 
