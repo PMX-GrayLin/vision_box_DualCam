@@ -5,7 +5,7 @@ VERSION_FLAG += -DFW_VERSION="\"3.01.01\""
 VERSION_FLAG += -DVSB_VERSION="\"IPS.0.0.4\"" #IPS_version : 10/11/2023 : RERVE.VERSION.PATCHLEVE.WEEKNUM
 VERSION_FLAG += -DIOS_VERSION="\"IOS.0.0.4\""
 VERSION_FLAG += -DALGO_Enable_MAINLOG_DEBUG
-VERSION_FLAG += -DALGO_Enable_IPSLOG_DEBUG
+# VERSION_FLAG += -DALGO_Enable_IPSLOG_DEBUG
 # VERSION_FLAG += -DALGO_Enable_CYCLE_TIME_DEBUG
 # VERSION_FLAG += -DALGO_Enable_MeasGlueWidth_ResultIMG_DEBUG
 # VERSION_FLAG += -DALGO_Enable_ImgBufOpt_InputImagDump_DEBUG
@@ -13,7 +13,7 @@ VERSION_FLAG += -DALGO_Enable_IPSLOG_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_AddTimestamp_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_SpeedOptimization_DEBUG
 # VERSION_FLAG += -DALGO_Enable_StreamingBufOpt_EnableGStreamer_DEBUG
-		
+
 TARGET=vision_box_DualCam
 
 # Debug print format FLAG
