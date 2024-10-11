@@ -108,7 +108,7 @@ CMethod_V4L2CamCtrl::CMethod_V4L2CamCtrl()
     if (!cap_uvc.isOpened()) {
         std::cerr << "Error: Unable to open UVC device." << std::endl;
     }
-IPSLOG(1, "by joe 111111111111111111111111111111111111111111111111111\n");
+
     // Set video screen size
     cap_uvc.set(cv::CAP_PROP_FRAME_WIDTH, 640);
     cap_uvc.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
@@ -126,13 +126,10 @@ CMethod_V4L2CamCtrl::~CMethod_V4L2CamCtrl()
 
 int CMethod_V4L2CamCtrl::GigeCam_Init()
 {
-	fprintf(stderr, "%s()%d: by joe 1111111111111111122222222222222\n", __FUNCTION__, __LINE__);
-
 	std::unique_lock<std::mutex> lock(u_mutex);
 
 	int nRet = 0;
 	int cam = 0;
-	fprintf(stderr, "%s()%d: by joe 1111111111111111122222222222222\n", __FUNCTION__, __LINE__);
 
 	IPSLOG(0, " ## m_global_cfg_ParamInfo.bIsStreaming = %d\n", Streaming_Inquiry());
 
@@ -158,8 +155,9 @@ int CMethod_V4L2CamCtrl::GigeCam_Init()
 	}
 
 	if (m_pCam < 0) {
-        IPSLOG(1, "Error!! open camdev nRet : %d\n", m_pCam);
-		IPSLOG(0, "failed to open camera device (%d)!\n", m_DeviceId);
+        // IPSLOG(1, "Error!! open camdev nRet : %d\n", m_pCam);
+		// IPSLOG(0, "failed to open camera device (%d)!\n", m_DeviceId);
+		xlog("%s:%d, fail open camdev, nRet:%d, m_DeviceId:%d \n\r", __func__, __LINE__, m_pCam, m_DeviceId);
 		return -1;
 	}
 
@@ -257,7 +255,7 @@ int CMethod_V4L2CamCtrl::GigECam_SetConfig(const LpGigECamConfig pParamIn)
 {
 
 	int nRet = 0;
-IPSLOG(1, "by joe 4444444444444444444444444444444444444444\n");
+
 	if (m_pCam <= 0) {
 		IPSLOG(0, " > Erroe!!! m_pCam [%d] <= 0\n", m_pCam);
 		//return -1;
@@ -373,7 +371,6 @@ IPSLOG(1, "by joe 4444444444444444444444444444444444444444\n");
 		//    return nRet;
 		//}
 
-IPSLOG(1, "by joe 4444444444444444444444444444444444444444\n");
 		if (nRet < 0)
 		{
 			//IPSLOG(0, " ## m_global_cfg_ParamInfo.bIsStreaming = %d\n", Streaming_Inquiry());
@@ -384,7 +381,6 @@ IPSLOG(1, "by joe 4444444444444444444444444444444444444444\n");
 
 				//AcquireStreaming_StartorStop(false);
 			}
-IPSLOG(1, "by joe 4444444444444444444444444444444444444444\n");
 AcquireStreaming_Prepare();
 			return nRet;
 		}
@@ -579,7 +575,6 @@ int CMethod_V4L2CamCtrl::GigECam_Strm_Inquiry(seStreamingInfo* pStrmInfo)
 int CMethod_V4L2CamCtrl::GigECam_Strm_Start()
 {
 	int nRet = 0;
-    IPSLOG(0, "by joe 22222222222222222222222222222222\n");
 	AcquireStreaming_StartorStop(true);
 	usleep(10000); /* delay 1  ms */
 
@@ -889,14 +884,9 @@ int CMethod_V4L2CamCtrl::Configure_ImageFormat(const int pCam, const LpGigECamCo
 			//return -1;
 		}
 	}
-
 	
 	//# disable dwe if capture raw format
 	// ...TBD
-
-
-
-
 
 	//# choose RawData type.
 	/* by joe 
