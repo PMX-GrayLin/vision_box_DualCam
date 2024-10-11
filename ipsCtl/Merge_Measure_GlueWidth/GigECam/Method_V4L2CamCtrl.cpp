@@ -26,6 +26,7 @@
 #include "../cvip.h"
 #include "Method_V4L2CamCtrl.h"
 #include "common.hpp"
+#include "global.hpp"
 
 /////////////////////////////////////////////////////////////////////////////
 /// V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>> V4L2 >>>
@@ -846,10 +847,7 @@ int CMethod_V4L2CamCtrl::Configure_ImageFormat(const int pCam, const LpGigECamCo
 			//return -1;
 		}
 
-
 	}
-
-
 
 	//# scale_enable flag
 	IPSLOG(1, "scale_enable flag_scale_enable(%d)\n", m_Scale_enable);
@@ -900,7 +898,6 @@ int CMethod_V4L2CamCtrl::Configure_ImageFormat(const int pCam, const LpGigECamCo
 
 	IPSLOG(1, "\n");
 	IPSLOG(1, "Image Foramt:\"%s\"; isRawData=(%d)\n", m_szFormat, m_isRawData);
-
 
 	//// # 01 >>
 	start = std::chrono::high_resolution_clock::now();
