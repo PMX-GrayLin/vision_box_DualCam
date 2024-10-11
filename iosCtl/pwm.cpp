@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <global.hpp>
 
 #define PWM_CHIP_PATH "/sys/class/pwm/pwmchip"
 
@@ -12,8 +13,9 @@ int pwm_export(int channel_num)
 
     int export_fd = open(export_path, O_WRONLY);
     if (export_fd < 0) {
-        fprintf(stderr, "%d: export_path=[%s] fail.\n", __LINE__, export_path);
-        perror("Failed to open PWM export file");
+        // fprintf(stderr, "%d: export_path=[%s] fail.\n", __LINE__, export_path);
+        // perror("Failed to open PWM export file");
+        xlog("%s:%d, open PWM export fail, path:%s \n\r", __func__, __LINE__, export_path);
         return -1;
     }
 
@@ -21,15 +23,15 @@ int pwm_export(int channel_num)
     snprintf(channel_str, sizeof(channel_str), "0");
     ssize_t num_written = write(export_fd, channel_str, sizeof(channel_str));
     if (num_written < 0) {
-        fprintf(stderr, "%d: export_path=[%s] channel_str=[%s] fail.\n", __LINE__, export_path, channel_str);
-        perror("Failed to write to PWM export file");
+        // fprintf(stderr, "%d: export_path=[%s] channel_str=[%s] fail.\n", __LINE__, export_path, channel_str);
+        // perror("Failed to write to PWM export file");
+        xlog("%s:%d, write PWM export fail, path:%s, channel:%s \n\r", __func__, __LINE__, export_path, channel_str);
         return -1;
     }
 
     close(export_fd);
 
-    printf("PWM channel %d has been exported\n", channel_num);
-
+    // printf("PWM channel %d has been exported\n", channel_num);
     return 0;
 }
 
