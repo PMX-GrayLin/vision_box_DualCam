@@ -1358,35 +1358,35 @@ void ios_modbus_RTU_handler(void)
   }
 }
 
-void sig_receiveData_handler(int sig, siginfo_t *info, void *unused)
-{
-    IOSLOG(0, "[IOS](%s): Receive signal from kernel, signal number: %d \n", __func__, sig);
+void sig_receiveData_handler(int sig, siginfo_t *info, void *unused) {
+  // IOSLOG(0, "[IOS](%s): Receive signal from kernel, signal number: %d \n", __func__, sig);
+  xlog("Receive signal from kernel, sig:%d", sig);
 
   if (sig == SIGMCU) {
     if (info->si_int & DIN1_trigger) {
-      ////msgQ_iosSend("Din_Trigger");
+      // msgQ_iosSend("Din_Trigger");
+      xlog("DIN1_trigger");
       innerQ_IOS_EnQ("Din_Trigger");
-      IOSLOG(0, "[IOS](%s): Response Status is DIN1_trigger \n", __func__);
     }
     if (info->si_int & DIN2_trigger) {
-      IOSLOG(0, "[IOS](%s): Response Status is DIN2_trigger \n", __func__);
+      xlog("DIN2_trigger");
     }
     if (info->si_int & DIN3_trigger) {
-      IOSLOG(0, "[IOS](%s): Response Status is DIN3_trigger \n", __func__);
+      xlog("DIN3_trigger");
     }
     if (info->si_int & DIN4_trigger) {
-      IOSLOG(0, "[IOS](%s): Response Status is DIN4_trigger \n", __func__);
+      xlog("DIN4_trigger");
     }
     if (info->si_int & Trig1_trigger) {
-      IOSLOG(0, "[IOS](%s): Response Status is Trig1_trigger \n", __func__);
+      xlog("Trig1_trigger");
     }
     if (info->si_int & Trig2_trigger) {
-      IOSLOG(0, "[IOS](%s): Response Status is Trig2_trigger \n", __func__);
+      xlog("Trig2_trigger");
     }
     if (info->si_int & LED_Status_trigger) {
       UpdateLEDStatus_Flg = 1;
-      IOSLOG(0, "[IOS](%s): Response Status is LED_Status_trigger \n", __func__);
-        #if 0
+      xlog("LED_Status_trigger");
+#if 0
         unsigned int rvalue = 0;
         gpio_get_value(DI_TRIG1, &rvalue);
         if(rvalue == 0) {
@@ -1410,8 +1410,7 @@ void sig_receiveData_handler(int sig, siginfo_t *info, void *unused)
             //spi_gpio_set_value(trig_dout_pin[4], 0);
             ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
         }
-        #endif
-        
+#endif
     }
     if (info->si_int & Unknown_trigger) {
       IOSLOG(0, "[IOS](%s): Unknown Response Status \n", __func__);
@@ -2690,9 +2689,10 @@ int iosCtl_init()
 {
     int ret;
     
-    IOSLOG(0, "*********************************\n");
-    IOSLOG(0, "*****   IOS Controller Init.    *****\n");
-    IOSLOG(0, "*********************************\n");
+    xlog("");
+    // IOSLOG(0, "*********************************\n");
+    // IOSLOG(0, "*****   IOS Controller Init.    *****\n");
+    // IOSLOG(0, "*********************************\n");
     
     //pid_t signal_pid = getpid();
     
@@ -2702,7 +2702,7 @@ int iosCtl_init()
     sig.sa_flags = SA_SIGINFO | SA_RESTART;
     ret = sigaction(SIGMCU, &sig, nullptr);
     if (ret == -1) {
-      printf("[IOS](%s): Failed to caught SIGMCU signal\n", __func__);
+      xlog("Failed to caught SIGMCU signal");
     }
     trig_dout_pin[0] = DOUT_PIN_1;
     trig_dout_pin[1] = DOUT_PIN_2;
@@ -2726,24 +2726,24 @@ int iosCtl_init()
     SPI_Open();
     tof_init();
 
-    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);  	
-    if (ret < 0){
-      printf("[IOS](%s): Create iosCtl thread fail! \n", __func__);
+    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
+    if (ret < 0) {
+      xlog("Create iosCtl iosThread fail");
       return -1;
     }
 
-    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);  	
-    if (ret < 0){
-        printf("[IOS](%s): Create trigCtl thread fail! \n", __func__);
-        return -1;
+    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
+    if (ret < 0) {
+      xlog("Create didoThread iosThread fail");
+      return -1;
     }
 
     ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
-    if (ret < 0){
-        printf("[IOS](%s): Create ioCtl thread fail! \n", __func__);
-        return -1;
+    if (ret < 0) {
+      xlog("Create ledThread iosThread fail");
+      return -1;
     }
-    
+
     ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
     return ret;
 }

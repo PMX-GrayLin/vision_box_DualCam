@@ -2814,7 +2814,7 @@ void* ios_process(void *argu)
 
         if (IO_JsonQ_IsEmpty())
         {
-            if (io_doneFlag)
+            if (io_doneFlag)    
             {
                 MAINLOG(0, " ## break of ips_process ##\n");
                 break;
@@ -3094,37 +3094,38 @@ int main(int argc, char **argv)
     }
 
     /* create a thread for IP process */
-    int iCamId[2] = {0 ,1}; //dual camera
-    fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
+    int iCamId[2] = {0, 1};  // dual camera
     ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
-        exit(1);
+    if (ret < 0) {
+      perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+      exit(1);
+    } else {
+      xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[0]);
     }
 
     usleep(10000);
 
-    fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
     ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
-        exit(1);
-    }    
+    if (ret < 0) {
+      perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+      exit(1);
+    } else {
+      xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[1]);
+    }
 
-    fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
     ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 5 _ ios_process(...) !!\n");
-        exit(1);
-    }    
+    if (ret < 0) {
+      perror("Cannot create thread 5 _ ios_process(...) !!\n");
+      exit(1);
+    } else {
+      xlog("pthread_create success, ios_process iCamId:%d", iCamId[1]);
+    }
 
     /* init mcuCtl */
     ret = iosCtl_init();
     if (ret < 0) {
-      perror("iosCtl_init");
+      xlog("iosCtl_init fail");
+    //   perror("iosCtl_init");
       exit(1);
     }
 
