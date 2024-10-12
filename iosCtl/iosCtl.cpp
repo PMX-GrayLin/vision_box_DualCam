@@ -1648,7 +1648,7 @@ void sfcCtl_init() {
 
   // Check whether the serial port is opened successfully
   if (sfcCtl_serial_port < 0) {
-    xlog("open serial port /dev/ttyUSB0 fail", );
+    xlog("open serial port /dev/ttyUSB0 fail");
     return;
   }
 
