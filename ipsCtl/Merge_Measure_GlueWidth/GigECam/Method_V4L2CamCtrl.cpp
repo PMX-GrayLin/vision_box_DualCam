@@ -107,7 +107,8 @@ CMethod_V4L2CamCtrl::CMethod_V4L2CamCtrl()
 {
     // Check whether the device is turned on successfully
     if (!cap_uvc.isOpened()) {
-        std::cerr << "Error: Unable to open UVC device." << std::endl;
+        // std::cerr << "Error: Unable to open UVC device." << std::endl;
+		xlog("fail to open UVC device");
     }
 
     // Set video screen size

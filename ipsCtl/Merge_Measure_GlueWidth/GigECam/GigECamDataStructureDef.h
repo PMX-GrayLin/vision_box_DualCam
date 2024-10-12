@@ -25,11 +25,11 @@ inline void Cam_Log_Level() {
 	char* szLogLevel = getenv("CAM_LOG_LEVEL");
 	if (szLogLevel) {
 		camDebugLevel = atoi(szLogLevel);
-		printf("# camDebugLevel = %d\n", camDebugLevel);
+		// printf("# camDebugLevel = %d\n", camDebugLevel);
 	}
 	else {
 		camDebugLevel = CAM_LOG_LEVEL_NONE;
-		printf("# camDebugLevel = %d\n", camDebugLevel);
+		// printf("# camDebugLevel = %d\n", camDebugLevel);
 	}
 }
 

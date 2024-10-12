@@ -128,7 +128,7 @@ C_MatchPattern::C_MatchPattern() :
 
 	m_vecSingleTargetData.clear();
 
-	std::cout << "C_MatchPattern() Created !" << std::endl;
+	// std::cout << "C_MatchPattern() Created !" << std::endl;
 
 }
 
