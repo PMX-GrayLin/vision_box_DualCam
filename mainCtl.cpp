@@ -2262,7 +2262,7 @@ void *ips_process_Dual(void *argu) {
     end = std::chrono::high_resolution_clock::now();
     duration = end - start;
     strtmp = std::to_string(duration.count());
-    MAINLOG(0, " # Total_Methed(...)_CycleTime : %s (ms)\n", strtmp.c_str());
+    // MAINLOG(0, " # Total_Methed(...)_CycleTime : %s (ms)\n", strtmp.c_str());
 
     if (TasksQ_IsEmpty_Dual(iCamId)) {
       if (ip_doneFlag_Dual[iCamId]) {
@@ -2792,7 +2792,7 @@ void close_ip_Dual(const int iID)
  *************************************************************/
 void suspend_io()
 { // tell the thread to suspend
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&io_suspendMutex);
     io_suspendFlag = 1;
     pthread_mutex_unlock(&io_suspendMutex);
@@ -2805,7 +2805,7 @@ void suspend_io()
  *************************************************************/
 void resume_io()
 { // tell the thread to resume
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&io_suspendMutex);
     io_suspendFlag = 0;
     pthread_cond_broadcast(&io_resumeCond);
@@ -2819,7 +2819,7 @@ void resume_io()
  *************************************************************/
 void close_io()
 {
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&io_suspendMutex);
     io_suspendFlag = 0;
     io_doneFlag = 1;
@@ -2835,7 +2835,7 @@ void close_io()
  *************************************************************/
 void suspend_mp()
 { // tell the thread to suspend
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&mp_suspendMutex);
     mp_suspendFlag = 1;
     pthread_mutex_unlock(&mp_suspendMutex);
@@ -2849,7 +2849,7 @@ void suspend_mp()
  *************************************************************/
 void resume_mp(int iStatus)
 { // tell the thread to resume
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&mp_suspendMutex);
     mp_suspendFlag = 0;
     mp_FlowStatus = iStatus;
@@ -2865,7 +2865,7 @@ void resume_mp(int iStatus)
  *************************************************************/
 void close_mp()
 {
-    MAINLOG(0, "%s\n", __func__);
+    // MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&mp_suspendMutex);
     mp_suspendFlag = 0;
     mp_doneFlag = 1;
