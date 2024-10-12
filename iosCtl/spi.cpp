@@ -42,33 +42,28 @@ int SPI_Transfer(const uint8_t *TxBuf, uint8_t *RxBuf, int len)
         .delay_usecs = delay,
     };
 
-
     ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-    if (ret < 1)
-        perror("can't send spi message\n");
-    else
-    {
+    if (ret < 1) {
+      xlog("ioctl error");
+    } else {
 #if SPI_DEBUG
-        int i;
-        //printf("nsend spi message Succeed\n");
-        printf("%s()%d: nSPI Send [Len:%d]: ", __FUNCTION__, __LINE__, len);
-        for (i = 0; i < len; i++)
-        {
-            //if (i % 8 == 0)
-            //    printf("nt\n");
-            printf("0x%02X ", TxBuf[i]);
-        }
-        printf("\r\n");
+      int i;
+      // printf("nsend spi message Succeed\n");
+      printf("%s()%d: nSPI Send [Len:%d]: ", __FUNCTION__, __LINE__, len);
+      for (i = 0; i < len; i++) {
+        // if (i % 8 == 0)
+        //     printf("nt\n");
+        printf("0x%02X ", TxBuf[i]);
+      }
+      printf("\r\n");
 
-
-        printf("%s()%d: SPI Receive [len:%d]:", __FUNCTION__, __LINE__, len);
-        for (i = 0; i < len; i++)
-        {
-            //if (i % 8 == 0)
-            //    printf("nt\n");
-            printf("0x%02X ", RxBuf[i]);
-        }
-        printf("\r\n");
+      printf("%s()%d: SPI Receive [len:%d]:", __FUNCTION__, __LINE__, len);
+      for (i = 0; i < len; i++) {
+        // if (i % 8 == 0)
+        //     printf("nt\n");
+        printf("0x%02X ", RxBuf[i]);
+      }
+      printf("\r\n");
 #endif
     }
     return ret;
@@ -122,80 +117,73 @@ int SPI_Read(uint8_t *RxBuf, int len)
     return ret;
 }
 
+int SPI_Open(void) {
+  int fd;
+  int ret = 0;
 
-int SPI_Open(void)
-{
-    int fd;
-    int ret = 0;
+  if (g_SPI_Fd != 0) {
+    xlog("spi already been opened");
+    return 0xF1;
+  }
+  fd = open(device, O_RDWR);
+  if (fd < 0) {
+    xlog("open fail");
+    // pabort("can't open device\n");
+  } else {
+    xlog("open succeed. Start Init SPI %s\n", device);
+  }
 
+  g_SPI_Fd = fd;
+  /*
+   * spi mode
+   */
+  ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
+  if (ret == -1)
+    pabort("can't set spi mode\n");
 
-    if (g_SPI_Fd != 0){
-        printf("spi already been opened"); /* $)Av,??????? */
-        return 0xF1;
-    }
-    fd = open(device, O_RDWR);
-    if (fd < 0) {
-        pabort("can't open device\n");
-        printf("%s()%d: can't open device [%s]\n", __FUNCTION__, __LINE__, device);
-    } else {
-        printf("SPI - Open Succeed. Start Init SPI...\n");
-    }
+  ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
+  if (ret == -1)
+    pabort("can't get spi mode\n");
 
-    g_SPI_Fd = fd;
-    /*
-    * spi mode
-    */
-    ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-    if (ret == -1)
-        pabort("can't set spi mode\n");
+  /*
+   * bits per word
+   */
+  ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+  if (ret == -1)
+    pabort("can't set bits per word\n");
 
+  ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+  if (ret == -1)
+    pabort("can't get bits per word\n");
 
-    ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-    if (ret == -1)
-        pabort("can't get spi mode\n");
+  /*
+   * max speed hz
+   */
+  ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+  if (ret == -1) {
+    xlog("can't set max speed");
+    // pabort("can't set max speed hz\n");
+  }
 
+  ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+  if (ret == -1) {
+    xlog("can't get max speed");
+    // pabort("can't get max speed hz\n");
+  }
 
-    /*
-    * bits per word
-    */
-    ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-    if (ret == -1)
-        pabort("can't set bits per word\n");
+  xlog("spi mode:%d", mode);
+  xlog("bits per word:%d", bits);
+  xlog("max speed:%d KHz (%d MHz)", speed / 1000, speed / 1000 / 1000);
 
-
-    ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
-    if (ret == -1)
-        pabort("can't get bits per word\n");
-
-
-    /*
-    * max speed hz
-    */
-    ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-    if (ret == -1)
-        pabort("can't set max speed hz\n");
-
-
-    ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-    if (ret == -1)
-        pabort("can't get max speed hz\n");
-
-
-    printf("spi mode: %d\n", mode);
-    printf("bits per word: %d\n", bits);
-    printf("max speed: %d KHz (%d MHz)\n", speed / 1000, speed / 1000 / 1000);
-
-
-    return ret;
+  return ret;
 }
-
 
 int SPI_Close(void)
 {
     int fd = g_SPI_Fd;
 
 
-    if (fd == 0) /* SPI?$)At+???????*/
+    if (fd == 0)
         return 0;
     close(fd);
     g_SPI_Fd = 0;

@@ -2448,7 +2448,7 @@ int CMethod_V4L2CamCtrl::Streaming_Inquiry()
 {
 	std::lock_guard<std::mutex> lock(u_streaming_mutex);
 
-	std::cout << " ## Streaming_Inquiry() ==>> bIsStreaming =" << std::to_string(m_global_cfg_ParamInfo.bIsStreaming) << std::endl;;
+	// std::cout << " ## Streaming_Inquiry() ==>> bIsStreaming =" << std::to_string(m_global_cfg_ParamInfo.bIsStreaming) << std::endl;;
 
 	return m_global_cfg_ParamInfo.bIsStreaming;
 }

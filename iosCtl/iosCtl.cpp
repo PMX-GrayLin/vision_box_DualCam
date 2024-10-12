@@ -453,59 +453,59 @@ int ios_lightGetPWM(IOS_LIGHT_SET_PWM *ios_setpwm)
   }
 #endif
   return ret;
-}    
+}
 
-int iosLED_init()
-{
-    int ret = 0;
-    int address;
-    int daddress;
-    char *end;
-    char filename[20];
-    int force = 1;
+int iosLED_init() {
+  xlog("");
+  int ret = 0;
+  int address;
+  int daddress;
+  char *end;
+  char filename[20];
+  int force = 1;
 #if 1
-    ios_setStatusLed(LED1_PWR, LED_OFF);
-    ios_setStatusLed(LED2_STAT, LED_OFF);
-    ios_setStatusLed(LED3_COM, LED_OFF);
-    ios_setStatusLed(LED4_TRIG, LED_OFF);
-    ios_setStatusLed(LED5_ERR, LED_OFF);
+  ios_setStatusLed(LED1_PWR, LED_OFF);
+  ios_setStatusLed(LED2_STAT, LED_OFF);
+  ios_setStatusLed(LED3_COM, LED_OFF);
+  ios_setStatusLed(LED4_TRIG, LED_OFF);
+  ios_setStatusLed(LED5_ERR, LED_OFF);
 #else
-    do {
-        led_i2cbus = lookup_i2c_bus("2");
-        if (led_i2cbus < 0) {
-            printf("%s()%d: lookup_i2c_bus led_i2cbus=[%d] fail.\n", __FUNCTION__, __LINE__, led_i2cbus);
-            break;
-        }
-        address = parse_i2c_address("0x20");
-        if (address < 0) {
-            printf("%s()%d: lookup_i2c_bus address=[%d] fail.\n", __func__, __LINE__, address);
-            break;
-        }
-        daddress = strtol("0x02", &end, 0);
-        if (*end || daddress < 0 || daddress > 0xff) {
-        	printf("%s()%d: Error: Data address=[%d] invalid fail.\n", __func__, __LINE__, daddress);
-        	break;
-        }
-        iosLED_file = open_i2c_dev(led_i2cbus, filename, sizeof(filename), 0);
-        if (iosLED_file < 0 || set_slave_addr(iosLED_file, address, force)) {
-        	printf("%s()%d: Error: open_i2c_dev iosLED_file=[%d] fail.\n", __func__, __LINE__, iosLED_file);
-        	break;
-        }
-    } while(0);
-    
-    if ((ret = i2c_smbus_write_byte_data(iosLED_file, 0x06, (char)0x00)) < 0) {
-        printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+  do {
+    led_i2cbus = lookup_i2c_bus("2");
+    if (led_i2cbus < 0) {
+      printf("%s()%d: lookup_i2c_bus led_i2cbus=[%d] fail.\n", __FUNCTION__, __LINE__, led_i2cbus);
+      break;
     }
-    if ((ret = i2c_smbus_write_byte_data(iosLED_file, 0x07, (char)0x00)) < 0) {
-        printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+    address = parse_i2c_address("0x20");
+    if (address < 0) {
+      printf("%s()%d: lookup_i2c_bus address=[%d] fail.\n", __func__, __LINE__, address);
+      break;
     }
-    
-    if ((ret = i2c_smbus_write_byte_data(iosLED_file, PCA64_P0, (char)0x00)) < 0) {
-        printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+    daddress = strtol("0x02", &end, 0);
+    if (*end || daddress < 0 || daddress > 0xff) {
+      printf("%s()%d: Error: Data address=[%d] invalid fail.\n", __func__, __LINE__, daddress);
+      break;
     }
-    if ((ret = i2c_smbus_write_byte_data(iosLED_file, PCA64_P1, (char)0x00)) < 0) {
-        printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+    iosLED_file = open_i2c_dev(led_i2cbus, filename, sizeof(filename), 0);
+    if (iosLED_file < 0 || set_slave_addr(iosLED_file, address, force)) {
+      printf("%s()%d: Error: open_i2c_dev iosLED_file=[%d] fail.\n", __func__, __LINE__, iosLED_file);
+      break;
     }
+  } while (0);
+
+  if ((ret = i2c_smbus_write_byte_data(iosLED_file, 0x06, (char)0x00)) < 0) {
+    printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+  }
+  if ((ret = i2c_smbus_write_byte_data(iosLED_file, 0x07, (char)0x00)) < 0) {
+    printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+  }
+
+  if ((ret = i2c_smbus_write_byte_data(iosLED_file, PCA64_P0, (char)0x00)) < 0) {
+    printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+  }
+  if ((ret = i2c_smbus_write_byte_data(iosLED_file, PCA64_P1, (char)0x00)) < 0) {
+    printf("%s()%d: Error: i2c_smbus_write_byte_data ret=[%d]\n", __func__, __LINE__, ret);
+  }
 #endif
     return ret;
 }
@@ -1738,119 +1738,117 @@ int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc)
 
 uint16_t tof_Dev;
 
-int tof_init(void)
-{
-    int status;
-	int adapter_nr = 1;
-	int file = 0;
-	
-	uint8_t byteData, sensorState = 0;
-	uint16_t wordData;
-	
-	uint8_t first_range = 1;
-	uint8_t I2cDevAddr = 0x29;
+int tof_init(void) {
+  int status;
+  int adapter_nr = 1;
+  int file = 0;
 
-	IOSLOG(0, "[IOS](%s): I2C Bus number is %d\n", __func__, adapter_nr);
+  uint8_t byteData, sensorState = 0;
+  uint16_t wordData;
 
-	file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
-	if (file == -1) {
-	    IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
-		return -1;
-	}
+  uint8_t first_range = 1;
+  uint8_t I2cDevAddr = 0x29;
 
-	status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
-	IOSLOG(0, "VL53L1X Model_ID: %X\n", byteData);
-	status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
-	IOSLOG(0, "VL53L1X Module_Type: %X\n", byteData);
-	status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
-	IOSLOG(0, "VL53L1X: %X\n", wordData);
+  xlog("I2C Bus:%d", adapter_nr);
+
+  file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
+  if (file == -1) {
+    IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
+    return -1;
+  }
+
+  status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
+  IOSLOG(0, "VL53L1X Model_ID: %X\n", byteData);
+  status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
+  IOSLOG(0, "VL53L1X Module_Type: %X\n", byteData);
+  status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
+  IOSLOG(0, "VL53L1X: %X\n", wordData);
   // ??
-	// while (sensorState == 0) {
-	// 	status += VL53L1X_BootState(tof_Dev, &sensorState);
-	// 	VL53L1_WaitMs(tof_Dev, 2);
-	// }
-	IOSLOG(0, "Chip booted\n");
-
-  // ??
-	// status = VL53L1X_SensorInit(tof_Dev);
-	/* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
+  // while (sensorState == 0) {
+  // 	status += VL53L1X_BootState(tof_Dev, &sensorState);
+  // 	VL53L1_WaitMs(tof_Dev, 2);
+  // }
+  IOSLOG(0, "Chip booted\n");
 
   // ??
-	// status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
-	// status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
-	// status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
-	// status += VL53L1X_StartRanging(tof_Dev);
+  // status = VL53L1X_SensorInit(tof_Dev);
+  /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
-
+  // ??
+  // status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+  // status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
+  // status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
+  // status += VL53L1X_StartRanging(tof_Dev);
 }
 
-int tofReadDistance(void)
-{
-    uint8_t first_range = 1;
-    VL53L1X_Result_t Results;
-    int status = 0;
+int tofReadDistance(void) {
+  uint8_t first_range = 1;
+  VL53L1X_Result_t Results;
+  int status = 0;
 
-    // ??
-    /* Get the data the new way */
-    // status += VL53L1X_GetResult(tof_Dev, &Results);
+  // ??
+  /* Get the data the new way */
+  // status += VL53L1X_GetResult(tof_Dev, &Results);
 
-    IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
-			Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+  IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
+         Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
 
-    // ??
-    /* trigger next ranging */
-    // status += VL53L1X_ClearInterrupt(tof_Dev);
-    // if (first_range) {
-    // 	/* very first measurement shall be ignored
-    // 	 * thus requires twice call
-    // 	 */
-    // 	status += VL53L1X_ClearInterrupt(tof_Dev);
-    // 	first_range = 0;
-    // }
-    
-    return Results.Distance;
+  // ??
+  /* trigger next ranging */
+  // status += VL53L1X_ClearInterrupt(tof_Dev);
+  // if (first_range) {
+  // 	/* very first measurement shall be ignored
+  // 	 * thus requires twice call
+  // 	 */
+  // 	status += VL53L1X_ClearInterrupt(tof_Dev);
+  // 	first_range = 0;
+  // }
+
+  return Results.Distance;
 }
 
-int iosPWM_init(int channel_num)
-{
-    int ret = 0;
-    if ((ret = pwm_export(channel_num)) != 0) {
-        xlog("pwm_export fail");
-        return -1;
-    }
-    
-    if ((ret = pwm_write_enable(channel_num, 0)) != 0) {
-        xlog("pwm_write_enable fail");
-        return -1;
-    }
-    
-    if ((ret = pwm_write_period(channel_num, AILED_MAX_LEVEL)) != 0) {
-        xlog("pwm_write_period fail");
-        return -1;
-    }
+int iosPWM_init(int channel_num) {
+  xlog("channel_num:%d", channel_num);
+  int ret = 0;
+  if ((ret = pwm_export(channel_num)) != 0) {
+    // xlog("pwm_export fail");
+    return -1;
+  }
 
-    if ((ret = pwm_write_duty_cycle(channel_num, 0)) != 0) {
-        xlog("pwm_write_duty_cycle fail");
-        return -1;
-    }
+  if ((ret = pwm_write_enable(channel_num, 0)) != 0) {
+    xlog("pwm_write_enable fail");
+    return -1;
+  }
 
-    if ((ret = pwm_write_polarity(channel_num, (char *)"normal")) != 0) {
-        xlog("pwm_write_polarity fail");
-        return -1;
-    }
+  if ((ret = pwm_write_period(channel_num, AILED_MAX_LEVEL)) != 0) {
+    xlog("pwm_write_period fail");
+    return -1;
+  }
 
-    if ((ret = pwm_write_enable(channel_num, 1)) != 0) {
-        xlog("pwm_write_enable fail");
-        return -1;
-    }
+  if ((ret = pwm_write_duty_cycle(channel_num, 0)) != 0) {
+    xlog("pwm_write_duty_cycle fail");
+    return -1;
+  }
 
-    return ret;
+  if ((ret = pwm_write_polarity(channel_num, (char *)"normal")) != 0) {
+    xlog("pwm_write_polarity fail");
+    return -1;
+  }
+
+  if ((ret = pwm_write_enable(channel_num, 1)) != 0) {
+    xlog("pwm_write_enable fail");
+    return -1;
+  }
+
+  return ret;
 }
 
 int iosGPIO_init() {
   
   xlog("");
-  {  // DI
+  {  
+    // DI
+    // ?? DI1_VB do twice
     gpio_export(DI1_VB);
     gpio_export(DI1_VB);
     gpio_export(DI3_VB);
@@ -1872,7 +1870,8 @@ int iosGPIO_init() {
     gpio_set_edge(DI_TRIG1, (char *)"falling");
     gpio_set_edge(DI_TRIG2, (char *)"falling");
   }
-  {  // DO
+  {  
+    // DO
     gpio_export(DO1_VB);
     gpio_export(DO2_VB);
     gpio_export(DO3_VB);
@@ -1883,8 +1882,8 @@ int iosGPIO_init() {
     gpio_set_dir(DO3_VB, 1);
     gpio_set_dir(DO4_VB, 1);
   }
-  // AILighting GPIO Enable
   {
+    // AILighting GPIO Enable
     gpio_export(AILED_GPIO1);
     gpio_export(AILED_GPIO2);
     gpio_export(AILED_GPIO3);
@@ -1903,7 +1902,7 @@ int iosGPIO_init() {
     gpio_set_value(AILED_GPIO4, 1);
   }
 
-  IOSLOG(0, "[IOS](%s): GPIO Init Finish \n", __func__);
+  // IOSLOG(0, "[IOS](%s): GPIO Init Finish \n", __func__);
   return 0;
 }
 

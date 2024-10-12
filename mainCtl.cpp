@@ -2273,7 +2273,7 @@ void *ips_process_Dual(void *argu) {
       suspend_ip_Dual(iCamId);
     }
 
-    MAINLOG(0, "*****   IP processing App.    *****\n");
+    // MAINLOG(0, "*****   IP processing App.    *****\n");
 
     usleep(1000); /* delay 10 ms */
   }

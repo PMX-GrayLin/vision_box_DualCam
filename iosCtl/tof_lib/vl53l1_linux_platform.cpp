@@ -119,19 +119,21 @@ int8_t VL53L1X_UltraLite_Linux_I2C_Init(uint16_t dev,
 	char i2c_hdlname[20];
 	(void)dev;
 
-	printf("I2C Bus number is %d\n", i2c_adapter_nr);
+	printf("I2C Bus:%d\n", i2c_adapter_nr);
 
 	snprintf(i2c_hdlname, 19, "/dev/i2c-%d", i2c_adapter_nr);
 	i2c_hdl = open(i2c_hdlname, O_RDWR);
 	if (i2c_hdl < 0) {
+		xlog("open %s fail", i2c_hdlname);
 		/* ERROR HANDLING; you can check errno to see what went wrong */
-		printf(" Open failed, returned value = %d, i2c_hdl_name = %s\n",
-				i2c_hdl, i2c_hdlname);
-		perror("Open bus ");
+		// printf(" Open failed, returned value = %d, i2c_hdl_name = %s\n",
+		// 		i2c_hdl, i2c_hdlname);
+		// perror("Open bus ");
 		return -1;
 	}
 	if (ioctl(i2c_hdl, I2C_SLAVE, i2c_Addr) < 0) {
-		printf("Failed to acquire bus access and/or talk to slave.\n");
+		xlog("ioctl fail");
+		// printf("Failed to acquire bus access and/or talk to slave.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
 		return -1;
 	}
