@@ -386,15 +386,16 @@ int ios_setStatusLed(uint8_t channel , uint8_t value){
   TX_Data[EXT_LIGHT_CH] = channel;
   TX_Data[LIGHT_LEVEL] = value;
   checksum = xor_checksum(TX_Data, MAX_FORMAT_LEN-1);
-  xlog("%s:%d \n\r", __func__, __LINE__);
-  printf("%s()%d: checksum=%x\r\n", __FUNCTION__, __LINE__,checksum);
+  xlog("checksum:0x%X", checksum);
+
   TX_Data[CHECKSUM] = checksum;
   SPI_Transfer(TX_Data, RxBuf, MAX_FORMAT_LEN+2);
-  printf("%s()%d: TX_Data=", __FUNCTION__, __LINE__);
-  for(int i=0;i<MAX_FORMAT_LEN;i++) {
-    printf("[0x%x] ", TX_Data[i]);
-  }
-  printf("\r\n");
+
+  // printf("%s()%d: TX_Data=", __FUNCTION__, __LINE__);
+  // for(int i=0;i<MAX_FORMAT_LEN;i++) {
+  //   printf("[0x%x] ", TX_Data[i]);
+  // }
+  // printf("\r\n");
 
   return 0;
 }

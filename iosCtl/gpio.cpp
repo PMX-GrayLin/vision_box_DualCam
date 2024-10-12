@@ -28,7 +28,7 @@ int gpio_export(unsigned int gpio) {
 
   fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
   if (fd < 0) {
-    xlog("open %s fail \n\r", SYSFS_GPIO_DIR"/export");
+    xlog("open %s fail", SYSFS_GPIO_DIR"/export");
     close(fd);
     return fd;
   }
@@ -75,8 +75,7 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
   snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    // printf("gpio/direction\r\n");
-    xlog("open %s fail\n\r", buf);
+    xlog("open %s fail", buf);
     return fd;
   }
 
@@ -110,7 +109,7 @@ int gpio_set_value(unsigned int gpio, unsigned int value)
   snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    xlog("open %s fail \n\r", buf);
+    xlog("open %s fail", buf);
     return fd;
   }
 
@@ -174,7 +173,7 @@ int gpio_set_edge(unsigned int gpio, char *edge) {
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    xlog("open %s fail \n\r", buf);
+    xlog("open %s fail", buf);
     close(fd);
     return fd;
   }
