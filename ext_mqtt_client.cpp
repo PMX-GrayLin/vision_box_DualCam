@@ -445,13 +445,12 @@ void ext_connect_callback_Dual(struct mosquitto *ext_mosq, void *obj, int32_t re
     struct mosq_config *mqcfg;
     int32_t i;
 
-    MAINLOG(0, "__%s__\n", __func__);
     assert(obj);
     mqcfg = (struct mosq_config *)obj;
 
     for (i = 0; i < mqcfg->topic_count; i++)
     {
-        MAINLOG(1, "set topics_sub[%d] = %s\n", i, mqcfg->topics_sub[i]);
+        xlog("mosquitto_subscribe topics:%s", mqcfg->topics_sub[i]);
         mosquitto_subscribe(ext_mosq, &mid, mqcfg->topics_sub[i], mqcfg->qos);
     }
 }
@@ -552,72 +551,63 @@ int32_t ext_client_id_generate(struct mosq_config *ext_cfg, const char *id_base)
  *	Param 		: NONE 
  *	Return		: error number
  *************************************************************/
-int32_t ext_mqtt_subscriber_Dual()
-{
-    int32_t rc;
+int32_t ext_mqtt_subscriber_Dual() {
+  int32_t rc;
 
-    MAINLOG(0, " @@ >> %s, ---> . ---> ext_mqtt_subscriber : Init\n", __func__);
+  xlog(">>>> Start");
 
-    /* initial parameters */
-    ext_cfg = (mosq_config*)malloc(sizeof(struct mosq_config));
+  /* initial parameters */
+  ext_cfg = (mosq_config *)malloc(sizeof(struct mosq_config));
 
-    ext_init_config_Dual(ext_cfg);
+  ext_init_config_Dual(ext_cfg);
 
-    mosquitto_lib_init();
+  mosquitto_lib_init();
 
-    if (ext_client_id_generate(ext_cfg, "vbox_id_"))
-        {
-            return 1;
-        }
+  if (ext_client_id_generate(ext_cfg, "vbox_id_")) {
+    return 1;
+  }
 
-    MAINLOG(0, " @ >> %s, --- . ---> clientid : %s\n", __func__, ext_cfg->id);
+  xlog("clientid:ext_cfg->id:%s", ext_cfg->id);
 
-    ext_mosq = mosquitto_new(ext_cfg->id, ext_cfg->clean_session, ext_cfg);
-    if (!ext_mosq)
-    {
-        switch (errno)
-        {
-        case ENOMEM:
-            if (!ext_cfg->quiet)
-                fprintf(stderr, "Error: Out of memory.\n");
-            break;
-        case EINVAL:
-            if (!ext_cfg->quiet)
-                fprintf(stderr, "Error: Invalid id and/or clean_session.\n");
-            break;
-        }
-        mosquitto_lib_cleanup();
-        return 1;
+  ext_mosq = mosquitto_new(ext_cfg->id, ext_cfg->clean_session, ext_cfg);
+  if (!ext_mosq) {
+    switch (errno) {
+      case ENOMEM:
+        if (!ext_cfg->quiet)
+          fprintf(stderr, "Error: Out of memory.\n");
+        break;
+      case EINVAL:
+        if (!ext_cfg->quiet)
+          fprintf(stderr, "Error: Invalid id and/or clean_session.\n");
+        break;
     }
-
-    mosquitto_connect_callback_set(ext_mosq, ext_connect_callback_Dual);    //Dual_camera
-    mosquitto_message_callback_set(ext_mosq, ext_message_callback_Dual);    //Dual_camera
-    rc = mosquitto_connect(ext_mosq, ext_cfg->host, ext_cfg->port, ext_cfg->keepalive);
-    if (rc)
-        return rc;
-
-    MAINLOG(0, " @@ >> %s, ---> . ---> mosquitto_loop_forever : Start\n", __func__);
-
-    rc = mosquitto_loop_forever(ext_mosq, -1, 1);
-
-    MAINLOG(0, " @@ >> %s, <--- . <--- mosquitto_loop_forever : End\n", __func__);
-
-    mosquitto_destroy(ext_mosq);
     mosquitto_lib_cleanup();
+    return 1;
+  }
 
-    if (ext_cfg->msg_count > 0 && rc == MOSQ_ERR_NO_CONN)
-    {
-        rc = 0;
-    }
-    if (rc)
-    {
-        fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
-        MAINLOG(0, " ?? >> %s, ---> . ---> mosquitto_strerror : [ %d ] \n", __func__, rc);
-    }
-
-    MAINLOG(0, " @@ >> %s, <--- . <--- ext_mqtt_subscriber : Exit\n", __func__);
-
+  mosquitto_connect_callback_set(ext_mosq, ext_connect_callback_Dual);  // Dual_camera
+  mosquitto_message_callback_set(ext_mosq, ext_message_callback_Dual);  // Dual_camera
+  rc = mosquitto_connect(ext_mosq, ext_cfg->host, ext_cfg->port, ext_cfg->keepalive);
+  if (rc)
     return rc;
+
+  xlog("========== mosquitto_loop_forever Start");
+  rc = mosquitto_loop_forever(ext_mosq, -1, 1);
+  xlog("========== mosquitto_loop_forever End");
+
+  mosquitto_destroy(ext_mosq);
+  mosquitto_lib_cleanup();
+
+  if (ext_cfg->msg_count > 0 && rc == MOSQ_ERR_NO_CONN) {
+    rc = 0;
+  }
+  if (rc) {
+    fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
+    MAINLOG(0, " ?? >> %s, ---> . ---> mosquitto_strerror : [ %d ] \n", __func__, rc);
+  }
+
+  xlog(">>>> Exit");
+  return rc;
 }
 
 /***********************************************************

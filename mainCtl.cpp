@@ -1851,524 +1851,435 @@ void stop_watch_dog()
  *	Param       : void *argu --> none
  *	Return      : NONE
  *************************************************************/
-void *ips_process_Dual(void *argu)
-{
-    int res = 0;
+void *ips_process_Dual(void *argu) {
+  int res = 0;
 
-    /* init value */
-    /* once has been configured , will do not configure anymore,
-           unless changed the project name (recipe)*/
-    ips_status.ios_configured = FALSE;
-    ips_status.ips_configured = FALSE;
+  /* init value */
+  /* once has been configured , will do not configure anymore,
+         unless changed the project name (recipe)*/
+  ips_status.ios_configured = FALSE;
+  ips_status.ips_configured = FALSE;
 
-    int iCamId = 0;
-    if(argu != nullptr) {
-        iCamId = *(int*) argu;
-    }
-    
-    fprintf(stderr, "%s()%d: >> *(int*) argu = %d\n", __FUNCTION__, __LINE__, *(int*) argu);
-    fprintf(stderr, "%s()%d: >> iCamId = %d\n", __FUNCTION__, __LINE__, iCamId);    
+  int iCamId = 0;
+  if (argu != nullptr) {
+    iCamId = *(int *)argu;
+  }
 
-    void *phandler = nullptr;
+//   fprintf(stderr, "%s()%d: >> *(int*) argu = %d\n", __FUNCTION__, __LINE__, *(int *)argu);
+//   fprintf(stderr, "%s()%d: >> iCamId = %d\n", __FUNCTION__, __LINE__, iCamId);
 
-    ParamCvtMethod ptrParamCvt;
+  void *phandler = nullptr;
 
-    static bool bEnb_AutoRunningMode = 0;
-    static bool bPrev_AutoRunningMode = 0;
+  ParamCvtMethod ptrParamCvt;
 
-    static bool bEnb_AutoRunningMode_Activate = 0;
-    static bool bPrev_AutoRunningMode_Activate = 0;
+  static bool bEnb_AutoRunningMode = 0;
+  static bool bPrev_AutoRunningMode = 0;
 
-    static bool bEnb_TriggerMode = 0;
-    static bool bPrev_TriggerMode = 0;
+  static bool bEnb_AutoRunningMode_Activate = 0;
+  static bool bPrev_AutoRunningMode_Activate = 0;
 
-    static bool bEnb_TriggerMode_Activate = 0;
+  static bool bEnb_TriggerMode = 0;
+  static bool bPrev_TriggerMode = 0;
 
-    static int bStatus_AutoRunMode = -1;
+  static bool bEnb_TriggerMode_Activate = 0;
 
-    seAllParamTable_MeasGW_Annulus seAllParam{};
+  static int bStatus_AutoRunMode = -1;
 
-    seExpansionMode iEnbExMode{};
+  seAllParamTable_MeasGW_Annulus seAllParam{};
 
-    std::vector<CAlgoMethodParametr> vecMthParmTasksRespo;
+  seExpansionMode iEnbExMode{};
 
-    seImageInfo imgBuf = seImageInfo();
+  std::vector<CAlgoMethodParametr> vecMthParmTasksRespo;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration(0);
-    std::string strtmp;
+  seImageInfo imgBuf = seImageInfo();
 
-    while (!ip_doneFlag_Dual[iCamId])
-    {
-
-        pthread_mutex_lock(&ip_suspendMutex_Dual[iCamId]);
-        while (ip_suspendFlag_Dual[iCamId] != 0)
-            pthread_cond_wait(&ip_resumeCond_Dual[iCamId], &ip_suspendMutex_Dual[iCamId]);
-        pthread_mutex_unlock(&ip_suspendMutex_Dual[iCamId]);
-
-        // cycletime_start >>
-        start = std::chrono::high_resolution_clock::now();
-
-        MAINLOG(0, " ## >> ## >> pAlgoMthd ==. ==> Start \n");
-        bStatus_AutoRunMode = -1;
-
-        while (!TasksQ_IsEmpty_Dual(iCamId))
-        {
-            // deque pop_front
-            CAlgoMethodParametr cAlgoMthParam;
-            TasksQ_DeQ_Dual(&cAlgoMthParam, iCamId);
-
-            ExModeQ_DeQ_Dual(&iEnbExMode, iCamId);
-
-            /////////////////////////////////////////////////////
-            //< Trigger Mode_Activate > AutoRun Mode.
-            /////////////////////////////////////////////////////
-
-            if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_TRIGGERMODETYPE]))
-            {
-
-                MAINLOG(0, "@ === ===> AutoRun Mode === ===>\n");
-
-                bEnb_TriggerMode_Activate = iEnbExMode.flg_TriggerMode_Activat;
-
-                if (bEnb_TriggerMode_Activate)
-                {
-                    bEnb_AutoRunningMode_Activate = true;
-                }
-                else
-                {
-                    /* send msgQ to mainCtl for indicating the fail of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                    bEnb_AutoRunningMode_Activate = false;
-                    bStatus_AutoRunMode = 0;
-                    resume_mp(bStatus_AutoRunMode);
-                    continue;
-                }
-
-                int szVector = vecMthParmTasksRespo.size();
-                if (0 == szVector)
-                {
-                    /* send msgQ to mainCtl for indicating the fail of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                    bEnb_AutoRunningMode_Activate = false;
-                    bStatus_AutoRunMode = 0;
-                    resume_mp(bStatus_AutoRunMode);
-                    continue;
-                }
-
-                ///////////////////////////////////////////////////////////////////////////////////////
-                // Send the state of Auto-Run Mode was enabled to the Backend.
-
-                int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
-                cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
-
-                ///////////////////////////////////////////////////////////////////////////////////////
-                int iLoopCnt = 1;
-                for (int i = 0; i < szVector; i++)
-                {
-
-                    CAlgoMethodParametr vecCAlgoMthdParm;
-
-                    vecCAlgoMthdParm = vecMthParmTasksRespo[i];
-
-                    if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING]))
-                    {
-
-                        if (!bPrev_AutoRunningMode_Activate && bEnb_AutoRunningMode_Activate)
-                        {
-
-                            bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
-                            seAllParam = seAllParamTable_MeasGW_Annulus();
-                        }
-                        else if (bPrev_AutoRunningMode_Activate && !bEnb_AutoRunningMode_Activate)
-                        {
-
-                            bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
-                            seAllParam = seAllParamTable_MeasGW_Annulus();
-                        }
-                        else
-                        {
-                        }
-                    }
-
-                    // Selection the handle pointer
-                    if ((!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
-
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
-                    {
-
-                        MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-                        phandler = pter_hdl_GigE_Dual[iCamId];
-
-                        if (imgBuf.pbImgBuf)
-                        {
-
-                            MAINLOG(0, "@===> Release imgBuf.pbImgBuf\n");
-                            delete[] imgBuf.pbImgBuf;
-                            imgBuf.pbImgBuf = nullptr;
-                        }
-                    }
-                    else
-                    {
-
-                        MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
-                        phandler = pter_hdl_IPL;
-                    }
-
-                    // Get the handle of Parameter convert method.
-                    ptrParamCvt = vecCAlgoMthdParm.mAlgoMethod.ParamConverter;
-                    nID = vecCAlgoMthdParm.mAlgoMethod.emAlgoId;
-
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
-                        // Convert the all parameter to function parameter.
-                        //[[ AP to P ]]
-                        if (ptrParamCvt != nullptr)
-                        {
-                            (*(*ptrParamCvt)[0])(&vecCAlgoMthdParm, &seAllParam);
-                        }
-                    }
-
-                    // Algorithm Running !!!
-                    res = vecCAlgoMthdParm.mAlgoMethod.AlgoMthd(phandler, &imgBuf, &vecCAlgoMthdParm, vecCAlgoMthdParm.mAlgoMethod.pRes, &imgBuf);
-                    if (res)
-                    {
-
-                        vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
-                        bEnb_AutoRunningMode_Activate = 0;
-                        bPrev_AutoRunningMode_Activate = 0;
-
-                        if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
-                            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
-                            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
-
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
-                        {
-
-                            seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
-
-                            if (pResult->retState)
-                            {
-                                ipsComp_IPL_Release();
-                                ipsComp_Camera_Release_Dual(iCamId);
-                                usleep(2000); /* delay 2 ms */
-                                ipsComp_IPL_Init();
-                                ipsComp_Camera_Init_Dual(iCamId);
-
-                                MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-                            }
-                        }
-                        printf("Error ==> %s  <===\n", enum_Publish_CAMReg[nID]);
-                        /* send msgQ to mainCtl for indicating the fail of auto mode */
-                        innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                        bStatus_AutoRunMode = -1;
-                        resume_mp(bStatus_AutoRunMode);
-                        break;
-                    }
-
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
-                        // Convert the Result Parameter to All parameter.
-                        //[[ RetP to AP ]]
-                        if (ptrParamCvt != nullptr)
-                        {
-                            (*(*ptrParamCvt)[1])(vecCAlgoMthdParm.mAlgoMethod.pRes, &seAllParam);
-                        }
-                    }
-
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
-
-                        // When the camera capture image was finished, send the result immediately to Back-end.
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture]))
-                        {
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
-                        }
-
-                        // # MeasGlueWidth_Annulus
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus]))
-                        {
-
-                            // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
-                            // The value of roi_id in pJsonBuf only for continuity testing mode.
-                            std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
-
-                            printf("ALGO_MeasGW_Annulus:\n %s\n\n", strPSetInfo.c_str());
-
-                            std::size_t found = strPSetInfo.rfind("}");
-                            std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
-
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
-
-                            iLoopCnt++;
-                        }
-
-                        // # MeasGlueWidth_Rectangle
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect]))
-                        {
-
-                            // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
-                            // The value of roi_id in pJsonBuf only for continuity testing mode.
-                            std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
-
-                            printf("ALGO_MeasGW_Rectangle:\n %s\n\n", strPSetInfo.c_str());
-
-                            std::size_t found = strPSetInfo.rfind("}");
-                            std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
-
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
-
-                            iLoopCnt++;
-                        }
-                    }
-                }
-                if (0 == res)
-                {
-                    /* send msgQ to mainCtl for indicating the done of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Done", iCamId);   // Dual camera
-                    bStatus_AutoRunMode = 1;
-                    resume_mp(bStatus_AutoRunMode);
-                }
-
-                MAINLOG(0, "@ <=== === AutoRun Mode <=== ===\n");
-
-                usleep(1000); /* delay 1 ms */
-
-                continue;
+  auto start = std::chrono::high_resolution_clock::now();
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> duration(0);
+  std::string strtmp;
+
+  while (!ip_doneFlag_Dual[iCamId]) {
+    pthread_mutex_lock(&ip_suspendMutex_Dual[iCamId]);
+    while (ip_suspendFlag_Dual[iCamId] != 0)
+      pthread_cond_wait(&ip_resumeCond_Dual[iCamId], &ip_suspendMutex_Dual[iCamId]);
+    pthread_mutex_unlock(&ip_suspendMutex_Dual[iCamId]);
+
+    // cycletime_start >>
+    start = std::chrono::high_resolution_clock::now();
+
+    MAINLOG(0, " ## >> ## >> pAlgoMthd ==. ==> Start \n");
+    bStatus_AutoRunMode = -1;
+
+    while (!TasksQ_IsEmpty_Dual(iCamId)) {
+      // deque pop_front
+      CAlgoMethodParametr cAlgoMthParam;
+      TasksQ_DeQ_Dual(&cAlgoMthParam, iCamId);
+
+      ExModeQ_DeQ_Dual(&iEnbExMode, iCamId);
+
+      /////////////////////////////////////////////////////
+      //< Trigger Mode_Activate > AutoRun Mode.
+      /////////////////////////////////////////////////////
+
+      if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_TRIGGERMODETYPE])) {
+        MAINLOG(0, "@ === ===> AutoRun Mode === ===>\n");
+
+        bEnb_TriggerMode_Activate = iEnbExMode.flg_TriggerMode_Activat;
+
+        if (bEnb_TriggerMode_Activate) {
+          bEnb_AutoRunningMode_Activate = true;
+        } else {
+          /* send msgQ to mainCtl for indicating the fail of auto mode */
+          innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);  // Dual camera
+          bEnb_AutoRunningMode_Activate = false;
+          bStatus_AutoRunMode = 0;
+          resume_mp(bStatus_AutoRunMode);
+          continue;
+        }
+
+        int szVector = vecMthParmTasksRespo.size();
+        if (0 == szVector) {
+          /* send msgQ to mainCtl for indicating the fail of auto mode */
+          innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);  // Dual camera
+          bEnb_AutoRunningMode_Activate = false;
+          bStatus_AutoRunMode = 0;
+          resume_mp(bStatus_AutoRunMode);
+          continue;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // Send the state of Auto-Run Mode was enabled to the Backend.
+
+        int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
+        cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        int iLoopCnt = 1;
+        for (int i = 0; i < szVector; i++) {
+          CAlgoMethodParametr vecCAlgoMthdParm;
+
+          vecCAlgoMthdParm = vecMthParmTasksRespo[i];
+
+          if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING])) {
+            if (!bPrev_AutoRunningMode_Activate && bEnb_AutoRunningMode_Activate) {
+              bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
+              seAllParam = seAllParamTable_MeasGW_Annulus();
+            } else if (bPrev_AutoRunningMode_Activate && !bEnb_AutoRunningMode_Activate) {
+              bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
+              seAllParam = seAllParamTable_MeasGW_Annulus();
+            } else {
             }
+          }
 
-            /////////////////////////////////////////////////////////////////
-            //<Without Trigger Mode_Activate> Normal Mode and AutoRunn Mode.
-            /////////////////////////////////////////////////////////////////
-            if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING]))
-            {
+          // Selection the handle pointer
+          if ((!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
 
-                bEnb_AutoRunningMode = iEnbExMode.flg_AutoRunning;
-                bEnb_TriggerMode = iEnbExMode.flg_Enb_TriggerMode;
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+              (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release]))) {
+            MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
+            phandler = pter_hdl_GigE_Dual[iCamId];
 
-                if (!bPrev_AutoRunningMode && bEnb_AutoRunningMode)
-                {
-
-                    bPrev_AutoRunningMode = bEnb_AutoRunningMode;
-                    seAllParam = seAllParamTable_MeasGW_Annulus();
-                }
-                else if (bPrev_AutoRunningMode && !bEnb_AutoRunningMode)
-                {
-
-                    bPrev_AutoRunningMode = bEnb_AutoRunningMode;
-                    seAllParam = seAllParamTable_MeasGW_Annulus();
-                }
-                else
-                {
-                }
+            if (imgBuf.pbImgBuf) {
+              MAINLOG(0, "@===> Release imgBuf.pbImgBuf\n");
+              delete[] imgBuf.pbImgBuf;
+              imgBuf.pbImgBuf = nullptr;
             }
+          } else {
+            MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
+            phandler = pter_hdl_IPL;
+          }
 
-            // Record All algoritm Mothod and Parameter.
-            if (!bPrev_TriggerMode && bEnb_TriggerMode)
-            { // 01
+          // Get the handle of Parameter convert method.
+          ptrParamCvt = vecCAlgoMthdParm.mAlgoMethod.ParamConverter;
+          nID = vecCAlgoMthdParm.mAlgoMethod.emAlgoId;
 
-                MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
-                MAINLOG(0, " =>>> Clear vector of vecMthParmTasksRespo() <<<= \n");
-                if (!vecMthParmTasksRespo.empty())
-                {
-                    vecMthParmTasksRespo.clear();
-                }
-
-                bPrev_TriggerMode = bEnb_TriggerMode;
-                vecMthParmTasksRespo.push_back(cAlgoMthParam);
-
-                MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
-                MAINLOG(0, " Continue... ...\n");
-                continue;
+          if (bEnb_AutoRunningMode_Activate) {
+            // Convert the all parameter to function parameter.
+            //[[ AP to P ]]
+            if (ptrParamCvt != nullptr) {
+              (*(*ptrParamCvt)[0])(&vecCAlgoMthdParm, &seAllParam);
             }
-            else if (bPrev_TriggerMode && bEnb_TriggerMode)
-            { // 11
+          }
 
-                vecMthParmTasksRespo.push_back(cAlgoMthParam);
+          // Algorithm Running !!!
+          res = vecCAlgoMthdParm.mAlgoMethod.AlgoMthd(phandler, &imgBuf, &vecCAlgoMthdParm, vecCAlgoMthdParm.mAlgoMethod.pRes, &imgBuf);
+          if (res) {
+            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
+            bEnb_AutoRunningMode_Activate = 0;
+            bPrev_AutoRunningMode_Activate = 0;
 
-                MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
-                MAINLOG(0, " Continue... ...\n");
-                continue;
-            }
-            else if (bPrev_TriggerMode && !bEnb_TriggerMode)
-            { // 10
-
-                MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
-                MAINLOG(0, " The End!!! \n");
-
-                bPrev_TriggerMode = bEnb_TriggerMode;
-                vecMthParmTasksRespo.push_back(cAlgoMthParam);
-            }
-            else if (!bPrev_TriggerMode && !bEnb_TriggerMode)
-            { // 00
-
-                MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
-                MAINLOG(0, " Clear vector of vecMthParmTasksRespo() ... ...\n");
-
-                if (!vecMthParmTasksRespo.empty())
-                {
-                    vecMthParmTasksRespo.clear();
-                }
-            }
-
-            MAINLOG(0, " cAlgoMthParam.mAlgoMethod.strCmd = %s\n", cAlgoMthParam.mAlgoMethod.strCmd);
-            MAINLOG(0, " iEnbExMode.flg_AutoRunning = %d\n", iEnbExMode.flg_AutoRunning);
-            MAINLOG(0, " bEnb_AutoRunningMode = %d\n", bEnb_AutoRunningMode);
-            MAINLOG(0, " bPrev_AutoRunningMode = %d\n", bPrev_AutoRunningMode);
-            MAINLOG(0, " >>>!!!>>> vecMthParmTasksRespo.szie() = %d <<<!!!<<< \n", (int)vecMthParmTasksRespo.size());
-
-            // Selection the handle pointer
             if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
                 (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
                 (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
 
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release]))
+                (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+                (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+                (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+                (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+                (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release]))) {
+              seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
 
-            )
-            {
+              if (pResult->retState) {
+                ipsComp_IPL_Release();
+                ipsComp_Camera_Release_Dual(iCamId);
+                usleep(2000); /* delay 2 ms */
+                ipsComp_IPL_Init();
+                ipsComp_Camera_Init_Dual(iCamId);
 
                 MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-
-                phandler = pter_hdl_GigE_Dual[iCamId];
+              }
             }
-            else
-            {
+            printf("Error ==> %s  <===\n", enum_Publish_CAMReg[nID]);
+            /* send msgQ to mainCtl for indicating the fail of auto mode */
+            innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);  // Dual camera
+            bStatus_AutoRunMode = -1;
+            resume_mp(bStatus_AutoRunMode);
+            break;
+          }
 
-                MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
-
-                phandler = pter_hdl_IPL;
+          if (bEnb_AutoRunningMode_Activate) {
+            // Convert the Result Parameter to All parameter.
+            //[[ RetP to AP ]]
+            if (ptrParamCvt != nullptr) {
+              (*(*ptrParamCvt)[1])(vecCAlgoMthdParm.mAlgoMethod.pRes, &seAllParam);
             }
+          }
 
-            // Get the handle of Parameter convert method.
-            ptrParamCvt = cAlgoMthParam.mAlgoMethod.ParamConverter;
-            int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
-
-            if (bEnb_AutoRunningMode)
-            {
-                // Convert the all parameter to function parameter.
-                //[[ AP to P ]]
-                if (ptrParamCvt != nullptr)
-                {
-                    (*(*ptrParamCvt)[0])(&cAlgoMthParam, &seAllParam);
-                }
-            }
-
-            // Algorithm Running !!!
-            res = cAlgoMthParam.mAlgoMethod.AlgoMthd(phandler, nullptr, &cAlgoMthParam, cAlgoMthParam.mAlgoMethod.pRes, nullptr);
-
-            if (res)
-            {
-
-                cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
-                bEnb_AutoRunningMode = 0;
-                bPrev_AutoRunningMode = 0;
-
-                if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
-
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                    (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
-                {
-
-                    seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
-
-                    if (pResult->retState)
-                    {
-
-                        ipsComp_IPL_Release();
-                        ipsComp_Camera_Release_Dual(iCamId);
-                        usleep(2000); /* delay 2 ms */
-                        ipsComp_IPL_Init();
-                        ipsComp_Camera_Init_Dual(iCamId);
-
-                        MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-                    }
-                }
-
-                break;
+          if (bEnb_AutoRunningMode_Activate) {
+            // When the camera capture image was finished, send the result immediately to Back-end.
+            if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) {
+              vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
             }
 
-            if (bEnb_AutoRunningMode)
-            {
-                // Convert the Result Parameter to All parameter.
-                //[[ RetP to AP ]]
-                if (ptrParamCvt != nullptr)
-                {
-                    (*(*ptrParamCvt)[1])(cAlgoMthParam.mAlgoMethod.pRes, &seAllParam);
-                }
+            // # MeasGlueWidth_Annulus
+            if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus])) {
+              // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
+              // The value of roi_id in pJsonBuf only for continuity testing mode.
+              std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
+
+              printf("ALGO_MeasGW_Annulus:\n %s\n\n", strPSetInfo.c_str());
+
+              std::size_t found = strPSetInfo.rfind("}");
+              std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
+
+              vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
+
+              iLoopCnt++;
             }
 
-            if (bEnb_AutoRunningMode)
-            {
+            // # MeasGlueWidth_Rectangle
+            if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect])) {
+              // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
+              // The value of roi_id in pJsonBuf only for continuity testing mode.
+              std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
 
-                // # MeasGlueWidth_Annulus
-                if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus]))
-                {
+              printf("ALGO_MeasGW_Rectangle:\n %s\n\n", strPSetInfo.c_str());
 
-                    cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
-                }
+              std::size_t found = strPSetInfo.rfind("}");
+              std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
 
-                // # MeasGlueWidth_Rectangle
-                if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect]))
-                {
+              vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
 
-                    cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
-                }
+              iLoopCnt++;
             }
-            else
-            {
-
-                cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
-            }
+          }
+        }
+        if (0 == res) {
+          /* send msgQ to mainCtl for indicating the done of auto mode */
+          innerQ_IPS_EnQ_Dual("Auto_Mode_Done", iCamId);  // Dual camera
+          bStatus_AutoRunMode = 1;
+          resume_mp(bStatus_AutoRunMode);
         }
 
-        MAINLOG(0, " ## << ## << pAlgoMthd <== . <== End \n");
+        MAINLOG(0, "@ <=== === AutoRun Mode <=== ===\n");
 
-        // # cycletime_end <<
-        end = std::chrono::high_resolution_clock::now();
-        duration = end - start;
-        strtmp = std::to_string(duration.count());
-        MAINLOG(0, " # Total_Methed(...)_CycleTime : %s (ms)\n", strtmp.c_str());
+        usleep(1000); /* delay 1 ms */
 
-        if (TasksQ_IsEmpty_Dual(iCamId))
-        {
-            if (ip_doneFlag_Dual[iCamId])
-            {
-                MAINLOG(0, " ## break of ips_process ##\n");
-                break;
-            }
+        continue;
+      }
 
-            suspend_ip_Dual(iCamId);
+      /////////////////////////////////////////////////////////////////
+      //<Without Trigger Mode_Activate> Normal Mode and AutoRunn Mode.
+      /////////////////////////////////////////////////////////////////
+      if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING])) {
+        bEnb_AutoRunningMode = iEnbExMode.flg_AutoRunning;
+        bEnb_TriggerMode = iEnbExMode.flg_Enb_TriggerMode;
+
+        if (!bPrev_AutoRunningMode && bEnb_AutoRunningMode) {
+          bPrev_AutoRunningMode = bEnb_AutoRunningMode;
+          seAllParam = seAllParamTable_MeasGW_Annulus();
+        } else if (bPrev_AutoRunningMode && !bEnb_AutoRunningMode) {
+          bPrev_AutoRunningMode = bEnb_AutoRunningMode;
+          seAllParam = seAllParamTable_MeasGW_Annulus();
+        } else {
+        }
+      }
+
+      // Record All algoritm Mothod and Parameter.
+      if (!bPrev_TriggerMode && bEnb_TriggerMode) {  // 01
+
+        MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
+        MAINLOG(0, " =>>> Clear vector of vecMthParmTasksRespo() <<<= \n");
+        if (!vecMthParmTasksRespo.empty()) {
+          vecMthParmTasksRespo.clear();
         }
 
-        MAINLOG(0, "*****   IP processing App.    *****\n");
+        bPrev_TriggerMode = bEnb_TriggerMode;
+        vecMthParmTasksRespo.push_back(cAlgoMthParam);
 
-        usleep(1000); /* delay 10 ms */
+        MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
+        MAINLOG(0, " Continue... ...\n");
+        continue;
+      } else if (bPrev_TriggerMode && bEnb_TriggerMode) {  // 11
+
+        vecMthParmTasksRespo.push_back(cAlgoMthParam);
+
+        MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
+        MAINLOG(0, " Continue... ...\n");
+        continue;
+      } else if (bPrev_TriggerMode && !bEnb_TriggerMode) {  // 10
+
+        MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
+        MAINLOG(0, " The End!!! \n");
+
+        bPrev_TriggerMode = bEnb_TriggerMode;
+        vecMthParmTasksRespo.push_back(cAlgoMthParam);
+      } else if (!bPrev_TriggerMode && !bEnb_TriggerMode) {  // 00
+
+        MAINLOG(0, " bEnb_TriggerMode = %d\n", bEnb_TriggerMode);
+        MAINLOG(0, " Clear vector of vecMthParmTasksRespo() ... ...\n");
+
+        if (!vecMthParmTasksRespo.empty()) {
+          vecMthParmTasksRespo.clear();
+        }
+      }
+
+      MAINLOG(0, " cAlgoMthParam.mAlgoMethod.strCmd = %s\n", cAlgoMthParam.mAlgoMethod.strCmd);
+      MAINLOG(0, " iEnbExMode.flg_AutoRunning = %d\n", iEnbExMode.flg_AutoRunning);
+      MAINLOG(0, " bEnb_AutoRunningMode = %d\n", bEnb_AutoRunningMode);
+      MAINLOG(0, " bPrev_AutoRunningMode = %d\n", bPrev_AutoRunningMode);
+      MAINLOG(0, " >>>!!!>>> vecMthParmTasksRespo.szie() = %d <<<!!!<<< \n", (int)vecMthParmTasksRespo.size());
+
+      // Selection the handle pointer
+      if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
+
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+          (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release]))
+
+      ) {
+        MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
+
+        phandler = pter_hdl_GigE_Dual[iCamId];
+      } else {
+        MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
+
+        phandler = pter_hdl_IPL;
+      }
+
+      // Get the handle of Parameter convert method.
+      ptrParamCvt = cAlgoMthParam.mAlgoMethod.ParamConverter;
+      int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
+
+      if (bEnb_AutoRunningMode) {
+        // Convert the all parameter to function parameter.
+        //[[ AP to P ]]
+        if (ptrParamCvt != nullptr) {
+          (*(*ptrParamCvt)[0])(&cAlgoMthParam, &seAllParam);
+        }
+      }
+
+      // Algorithm Running !!!
+      res = cAlgoMthParam.mAlgoMethod.AlgoMthd(phandler, nullptr, &cAlgoMthParam, cAlgoMthParam.mAlgoMethod.pRes, nullptr);
+
+      if (res) {
+        cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+        bEnb_AutoRunningMode = 0;
+        bPrev_AutoRunningMode = 0;
+
+        if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
+
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release]))) {
+          seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
+
+          if (pResult->retState) {
+            ipsComp_IPL_Release();
+            ipsComp_Camera_Release_Dual(iCamId);
+            usleep(2000); /* delay 2 ms */
+            ipsComp_IPL_Init();
+            ipsComp_Camera_Init_Dual(iCamId);
+
+            MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
+          }
+        }
+
+        break;
+      }
+
+      if (bEnb_AutoRunningMode) {
+        // Convert the Result Parameter to All parameter.
+        //[[ RetP to AP ]]
+        if (ptrParamCvt != nullptr) {
+          (*(*ptrParamCvt)[1])(cAlgoMthParam.mAlgoMethod.pRes, &seAllParam);
+        }
+      }
+
+      if (bEnb_AutoRunningMode) {
+        // # MeasGlueWidth_Annulus
+        if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus])) {
+          cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+        }
+
+        // # MeasGlueWidth_Rectangle
+        if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect])) {
+          cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+        }
+      } else {
+        cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+      }
     }
 
-    MAINLOG(0, " ## exit of ips_process ##\n");
-    return NULL;
+    MAINLOG(0, " ## << ## << pAlgoMthd <== . <== End \n");
+
+    // # cycletime_end <<
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - start;
+    strtmp = std::to_string(duration.count());
+    MAINLOG(0, " # Total_Methed(...)_CycleTime : %s (ms)\n", strtmp.c_str());
+
+    if (TasksQ_IsEmpty_Dual(iCamId)) {
+      if (ip_doneFlag_Dual[iCamId]) {
+        MAINLOG(0, " ## break of ips_process ##\n");
+        break;
+      }
+
+      suspend_ip_Dual(iCamId);
+    }
+
+    MAINLOG(0, "*****   IP processing App.    *****\n");
+
+    usleep(1000); /* delay 10 ms */
+  }
+
+  MAINLOG(0, " ## exit of ips_process ##\n");
+  return NULL;
 }
 
 /***********************************************************
@@ -2841,7 +2752,6 @@ void* ios_process(void *argu)
  *************************************************************/
 void suspend_ip_Dual(const int iID)
 { // tell the thread to suspend
-    MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
     ip_suspendFlag_Dual[iID] = 1;
     pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
@@ -2854,7 +2764,6 @@ void suspend_ip_Dual(const int iID)
  *************************************************************/
 void resume_ip_Dual(const int iID)
 { // tell the thread to resume
-    MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
     ip_suspendFlag_Dual[iID] = 0;
     pthread_cond_broadcast(&ip_resumeCond_Dual[iID]);
@@ -2868,7 +2777,6 @@ void resume_ip_Dual(const int iID)
  *************************************************************/
 void close_ip_Dual(const int iID)
 {
-    MAINLOG(0, "%s\n", __func__);
     pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
     ip_suspendFlag_Dual[iID] = 0;
     ip_doneFlag_Dual[iID] = 1;
