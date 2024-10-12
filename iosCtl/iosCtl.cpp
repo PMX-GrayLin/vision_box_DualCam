@@ -1855,63 +1855,64 @@ int iosPWM_init(int channel_num)
     return ret;
 }
 
-int iosGPIO_init()
-{
-    {    // DI
-        gpio_export(DI1_VB);
-        gpio_export(DI1_VB);
-        gpio_export(DI3_VB);
-        gpio_export(DI4_VB);
-        gpio_export(DI_TRIG1);
-        gpio_export(DI_TRIG2);
+int iosGPIO_init() {
+  
+  xlog("%s:%d \n\r", __func__, __LINE__);
+  {  // DI
+    gpio_export(DI1_VB);
+    gpio_export(DI1_VB);
+    gpio_export(DI3_VB);
+    gpio_export(DI4_VB);
+    gpio_export(DI_TRIG1);
+    gpio_export(DI_TRIG2);
 
-        gpio_set_dir(DI1_VB, 0);
-        gpio_set_dir(DI1_VB, 0);
-        gpio_set_dir(DI3_VB, 0);
-        gpio_set_dir(DI4_VB, 0);
-        gpio_set_dir(DI_TRIG1, 1);
-        gpio_set_dir(DI_TRIG2, 1);
+    gpio_set_dir(DI1_VB, 0);
+    gpio_set_dir(DI1_VB, 0);
+    gpio_set_dir(DI3_VB, 0);
+    gpio_set_dir(DI4_VB, 0);
+    gpio_set_dir(DI_TRIG1, 1);
+    gpio_set_dir(DI_TRIG2, 1);
 
-        gpio_set_edge(DI1_VB, (char *)"rising");
-        gpio_set_edge(DI1_VB, (char *)"rising");
-        gpio_set_edge(DI3_VB, (char *)"rising");
-        gpio_set_edge(DI4_VB, (char *)"rising");
-        gpio_set_edge(DI_TRIG1, (char *)"falling");
-        gpio_set_edge(DI_TRIG2, (char *)"falling");
-    }
-    {   // DO
-        gpio_export(DO1_VB);
-        gpio_export(DO2_VB);
-        gpio_export(DO3_VB);
-        gpio_export(DO4_VB);
+    gpio_set_edge(DI1_VB, (char *)"rising");
+    gpio_set_edge(DI1_VB, (char *)"rising");
+    gpio_set_edge(DI3_VB, (char *)"rising");
+    gpio_set_edge(DI4_VB, (char *)"rising");
+    gpio_set_edge(DI_TRIG1, (char *)"falling");
+    gpio_set_edge(DI_TRIG2, (char *)"falling");
+  }
+  {  // DO
+    gpio_export(DO1_VB);
+    gpio_export(DO2_VB);
+    gpio_export(DO3_VB);
+    gpio_export(DO4_VB);
 
-        gpio_set_dir(DO1_VB, 1);
-        gpio_set_dir(DO2_VB, 1);
-        gpio_set_dir(DO3_VB, 1);
-        gpio_set_dir(DO4_VB, 1);
-    }
-    // AILighting GPIO Enable
-    {
-        gpio_export(AILED_GPIO1);
-        gpio_export(AILED_GPIO2);
-        gpio_export(AILED_GPIO3);
-        gpio_export(AILED_GPIO4);
-        gpio_export(AILED_DETECT);
+    gpio_set_dir(DO1_VB, 1);
+    gpio_set_dir(DO2_VB, 1);
+    gpio_set_dir(DO3_VB, 1);
+    gpio_set_dir(DO4_VB, 1);
+  }
+  // AILighting GPIO Enable
+  {
+    gpio_export(AILED_GPIO1);
+    gpio_export(AILED_GPIO2);
+    gpio_export(AILED_GPIO3);
+    gpio_export(AILED_GPIO4);
+    gpio_export(AILED_DETECT);
 
-        gpio_set_dir(AILED_GPIO1, 1);
-        gpio_set_dir(AILED_GPIO2, 1);
-        gpio_set_dir(AILED_GPIO3, 1);
-        gpio_set_dir(AILED_GPIO4, 1);
-        gpio_set_dir(AILED_DETECT, 0);
+    gpio_set_dir(AILED_GPIO1, 1);
+    gpio_set_dir(AILED_GPIO2, 1);
+    gpio_set_dir(AILED_GPIO3, 1);
+    gpio_set_dir(AILED_GPIO4, 1);
+    gpio_set_dir(AILED_DETECT, 0);
 
-        gpio_set_value(AILED_GPIO1, 1);
-        gpio_set_value(AILED_GPIO2, 1);
-        gpio_set_value(AILED_GPIO3, 1);
-        gpio_set_value(AILED_GPIO4, 1);
-    }
-    
-    IOSLOG(0, "[IOS](%s): GPIO Init Finish \n", __func__);
-    return 0;
+    gpio_set_value(AILED_GPIO1, 1);
+    gpio_set_value(AILED_GPIO2, 1);
+    gpio_set_value(AILED_GPIO3, 1);
+    gpio_set_value(AILED_GPIO4, 1);
+  }
+
+  IOSLOG(0, "[IOS](%s): GPIO Init Finish \n", __func__);
+  return 0;
 }
 
 void *trigCtl(void *argu)

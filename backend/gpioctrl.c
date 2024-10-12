@@ -99,7 +99,6 @@ int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
   char buf[MAX_BUF];
 
   len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
-
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
     close(fd);
@@ -169,10 +168,9 @@ int gpio_get_value(unsigned int gpio, unsigned int *value)
     len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
     fd = open(buf, O_RDONLY);
-    if (fd < 0)
-    {
-        perror("gpio/get-value");
-        return fd;
+    if (fd < 0) {
+      perror("gpio/get-value");
+      return fd;
     }
 
     read(fd, &ch, 1);

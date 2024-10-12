@@ -22,15 +22,13 @@ void help()
   printf("set output: ./gpio DOUT_source -o -n -g/-s(get or set) Value\r\n");
 }
 
-/****************************************************************
- *  * gpio_export
- *   ****************************************************************/
 int gpio_export(unsigned int gpio) {
   int fd, len;
   char buf[MAX_BUF];
 
   fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
   if (fd < 0) {
+    xlog("%s:%d, open %s fail \n\r", __func__, __LINE__, SYSFS_GPIO_DIR"/export");
     close(fd);
     return fd;
   }
@@ -70,18 +68,15 @@ int gpio_unexport(unsigned int gpio) {
   return 0;
 }
 
-/****************************************************************
- *  * gpio_set_dir
- *   ****************************************************************/
 int gpio_set_dir(unsigned int gpio, unsigned int out_flag) {
   int fd;
   char buf[MAX_BUF];
 
   snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
-
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    printf("gpio/direction\r\n");
+    // printf("gpio/direction\r\n");
+    xlog("%s:%d, open %s fail\n\r", __func__, __LINE__, buf);
     return fd;
   }
 
@@ -113,10 +108,9 @@ int gpio_set_value(unsigned int gpio, unsigned int value)
   char buf[MAX_BUF];
 
   snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
-    printf("gpio/set-value\r\n");
+    xlog("%s:%d, open %s fail \n\r", __func__, __LINE__, buf);
     return fd;
   }
 
@@ -180,6 +174,7 @@ int gpio_set_edge(unsigned int gpio, char *edge) {
 
   fd = open(buf, O_WRONLY);
   if (fd < 0) {
+    xlog("%s:%d, open %s fail \n\r", __func__, __LINE__, buf);
     close(fd);
     return fd;
   }
