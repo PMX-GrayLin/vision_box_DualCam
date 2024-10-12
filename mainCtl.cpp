@@ -3123,28 +3123,22 @@ int main(int argc, char **argv)
 
     /* init mcuCtl */
     ret = iosCtl_init();
-    if (ret < 0)
-    {
-        perror("iosCtl_init");
-        exit(1);
+    if (ret < 0) {
+      perror("iosCtl_init");
+      exit(1);
     }
-
-    xlog("%s:%d \n\r", __func__, __LINE__);
 
     suspend_ip_Dual(0);
     suspend_ip_Dual(1);
     suspend_io();
     /* read the input character from keyborad be pressed  */
 
-    while (1)
-    {
+    while (1) {
+      if (bTearDown) {
+        break;
+      }
 
-        if (bTearDown)
-        {
-            break;
-        }
-
-        sleep(1);
+      sleep(1);
     };
 
     return 0;

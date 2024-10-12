@@ -158,7 +158,7 @@ int CMethod_V4L2CamCtrl::GigeCam_Init()
 	if (m_pCam < 0) {
         // IPSLOG(1, "Error!! open camdev nRet : %d\n", m_pCam);
 		// IPSLOG(0, "failed to open camera device (%d)!\n", m_DeviceId);
-		xlog("%s:%d, fail open camdev, nRet:%d, m_DeviceId:%d \n\r", __func__, __LINE__, m_pCam, m_DeviceId);
+		xlog("fail open camdev, nRet:%d, m_DeviceId:%d \n\r", __func__, __LINE__, m_pCam, m_DeviceId);
 		return -1;
 	}
 

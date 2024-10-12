@@ -15,7 +15,7 @@ int pwm_export(int channel_num)
     if (export_fd < 0) {
         // fprintf(stderr, "%d: export_path=[%s] fail.\n", __LINE__, export_path);
         // perror("Failed to open PWM export file");
-        xlog("%s:%d, open PWM export fail, path:%s \n\r", __func__, __LINE__, export_path);
+        xlog("open PWM export fail, path:%s \n\r", __func__, __LINE__, export_path);
         return -1;
     }
 
@@ -25,7 +25,7 @@ int pwm_export(int channel_num)
     if (num_written < 0) {
         // fprintf(stderr, "%d: export_path=[%s] channel_str=[%s] fail.\n", __LINE__, export_path, channel_str);
         // perror("Failed to write to PWM export file");
-        xlog("%s:%d, write PWM export fail, path:%s, channel:%s \n\r", __func__, __LINE__, export_path, channel_str);
+        xlog("write PWM export fail, path:%s, channel:%s \n\r", __func__, __LINE__, export_path, channel_str);
         return -1;
     }
 
