@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "spi.h"
+#include "global.hpp"
 
 static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 0;
