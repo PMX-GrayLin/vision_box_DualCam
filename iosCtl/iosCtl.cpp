@@ -1751,7 +1751,8 @@ int tof_init(void) {
 
   file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
   if (file == -1) {
-    IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
+    xlog("VL53L1X_UltraLite_Linux_I2C_Init fail");
+    // IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
     return -1;
   }
 
@@ -2729,18 +2730,24 @@ int iosCtl_init()
     if (ret < 0) {
       xlog("Create iosCtl iosThread fail");
       return -1;
+    } else {
+      xlog("create iosThread success");
     }
 
     ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
     if (ret < 0) {
       xlog("Create didoThread iosThread fail");
       return -1;
+    } else {
+      xlog("create didoThread success");
     }
 
     ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
     if (ret < 0) {
       xlog("Create ledThread iosThread fail");
       return -1;
+    } else {
+      xlog("create ledThread success");
     }
 
     ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
