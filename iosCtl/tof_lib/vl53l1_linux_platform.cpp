@@ -44,6 +44,7 @@
 #include <arpa/inet.h>
 
 #include "vl53l1_platform.h"
+#include "global.hpp"
 
 /* Globals ------------------------------------------------------------------*/
 
