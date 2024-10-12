@@ -1642,87 +1642,85 @@ void *ioCtl(void *argu)
     return 0;
 }
 
-void sfcCtl_init()
-{
-    // Open the serial device
-    sfcCtl_serial_port = open("/dev/ttyUSB0", O_RDWR);
+void sfcCtl_init() {
+  // Open the serial device
+  sfcCtl_serial_port = open("/dev/ttyUSB0", O_RDWR);
 
-    // Check whether the serial port is opened successfully
-    if (sfcCtl_serial_port < 0) {
-        perror("Error opening serial port");
-        return;
-    }
+  // Check whether the serial port is opened successfully
+  if (sfcCtl_serial_port < 0) {
+    xlog("open serial port /dev/ttyUSB0 fail", );
+    return;
+  }
 
-    // Get the current serial port configuration
-    struct termios tty;
-    if (tcgetattr(sfcCtl_serial_port, &tty) != 0) {
-        perror("Error getting serial port attributes");
-        close(sfcCtl_serial_port);
-        return;
-    }
+  // Get the current serial port configuration
+  struct termios tty;
+  if (tcgetattr(sfcCtl_serial_port, &tty) != 0) {
+    xlog("tcgetattr fail");
+    // perror("Error getting serial port attributes");
+    close(sfcCtl_serial_port);
+    return;
+  }
 
-    // Setting the baud rate
-    cfsetispeed(&tty, B115200);
-    cfsetospeed(&tty, B115200);
+  // Setting the baud rate
+  cfsetispeed(&tty, B115200);
+  cfsetospeed(&tty, B115200);
 
-    // Set 8-bit characters, no parity, and one stop bit
-    tty.c_cflag &= ~PARENB; // No verification
-    tty.c_cflag &= ~CSTOPB; // One stop bit
-    tty.c_cflag &= ~CSIZE;
-    tty.c_cflag |= CS8;     // 8-bit characters
+  // Set 8-bit characters, no parity, and one stop bit
+  tty.c_cflag &= ~PARENB;  // No verification
+  tty.c_cflag &= ~CSTOPB;  // One stop bit
+  tty.c_cflag &= ~CSIZE;
+  tty.c_cflag |= CS8;  // 8-bit characters
 
-    // Set to local connection, no control flow
-    tty.c_cflag |= CLOCAL;
-    tty.c_cflag |= CREAD;
+  // Set to local connection, no control flow
+  tty.c_cflag |= CLOCAL;
+  tty.c_cflag |= CREAD;
 
-    // Set the raw input mode
-    tty.c_lflag &= ~ICANON;
-    tty.c_lflag &= ~ECHO;   // Disable echo
-    tty.c_lflag &= ~ECHOE;  // Disable Echo Erase
-    tty.c_lflag &= ~ISIG;   // Prohibition signal
+  // Set the raw input mode
+  tty.c_lflag &= ~ICANON;
+  tty.c_lflag &= ~ECHO;   // Disable echo
+  tty.c_lflag &= ~ECHOE;  // Disable Echo Erase
+  tty.c_lflag &= ~ISIG;   // Prohibition signal
 
-    // Set the raw output mode
-    tty.c_oflag &= ~OPOST;
+  // Set the raw output mode
+  tty.c_oflag &= ~OPOST;
 
-    // Setting the read timeout
-    tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 10;   // Read timeout, in units of 100ms
+  // Setting the read timeout
+  tty.c_cc[VMIN] = 0;
+  tty.c_cc[VTIME] = 10;  // Read timeout, in units of 100ms
 
-    // Application Configuration
-    if (tcsetattr(sfcCtl_serial_port, TCSANOW, &tty) != 0) {
-        perror("Error setting serial port attributes");
-        close(sfcCtl_serial_port);
-        return;
-    }
-
+  // Application Configuration
+  if (tcsetattr(sfcCtl_serial_port, TCSANOW, &tty) != 0) {
+    xlog("tcsetattr fail");
+    // perror("Error setting serial port attributes");
+    close(sfcCtl_serial_port);
+    return;
+  }
 }
 
-int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc)
-{
-    // Send data to the serial port
-    const char *msg = ios_sfc->msg;
-    write(sfcCtl_serial_port, msg, strlen(msg));
+int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc) {
+  // Send data to the serial port
+  const char *msg = ios_sfc->msg;
+  write(sfcCtl_serial_port, msg, strlen(msg));
 
-    // Read data from the serial port
-    char read_buf[256];
-    memset(read_buf, 0, sizeof(read_buf));
-    int num_bytes = read(sfcCtl_serial_port, read_buf, sizeof(read_buf));
+  // Read data from the serial port
+  char read_buf[256];
+  memset(read_buf, 0, sizeof(read_buf));
+  int num_bytes = read(sfcCtl_serial_port, read_buf, sizeof(read_buf));
 
-    // Check if the read was successful
-    if (num_bytes < 0) {
-        perror("Error reading from serial port");
-        strcpy(ios_sfc->msg, "Error reading from serial port");
-        close(sfcCtl_serial_port);
-        return 1;
-    }
+  // Check if the read was successful
+  if (num_bytes < 0) {
+    perror("Error reading from serial port");
+    strcpy(ios_sfc->msg, "Error reading from serial port");
+    close(sfcCtl_serial_port);
+    return 1;
+  }
 
-    // Print the read data
-    printf("Read %d bytes: %s\n", num_bytes, read_buf);
-    strcpy(ios_sfc->msg, read_buf);
+  // Print the read data
+  printf("Read %d bytes: %s\n", num_bytes, read_buf);
+  strcpy(ios_sfc->msg, read_buf);
 
-    return 0;
+  return 0;
 }
-
 
 #define MICRO_WAIT 200000
 
@@ -1758,17 +1756,19 @@ int tof_init(void) {
   }
 
   status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
-  IOSLOG(0, "VL53L1X Model_ID: %X\n", byteData);
+  xlog("VL53L1X Model_ID:0x%X", byteData);
   status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
-  IOSLOG(0, "VL53L1X Module_Type: %X\n", byteData);
+  xlog("VL53L1X Module_Type:0x%X", byteData);
   status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
-  IOSLOG(0, "VL53L1X: %X\n", wordData);
+  xlog("VL53L1X wordData:0x%X", wordData);
   // ??
   // while (sensorState == 0) {
   // 	status += VL53L1X_BootState(tof_Dev, &sensorState);
   // 	VL53L1_WaitMs(tof_Dev, 2);
   // }
-  IOSLOG(0, "Chip booted\n");
+  // IOSLOG(0, "Chip booted\n");
+
+  xlog("Chip booted");
 
   // ??
   // status = VL53L1X_SensorInit(tof_Dev);

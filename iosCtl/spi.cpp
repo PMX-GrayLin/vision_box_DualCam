@@ -173,7 +173,7 @@ int SPI_Open(void) {
 
   xlog("spi mode:%d", mode);
   xlog("bits per word:%d", bits);
-  xlog("max speed:%d KHz (%d MHz)", speed / 1000, speed / 1000 / 1000);
+  xlog("max speed:%d KHz", speed/1000);
 
   return ret;
 }

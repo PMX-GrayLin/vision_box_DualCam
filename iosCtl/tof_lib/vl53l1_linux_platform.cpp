@@ -73,7 +73,7 @@ static int8_t Linux_I2CWrite(uint8_t *buff, uint8_t len)
 
 	ret = write(i2c_hdl, buff, len);
 	if (ret != len) {
-		printf("%s()%d: Write failed with %d\n", __FUNCTION__, __LINE__, ret);
+		xlog("write fail");
 		return -1;
 	}
 	return 0;

@@ -3034,7 +3034,7 @@ int main(int argc, char **argv)
     if (ret < 0) {
       xlog("iosCtl_init fail");
     //   perror("iosCtl_init");
-      exit(1);
+    //   exit(1);
     }
 
     suspend_ip_Dual(0);
