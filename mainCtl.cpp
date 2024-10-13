@@ -2752,6 +2752,7 @@ void* ios_process(void *argu)
  *************************************************************/
 void suspend_ip_Dual(const int iID)
 { // tell the thread to suspend
+    xlog("");
     pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
     ip_suspendFlag_Dual[iID] = 1;
     pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
@@ -2792,7 +2793,7 @@ void close_ip_Dual(const int iID)
  *************************************************************/
 void suspend_io()
 { // tell the thread to suspend
-    // MAINLOG(0, "%s\n", __func__);
+    xlog("");
     pthread_mutex_lock(&io_suspendMutex);
     io_suspendFlag = 1;
     pthread_mutex_unlock(&io_suspendMutex);

@@ -137,12 +137,16 @@ int SPI_Open(void) {
    * spi mode
    */
   ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-  if (ret == -1)
-    pabort("can't set spi mode\n");
+  if (ret == -1) {
+    xlog("ioctl fail, can't set spi mode");
+    // pabort("can't set spi mode\n");
+  }
 
   ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-  if (ret == -1)
+  if (ret == -1) {
+    xlog("ioctl fail, can't get spi mode");
     pabort("can't get spi mode\n");
+  }
 
   /*
    * bits per word

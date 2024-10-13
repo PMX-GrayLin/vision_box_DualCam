@@ -1775,7 +1775,7 @@ int tof_init(void) {
   xlog("Chip booted");
 
   // ??
-  // status = VL53L1X_SensorInit(tof_Dev);
+  status = VL53L1X_SensorInit(tof_Dev);
   /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
   // ??
@@ -2727,7 +2727,7 @@ int iosCtl_init()
     iosLED_init();
     sfcCtl_init();
     SPI_Open();
-    // tof_init();
+    tof_init();
 
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     if (ret < 0) {
