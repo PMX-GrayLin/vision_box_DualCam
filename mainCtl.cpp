@@ -2734,7 +2734,7 @@ void* ios_process(void *argu)
             suspend_io();
         }
 
-        MAINLOG(0, "*****   IO processing App.    *****\n");
+        // MAINLOG(0, "*****   IO processing App.    *****\n");
         
         usleep(1000); /* delay 1 ms */
     }

@@ -1422,24 +1422,24 @@ void sig_receiveData_handler(int sig, siginfo_t *info, void *unused) {
   }
 }
 
-void *iosCtl(void *argu)
-{
+void *iosCtl(void *argu) {
   int result = ios_modbus_init();
-
   if (result == 0) {
-    IOSLOG(0, "[IOS](%s): Modbus Init Finish \n", __func__);
+    xlog("ios_modbus_init success");
+    // IOSLOG(0, "[IOS](%s): Modbus Init Finish \n", __func__);
   } else {
-    IOSLOG(0, "[IOS](%s): Modbus Init Fail \n", __func__);
+    xlog("ios_modbus_init fail");
+    // IOSLOG(0, "[IOS](%s): Modbus Init Fail \n", __func__);
   }
 
   memcpy((void *)wbuf, ios_buf_init, IOS_BUF_SIZE);
 
-  while(1) {
-    if(bTearDown == true) {
-        IOSLOG(0, "[__%s__] : iosCtl bTearDown=[%d]\n", __func__, bTearDown);
-        break;
+  while (1) {
+    if (bTearDown == true) {
+      IOSLOG(0, "[__%s__] : iosCtl bTearDown=[%d]\n", __func__, bTearDown);
+      break;
     }
-        
+
     if (modbus_status) {
       if (FrameFormat == TCP) {
         ios_modbus_TCP_handler();
@@ -1447,10 +1447,10 @@ void *iosCtl(void *argu)
         ios_modbus_RTU_handler();
       }
     } else {
-       usleep(100000);
+      usleep(100000);
     }
   }
-    return 0;
+  return 0;
 }
 
 void wdtCtl(void *argu)
@@ -2737,13 +2737,13 @@ int iosCtl_init()
       xlog("create iosThread success");
     }
 
-    // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
-    // if (ret < 0) {
-    //   xlog("Create didoThread iosThread fail");
-    //   return -1;
-    // } else {
-    //   xlog("create didoThread success");
-    // }
+    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
+    if (ret < 0) {
+      xlog("Create didoThread iosThread fail");
+      return -1;
+    } else {
+      xlog("create didoThread success");
+    }
 
     // ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
     // if (ret < 0) {
