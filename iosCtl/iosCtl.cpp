@@ -2724,7 +2724,7 @@ int iosCtl_init()
     iosLED_init();
     sfcCtl_init();
     SPI_Open();
-    tof_init();
+    // tof_init();
 
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     if (ret < 0) {
