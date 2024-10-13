@@ -2729,29 +2729,29 @@ int iosCtl_init()
     SPI_Open();
     // tof_init();
 
-    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
-    if (ret < 0) {
-      xlog("Create iosCtl iosThread fail");
-      return -1;
-    } else {
-      xlog("create iosThread success");
-    }
+    // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create iosCtl iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create iosThread success");
+    // }
 
-    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
-    if (ret < 0) {
-      xlog("Create didoThread iosThread fail");
-      return -1;
-    } else {
-      xlog("create didoThread success");
-    }
+    // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create didoThread iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create didoThread success");
+    // }
 
-    ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
-    if (ret < 0) {
-      xlog("Create ledThread iosThread fail");
-      return -1;
-    } else {
-      xlog("create ledThread success");
-    }
+    // ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create ledThread iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create ledThread success");
+    // }
 
     ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
     return ret;
