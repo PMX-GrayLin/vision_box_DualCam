@@ -74,8 +74,6 @@ int main(int argc, char **argv)
 	adapter_nr = atoi(argv[1]);
 	printf("I2C Bus number is %d\n", adapter_nr);
 
-
-
 	file = VL53L1X_UltraLite_Linux_I2C_Init(Dev, adapter_nr, I2cDevAddr);
 	if (file == -1)
 		exit(1);

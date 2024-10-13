@@ -1775,7 +1775,7 @@ int tof_init(void) {
   xlog("Chip booted");
 
   // ??
-  status = VL53L1X_SensorInit(tof_Dev);
+  // status = VL53L1X_SensorInit(tof_Dev);
   /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
   // ??

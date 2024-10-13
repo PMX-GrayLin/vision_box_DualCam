@@ -213,12 +213,12 @@ int msgQ_send(uint8_t *msg);
  *************************************************************/
 void sigExit_main(int sig)
 {
-    fprintf(stderr, "%s()%d: Error: something crash fail.\n", __FUNCTION__, __LINE__);
+    xlog("sig:%d", sig);
+    // fprintf(stderr, "%s()%d: Error: something crash fail.\n", __FUNCTION__, __LINE__);
 
     suspend_ip_Dual(0);         //Dual camera
     suspend_ip_Dual(1);         //Dual camera
     suspend_io();
-    bTearDown = true;
     suspend_mp();
     usleep(30000);
     close(sfcCtl_serial_port);
@@ -2994,21 +2994,28 @@ int main(int argc, char **argv) {
   /* create a thread for main handler  */
   ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
   if (ret < 0) {
-    perror("Cannot create thread 1 !!\n");
+    xlog("pthread_create fail, mainCtl");
+    // perror("Cannot create thread 1 !!\n");
     exit(1);
+  } else {
+    xlog("pthread_create success, mainCtl");
   }
 
   ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
   if (ret < 0) {
-    perror("Cannot create thread 2 !!\n");
+    xlog("pthread_create fail, ext_mqtt_sub_Dual");
+    // perror("Cannot create thread 2 !!\n");
     exit(1);
+  } else {
+    xlog("pthread_create success, ext_mqtt_sub_Dual");
   }
 
   /* create a thread for IP process */
   int iCamId[2] = {0, 1};  // dual camera
   ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
   if (ret < 0) {
-    perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+    xlog("pthread_create fail, ips_process_Dual iCamId:%d", iCamId[0]);
+    // perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
     exit(1);
   } else {
     xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[0]);
@@ -3018,7 +3025,8 @@ int main(int argc, char **argv) {
 
   ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
   if (ret < 0) {
-    perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+    xlog("pthread_create fail, ips_process_Dual iCamId:%d", iCamId[1]);
+    // perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
     exit(1);
   } else {
     xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[1]);
@@ -3026,7 +3034,8 @@ int main(int argc, char **argv) {
 
   ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
   if (ret < 0) {
-    perror("Cannot create thread 5 _ ios_process(...) !!\n");
+    xlog("pthread_create fail, ios_process iCamId:%d", iCamId[1]);
+    // perror("Cannot create thread 5 _ ios_process(...) !!\n");
     exit(1);
   } else {
     xlog("pthread_create success, ios_process iCamId:%d", iCamId[1]);
