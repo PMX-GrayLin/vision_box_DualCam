@@ -2931,13 +2931,13 @@ int main(int argc, char **argv) {
 //   MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
 //   MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
 //   MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
-  MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
+//   MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
 //   MAINLOG(0, "*******************************************\n");
 
   xlog("Main App version : %s", FW_VERSION);
   xlog("IPS version : %s", VSB_VERSION);
   xlog("IOS version : %s", IOS_VERSION);
-  xlog("Compile time %s", __TIME__);
+  xlog("Compile %s %s", __DATE__, __TIME__);
 
   /* Signal handling */
   signal(SIGKILL, sigExit_main);
