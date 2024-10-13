@@ -2920,135 +2920,136 @@ void init_value_set_to_default()
  *	Param     : void *argu --> none
  *	Return    : NONE
  *************************************************************/
-int main(int argc, char **argv)
-{
-    int ret;
-    
-    std::string strFWVersion(FW_VERSION);
-    std::string strIPSVersion(VSB_VERSION);
-    std::string strIOSVersion(IOS_VERSION);
+int main(int argc, char **argv) {
+  int ret;
 
-    MAINLOG(0, "*******************************************\n");
-    MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
-    MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
-    MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
-    MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
-    MAINLOG(0, "*******************************************\n");
+  std::string strFWVersion(FW_VERSION);
+  std::string strIPSVersion(VSB_VERSION);
+  std::string strIOSVersion(IOS_VERSION);
 
-    /* Signal handling */
-    signal(SIGKILL, sigExit_main);
-    signal(SIGTERM, sigExit_main);
-    signal(SIGSEGV, sigExit_main);
-    signal(SIGINT, sigExit_main);
+  MAINLOG(0, "*******************************************\n");
+  MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
+  MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
+  MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
+  MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
+  MAINLOG(0, "*******************************************\n");
 
-    /* init value */
-    jes.new_job = NO_SETFUNC;
-    jes.current_job = NO_SETFUNC;
-    init_value_set_to_default();
+  xlog("Main App version : %s", FW_VERSION);
 
-    /* initial vailable */
-    ipsComp_IPL_Init();
-    ipsComp_Camera_Init_Dual(0);    //Dual camera >> Camera handle
-    ipsComp_Camera_Init_Dual(1);    //Dual camera >> Camera handle
+  /* Signal handling */
+  signal(SIGKILL, sigExit_main);
+  signal(SIGTERM, sigExit_main);
+  signal(SIGSEGV, sigExit_main);
+  signal(SIGINT, sigExit_main);
 
-    /* initial inner queue(std::deque)  */
-    innerQ_Main_Init();
-    
-    innerQ_IPS_Init_Dual(0);    //Dual camera
-    innerQ_IPS_Init_Dual(1);    //Dual camera
+  /* init value */
+  jes.new_job = NO_SETFUNC;
+  jes.current_job = NO_SETFUNC;
+  init_value_set_to_default();
 
-    innerQ_IOS_Init();
+  /* initial vailable */
+  ipsComp_IPL_Init();
+  ipsComp_Camera_Init_Dual(0);  // Dual camera >> Camera handle
+  ipsComp_Camera_Init_Dual(1);  // Dual camera >> Camera handle
 
-    // /* initial IPS task queue(std::deque)  */
-    //Dual camera for IPS_Dual
-    JsonQ_Init_Dual(0);
-    JsonQ_Init_Dual(1);
-    TasksQ_Init_Dual(0);
-    TasksQ_Init_Dual(1);
-    ExModeQ_Init_Dual(0);
-    ExModeQ_Init_Dual(1);
-    
-    // /* initial IOS task queue(std::deque)  */
-    IO_JsonQ_Init();
+  /* initial inner queue(std::deque)  */
+  innerQ_Main_Init();
 
-    // /* initial AIS task queue(std::deque)  */
+  innerQ_IPS_Init_Dual(0);  // Dual camera
+  innerQ_IPS_Init_Dual(1);  // Dual camera
 
-    /* initial hash tabe of Mqtt parse and Method assign */
-    createHashMap_Param();
-    createHashMap_Method();
-    
-    createHashMap_IO_Param();
+  innerQ_IOS_Init();
 
-    usleep(100000);
+  // /* initial IPS task queue(std::deque)  */
+  // Dual camera for IPS_Dual
+  JsonQ_Init_Dual(0);
+  JsonQ_Init_Dual(1);
+  TasksQ_Init_Dual(0);
+  TasksQ_Init_Dual(1);
+  ExModeQ_Init_Dual(0);
+  ExModeQ_Init_Dual(1);
 
-    /* internal Mqtt commmand for StreamingMode enable. */
-    FW_Mqtt_PriorityPass_Internal(1);
+  // /* initial IOS task queue(std::deque)  */
+  IO_JsonQ_Init();
 
-    usleep(100000);
+  // /* initial AIS task queue(std::deque)  */
 
-    /* create a thread for main handler  */
-    ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 1 !!\n");
-        exit(1);
-    }
+  /* initial hash tabe of Mqtt parse and Method assign */
+  createHashMap_Param();
+  createHashMap_Method();
 
-    ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
-    if (ret < 0)
-    {
-        perror("Cannot create thread 2 !!\n");
-        exit(1);
-    }
+  createHashMap_IO_Param();
 
-    /* create a thread for IP process */
-    int iCamId[2] = {0, 1};  // dual camera
-    ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
-    if (ret < 0) {
-      perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
-      exit(1);
-    } else {
-      xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[0]);
-    }
+  usleep(100000);
 
-    usleep(10000);
+  /* internal Mqtt commmand for StreamingMode enable. */
+  FW_Mqtt_PriorityPass_Internal(1);
 
-    ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
-    if (ret < 0) {
-      perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
-      exit(1);
-    } else {
-      xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[1]);
-    }
+  usleep(100000);
 
-    ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
-    if (ret < 0) {
-      perror("Cannot create thread 5 _ ios_process(...) !!\n");
-      exit(1);
-    } else {
-      xlog("pthread_create success, ios_process iCamId:%d", iCamId[1]);
-    }
+  /* create a thread for main handler  */
+  ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
+  if (ret < 0) {
+    perror("Cannot create thread 1 !!\n");
+    exit(1);
+  }
 
-    /* init mcuCtl */
-    ret = iosCtl_init();
-    if (ret < 0) {
-      xlog("iosCtl_init fail");
+  ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
+  if (ret < 0) {
+    perror("Cannot create thread 2 !!\n");
+    exit(1);
+  }
+
+  /* create a thread for IP process */
+  int iCamId[2] = {0, 1};  // dual camera
+  ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
+  if (ret < 0) {
+    perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+    exit(1);
+  } else {
+    xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[0]);
+  }
+
+  usleep(10000);
+
+  ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
+  if (ret < 0) {
+    perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+    exit(1);
+  } else {
+    xlog("pthread_create success, ips_process_Dual iCamId:%d", iCamId[1]);
+  }
+
+  ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
+  if (ret < 0) {
+    perror("Cannot create thread 5 _ ios_process(...) !!\n");
+    exit(1);
+  } else {
+    xlog("pthread_create success, ios_process iCamId:%d", iCamId[1]);
+  }
+
+  /* init mcuCtl */
+  ret = iosCtl_init();
+  if (ret < 0) {
+    xlog("iosCtl_init fail");
     //   perror("iosCtl_init");
-      exit(1);
+    exit(1);
+  } else {
+    xlog("iosCtl_init success");
+  }
+
+  suspend_ip_Dual(0);
+  suspend_ip_Dual(1);
+  suspend_io();
+  /* read the input character from keyborad be pressed  */
+
+  while (1) {
+    if (bTearDown) {
+      break;
     }
 
-    suspend_ip_Dual(0);
-    suspend_ip_Dual(1);
-    suspend_io();
-    /* read the input character from keyborad be pressed  */
+    sleep(1);
+  };
 
-    while (1) {
-      if (bTearDown) {
-        break;
-      }
-
-      sleep(1);
-    };
-
-    return 0;
+  return 0;
 }

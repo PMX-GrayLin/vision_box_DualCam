@@ -22,7 +22,6 @@ static uint32_t delay = 100000;
 static int g_SPI_Fd = 0;
 
 unsigned char SPI_TX_Data[MAX_FORMAT_LEN] = {};
-#define SPI_DEBUG 1
 
 static void pabort(const char *s)
 {
@@ -130,7 +129,7 @@ int SPI_Open(void) {
     xlog("open fail");
     // pabort("can't open device\n");
   } else {
-    xlog("open succeed. Start Init SPI %s\n", device);
+    xlog("open succeed. Start Init SPI %s", device);
   }
 
   g_SPI_Fd = fd;

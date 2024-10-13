@@ -2,6 +2,7 @@
 
 // #include <cstdint>
 
+#define SPI_DEBUG
 #define DEBUGX
 
 #ifndef DEBUGX
