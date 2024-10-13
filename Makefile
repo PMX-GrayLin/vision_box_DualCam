@@ -159,9 +159,6 @@ OBJ_BUILD += $(OBJ_GIGE)
 OBJ_BUILD += $(OBJ_TPL)
 OBJ_BUILD += $(OBJ_TOF)
 
-# OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/vl53l1_linux_platform.o
-# OBJ_BUILD2 += $(shell pwd)/iosCtl/tof_lib/core/VL53L1X_api.o
-
 all: $(OBJ_BUILD)
 	$(CXX) $(CPPFLAG) -o $(TARGET) $(OBJ_BUILD) $(LDFLAG) 
 
