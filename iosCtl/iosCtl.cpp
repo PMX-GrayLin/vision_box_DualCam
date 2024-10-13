@@ -237,19 +237,20 @@ int set_nonblocking(int sockfd) {
  *	Param 		: NONE
  *	Return		: integer value
  *************************************************************/
-int ios_modbus_init(void)
-{
+int ios_modbus_init(void) {
   if (FrameFormat == TCP) {
     get_loacl_ip(test_eth, ip);
     ctx = modbus_new_tcp(ip, TCP_IP_PORT);
-        if (ctx == NULL) {
-      IOSLOG(0, "[IOS](%s): Unable to create the libmodbus context! \r\n", __func__);
+    if (ctx == NULL) {
+      xlog("modbus_new_tcp fail");
+      // IOSLOG(0, "[IOS](%s): Unable to create the libmodbus context! \r\n", __func__);
       return -1;
     }
 
     server_socket = modbus_tcp_listen(ctx, nb_connections);
     if (server_socket == -1) {
-      IOSLOG(0, "[IOS](%s): Unable to listen TCP connection! \r\n", __func__);
+      xlog("modbus_tcp_listen fail");
+      // IOSLOG(0, "[IOS](%s): Unable to listen TCP connection! \r\n", __func__);
       modbus_free(ctx);
       return -1;
     }
@@ -265,19 +266,22 @@ int ios_modbus_init(void)
     fdmax = server_socket;
   } else if (FrameFormat == RTU) {
     ctx = modbus_new_rtu(RTU_COM_PORT, RTU_BAUDRATE, RTU_PARITY, RTU_DATA_BIT, RTU_STOP_BIT);
-        if (ctx == NULL) {
-      IOSLOG(0, "[IOS](%s): Unable to create the libmodbus context! \r\n", __func__);
+    if (ctx == NULL) {
+      xlog("modbus_tcp_listen fail");
+      // IOSLOG(0, "[IOS](%s): Unable to create the libmodbus context! \r\n", __func__);
       return -1;
     }
 
     if (modbus_set_slave(ctx, RTU_SERVER_ID) == -1) {
-      IOSLOG(0, "[IOS](%s): Invalid slave ID! \r\n", __func__);
+      xlog("modbus_set_slave fail");
+      // IOSLOG(0, "[IOS](%s): Invalid slave ID! \r\n", __func__);
       modbus_free(ctx);
       return -1;
     }
 
     if (modbus_connect(ctx) == -1) {
-      IOSLOG(0, "[IOS](%s): Connection failed: %s \r\n", __func__, modbus_strerror(errno));
+      xlog("modbus_connect fail");
+      // IOSLOG(0, "[IOS](%s): Connection failed: %s \r\n", __func__, modbus_strerror(errno));
       modbus_free(ctx);
       return -1;
     }
@@ -288,7 +292,7 @@ int ios_modbus_init(void)
 #endif
 
   mb_mapping = modbus_mapping_new(MODBUS_MAX_READ_BITS, 0, MODBUS_MAX_READ_REGISTERS, 0);
-    if (mb_mapping == NULL) {
+  if (mb_mapping == NULL) {
     IOSLOG(0, "[IOS](%s): Failed to allocate the mapping: %s\n", __func__, modbus_strerror(errno));
     modbus_free(ctx);
     return -1;
@@ -1505,141 +1509,140 @@ void wdtCtl(void *argu)
     return;
 }
 
-void *ioCtl(void *argu)
-{
-    IOSLOG(0, "[IOS](%s): ioCtl Init Finish \n", __func__);
-    //int count = 0;
-    
-    auto iosDO1_start = std::chrono::high_resolution_clock::now();
-    auto iosDO2_start = std::chrono::high_resolution_clock::now();
-    auto iosDO3_start = std::chrono::high_resolution_clock::now();
-    auto iosDO4_start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now();
-        
-    std::chrono::duration<double, std::milli> duration(0);
-    std::string strtmp;
+void *ioCtl(void *argu) {
+  xlog("");
+  // IOSLOG(0, "[IOS](%s): ioCtl Init Finish \n", __func__);
+  // int count = 0;
 
-    iosDO1_start = std::chrono::high_resolution_clock::now();
-        
-    // # cycletime_end <<
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - iosDO1_start;
-    strtmp = std::to_string(duration.count());
-    IOSLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
+  auto iosDO1_start = std::chrono::high_resolution_clock::now();
+  auto iosDO2_start = std::chrono::high_resolution_clock::now();
+  auto iosDO3_start = std::chrono::high_resolution_clock::now();
+  auto iosDO4_start = std::chrono::high_resolution_clock::now();
+  auto end = std::chrono::high_resolution_clock::now();
 
-    ios_setStatusLed(LED1_PWR, LED_GREEN);  
+  std::chrono::duration<double, std::milli> duration(0);
+  std::string strtmp;
 
-    while(1) {
-        if(bTearDown == true) {
-            break;
-        }
+  iosDO1_start = std::chrono::high_resolution_clock::now();
+
+  // # cycletime_end <<
+  end = std::chrono::high_resolution_clock::now();
+  duration = end - iosDO1_start;
+  strtmp = std::to_string(duration.count());
+  // IOSLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
+
+  ios_setStatusLed(LED1_PWR, LED_GREEN);
+
+  while (1) {
+    if (bTearDown == true) {
+      break;
+    }
     /*int value = 0;
     int level = spi_gpio_di_get_value(0, &value);
     IOSLOG(0, RED "level=[%d]\r\n", level);
     usleep(1000000);*/
-        /*{
-            int iosLED_blink = 0;
-            int iosLED_ret0 = iosLED_val0;
-            int iosLED_ret1 = iosLED_val1;
-            iosLED_blink = iosLED_ret1 << 8 | iosLED_ret0;
+    /*{
+        int iosLED_blink = 0;
+        int iosLED_ret0 = iosLED_val0;
+        int iosLED_ret1 = iosLED_val1;
+        iosLED_blink = iosLED_ret1 << 8 | iosLED_ret0;
 
-            if((count++ / 5) % 2 == 0) {
-                iosLED_ret0 &= ~(iosLED_blink_bit);
-                iosLED_ret1 &= ~(iosLED_blink_bit >> 8);
-            } else if((count / 5) % 2 == 1) {
-                iosLED_ret0 |= (iosLED_blink_bit);
-                iosLED_ret1 |= (iosLED_blink_bit >> 8);
-            }
-            
-            iosLED_i2cset_blink(iosLED_ret0 & 0xff, iosLED_ret1);
-        }
-        {
-            if(pter_hdl_GigE == nullptr) {
-                //IOSLOG(0, "[IOS](%s)%d: pter_hdl_GigE is null\n", __func__, __LINE__);
-                iosLED_i2cset(LED1_VB_CAM1_CON_R, 1);
-                iosLED_i2cset(LED1_VB_CAM1_CON_G, 0);
-                iosLED_i2cset(LED2_VB_CAM2_CON_R, 1);
-                iosLED_i2cset(LED2_VB_CAM2_CON_G, 0);
-            } else {
-                //IOSLOG(0, "[IOS](%s)%d: pter_hdl_GigE not null\n", __func__, __LINE__);
-                iosLED_i2cset(LED1_VB_CAM1_CON_R, 0);
-                iosLED_i2cset(LED1_VB_CAM1_CON_G, 1);
-                iosLED_i2cset(LED2_VB_CAM2_CON_R, 0);
-                iosLED_i2cset(LED2_VB_CAM2_CON_G, 1);
-            }
-        }*/
-        
-        if(iosDO1_blink_time > 0) {
-            end = std::chrono::high_resolution_clock::now();
-            duration = end - iosDO1_start;
-            strtmp = std::to_string(duration.count());
-            // IOSLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
-            if(duration.count() >= iosDO1_blink_time) {
-                iosDO1_blink_time = 0;
-                unsigned int di_val = 0;
-                spi_gpio_do_get_value(0, &di_val);
-                spi_gpio_set_value(0, ~(di_val) & 0x01);
-            }
-        } else {
-            iosDO1_start = std::chrono::high_resolution_clock::now();
-        }
-        
-        if(iosDO2_blink_time > 0) {
-            end = std::chrono::high_resolution_clock::now();
-            duration = end - iosDO2_start;
-            strtmp = std::to_string(duration.count());
-            if(duration.count() >= iosDO2_blink_time) {
-                iosDO2_blink_time = 0;
-                unsigned int di_val = 0;
-                spi_gpio_do_get_value(1, &di_val);
-                spi_gpio_set_value(1, ~(di_val) & 0x01);
-            }
-        } else {
-            iosDO2_start = std::chrono::high_resolution_clock::now();
-        }
-        
-        
-        if(iosDO3_blink_time > 0) {
-            end = std::chrono::high_resolution_clock::now();
-            duration = end - iosDO3_start;
-            strtmp = std::to_string(duration.count());
-            if(duration.count() >= iosDO3_blink_time) {
-                iosDO3_blink_time = 0;
-                unsigned int di_val = 0;
-                spi_gpio_do_get_value(2, &di_val);
-                spi_gpio_set_value(2, ~(di_val) & 0x01);
-            }
-        } else {
-            iosDO3_start = std::chrono::high_resolution_clock::now();
-        }
-        
-        if(iosDO4_blink_time > 0) {
-            end = std::chrono::high_resolution_clock::now();
-            duration = end - iosDO4_start;
-            strtmp = std::to_string(duration.count());
-            if(duration.count() >= iosDO4_blink_time) {
-                iosDO4_blink_time = 0;
-                unsigned int di_val = 0;
-                spi_gpio_do_get_value(3, &di_val);
-                spi_gpio_set_value(3, ~(di_val) & 0x01);
-            }
-        } else {
-            iosDO4_start = std::chrono::high_resolution_clock::now();
+        if((count++ / 5) % 2 == 0) {
+            iosLED_ret0 &= ~(iosLED_blink_bit);
+            iosLED_ret1 &= ~(iosLED_blink_bit >> 8);
+        } else if((count / 5) % 2 == 1) {
+            iosLED_ret0 |= (iosLED_blink_bit);
+            iosLED_ret1 |= (iosLED_blink_bit >> 8);
         }
 
-        usleep(1000);
+        iosLED_i2cset_blink(iosLED_ret0 & 0xff, iosLED_ret1);
+    }
+    {
+        if(pter_hdl_GigE == nullptr) {
+            //IOSLOG(0, "[IOS](%s)%d: pter_hdl_GigE is null\n", __func__, __LINE__);
+            iosLED_i2cset(LED1_VB_CAM1_CON_R, 1);
+            iosLED_i2cset(LED1_VB_CAM1_CON_G, 0);
+            iosLED_i2cset(LED2_VB_CAM2_CON_R, 1);
+            iosLED_i2cset(LED2_VB_CAM2_CON_G, 0);
+        } else {
+            //IOSLOG(0, "[IOS](%s)%d: pter_hdl_GigE not null\n", __func__, __LINE__);
+            iosLED_i2cset(LED1_VB_CAM1_CON_R, 0);
+            iosLED_i2cset(LED1_VB_CAM1_CON_G, 1);
+            iosLED_i2cset(LED2_VB_CAM2_CON_R, 0);
+            iosLED_i2cset(LED2_VB_CAM2_CON_G, 1);
+        }
+    }*/
+
+    if (iosDO1_blink_time > 0) {
+      end = std::chrono::high_resolution_clock::now();
+      duration = end - iosDO1_start;
+      strtmp = std::to_string(duration.count());
+      // IOSLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
+      if (duration.count() >= iosDO1_blink_time) {
+        iosDO1_blink_time = 0;
+        unsigned int di_val = 0;
+        spi_gpio_do_get_value(0, &di_val);
+        spi_gpio_set_value(0, ~(di_val) & 0x01);
+      }
+    } else {
+      iosDO1_start = std::chrono::high_resolution_clock::now();
     }
 
-    ios_setStatusLed(LED1_PWR, LED_OFF);
-    ios_setStatusLed(LED2_STAT, LED_OFF);
-    ios_setStatusLed(LED3_COM, LED_OFF);
-    ios_setStatusLed(LED4_TRIG, LED_OFF);
-    ios_setStatusLed(LED5_ERR, LED_OFF);
-    
-    if(iosLED_file > 0) {
-        close(iosLED_file);
+    if (iosDO2_blink_time > 0) {
+      end = std::chrono::high_resolution_clock::now();
+      duration = end - iosDO2_start;
+      strtmp = std::to_string(duration.count());
+      if (duration.count() >= iosDO2_blink_time) {
+        iosDO2_blink_time = 0;
+        unsigned int di_val = 0;
+        spi_gpio_do_get_value(1, &di_val);
+        spi_gpio_set_value(1, ~(di_val) & 0x01);
+      }
+    } else {
+      iosDO2_start = std::chrono::high_resolution_clock::now();
     }
-    return 0;
+
+    if (iosDO3_blink_time > 0) {
+      end = std::chrono::high_resolution_clock::now();
+      duration = end - iosDO3_start;
+      strtmp = std::to_string(duration.count());
+      if (duration.count() >= iosDO3_blink_time) {
+        iosDO3_blink_time = 0;
+        unsigned int di_val = 0;
+        spi_gpio_do_get_value(2, &di_val);
+        spi_gpio_set_value(2, ~(di_val) & 0x01);
+      }
+    } else {
+      iosDO3_start = std::chrono::high_resolution_clock::now();
+    }
+
+    if (iosDO4_blink_time > 0) {
+      end = std::chrono::high_resolution_clock::now();
+      duration = end - iosDO4_start;
+      strtmp = std::to_string(duration.count());
+      if (duration.count() >= iosDO4_blink_time) {
+        iosDO4_blink_time = 0;
+        unsigned int di_val = 0;
+        spi_gpio_do_get_value(3, &di_val);
+        spi_gpio_set_value(3, ~(di_val) & 0x01);
+      }
+    } else {
+      iosDO4_start = std::chrono::high_resolution_clock::now();
+    }
+
+    usleep(1000);
+  }
+
+  ios_setStatusLed(LED1_PWR, LED_OFF);
+  ios_setStatusLed(LED2_STAT, LED_OFF);
+  ios_setStatusLed(LED3_COM, LED_OFF);
+  ios_setStatusLed(LED4_TRIG, LED_OFF);
+  ios_setStatusLed(LED5_ERR, LED_OFF);
+
+  if (iosLED_file > 0) {
+    close(iosLED_file);
+  }
+  return 0;
 }
 
 void sfcCtl_init() {
