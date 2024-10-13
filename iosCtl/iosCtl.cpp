@@ -2729,13 +2729,13 @@ int iosCtl_init()
     SPI_Open();
     // tof_init();
 
-    // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
-    // if (ret < 0) {
-    //   xlog("Create iosCtl iosThread fail");
-    //   return -1;
-    // } else {
-    //   xlog("create iosThread success");
-    // }
+    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
+    if (ret < 0) {
+      xlog("Create iosCtl iosThread fail");
+      return -1;
+    } else {
+      xlog("create iosThread success");
+    }
 
     // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
     // if (ret < 0) {
