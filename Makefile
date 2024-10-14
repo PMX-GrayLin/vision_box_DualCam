@@ -153,11 +153,11 @@ SRC_TPL = $(wildcard ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary/*.cpp)
 OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 
 BUILD_OBJs+=$(IOS_OBJS)
-BUILD_OBJs+=$(IPS_OBJS)
-BUILD_OBJs+=$(OBJ_IPL)
-BUILD_OBJs+=$(OBJ_GIGE)
-BUILD_OBJs+=$(OBJ_MLDL)
-BUILD_OBJs+=$(OBJ_TPL)
+# BUILD_OBJs+=$(IPS_OBJS)
+# BUILD_OBJs+=$(OBJ_IPL)
+# BUILD_OBJs+=$(OBJ_GIGE)
+# BUILD_OBJs+=$(OBJ_MLDL)
+# BUILD_OBJs+=$(OBJ_TPL)
 
 all: i2ctools $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(BUILD_OBJs)
 	@echo ""
