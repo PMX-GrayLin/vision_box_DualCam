@@ -1733,17 +1733,17 @@ void *mainCtl(void *argu)
 
                 //=================   IPS process.START (Single camera)   ===================
 
-                if (!JsonQ_DeQ(&seInfo))
-                {
+                // if (!JsonQ_DeQ(&seInfo))
+                // {
 
-                    MAINLOG(0, "%s : ======   IPS process.START   ======\n", __func__);
+                //     MAINLOG(0, "%s : ======   IPS process.START   ======\n", __func__);
 
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+                //     MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+                //     MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+                //     MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    MAINLOG(0, "%s : ======   IPS process.END   ======\n", __func__);
-                }
+                //     MAINLOG(0, "%s : ======   IPS process.END   ======\n", __func__);
+                // }
                 //=================   IPS process.END (Single camera)    ===================
 
                 //=================   IPS process.START (Dual camera)    ===================
