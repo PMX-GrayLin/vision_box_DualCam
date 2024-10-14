@@ -30,7 +30,6 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <mosquitto.h>
-// #include <json.h>
 #include "client_shared.h"
 #include "ipsCtl/IPS_CompFunction.h"
 #include "ipsCtl/IPS_CompAlgorithm.h"
@@ -111,7 +110,6 @@ static uint32_t ext_gettime_ms(void)
  *************************************************************/
 int json_parse_IOS(struct json_object *root, uint8_t *setFunc, const int iID)
 {
-
     seIO_JsonInfo seInfo;
     memset(&seInfo, 0x00, sizeof(seIO_JsonInfo));
 
