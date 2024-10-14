@@ -3053,13 +3053,13 @@ int main(int argc, char **argv)
     // }    
 
     // fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
-    ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
-    if (ret < 0)
-    {
-        xlog("%s:%d, pthread_create error:thread 5!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 5 _ ios_process(...) !!\n");
-        exit(1);
-    }    
+    // ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
+    // if (ret < 0)
+    // {
+    //     xlog("%s:%d, pthread_create error:thread 5!! \n\r", __func__, __LINE__);
+    //     // perror("Cannot create thread 5 _ ios_process(...) !!\n");
+    //     exit(1);
+    // }    
 
     /* init mcuCtl */
     ret = iosCtl_init();
