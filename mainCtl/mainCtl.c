@@ -1518,7 +1518,7 @@ void Process_Flow_Handler_Dual(void)
                         iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
                         // ExModeQ_EnQ_Dual(iEnbExMode, 1);
                         // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
-                        setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 1);
+                        // setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 1);
                         resume_ip_Dual(1);
                         wakeIPSFlag_Dual = 1;
                     }         
@@ -1660,8 +1660,8 @@ int FW_Mqtt_PriorityPass_Internal(int nIsEndFunc = 0)
     {
 
         int iId = iId_PriorityPass[i];
-        ExModeQ_EnQ(iEnbExMode);
-        setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"status\": \"FW_Mqtt_PriorityPass\" }");
+        // ExModeQ_EnQ(iEnbExMode);
+        // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"status\": \"FW_Mqtt_PriorityPass\" }");
     }
 
     resume_ip_Dual(0);
@@ -1747,33 +1747,33 @@ void *mainCtl(void *argu)
                 //=================   IPS process.END (Single camera)    ===================
 
                 //=================   IPS process.START (Dual camera)    ===================
-                if (!JsonQ_DeQ_Dual(&seInfo, 0))
-                {
+                // if (!JsonQ_DeQ_Dual(&seInfo, 0))
+                // {
 
-                    MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 0)   ======\n", __func__);
+                    // MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 0)   ======\n", __func__);
 
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+                    // MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+                    // MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+                    // MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    resume_ip_Dual(0);
+                    // resume_ip_Dual(0);
 
-                    MAINLOG(0, "%s : ======   IPS process.END (JsonQ_DeQ_Dual 0)   ======\n", __func__);
-                }
+                    // MAINLOG(0, "%s : ======   IPS process.END (JsonQ_DeQ_Dual 0)   ======\n", __func__);
+                // }
 
-                if (!JsonQ_DeQ_Dual(&seInfo, 1))
-                {
+                // if (!JsonQ_DeQ_Dual(&seInfo, 1))
+                // {
 
-                    MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 1)   ======\n", __func__);
+                    // MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 1)   ======\n", __func__);
 
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+                    // MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+                    // MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+                    // MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    resume_ip_Dual(1);
+                    // resume_ip_Dual(1);
 
-                    MAINLOG(0, "%s : ======   IPS process.END  (JsonQ_DeQ_Dual 1)   ======\n", __func__);
-                }                
+                    // MAINLOG(0, "%s : ======   IPS process.END  (JsonQ_DeQ_Dual 1)   ======\n", __func__);
+                // }                
 
                 //=================   IPS process.END (Dual camera)    ===================
             }
@@ -1913,229 +1913,229 @@ void *ips_process_Dual(void *argu)
             //< Trigger Mode_Activate > AutoRun Mode.
             /////////////////////////////////////////////////////
 
-            if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_TRIGGERMODETYPE]))
-            {
+            // if (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_TRIGGERMODETYPE]))
+            // {
 
-                MAINLOG(0, "@ === ===> AutoRun Mode === ===>\n");
+            //     MAINLOG(0, "@ === ===> AutoRun Mode === ===>\n");
 
-                bEnb_TriggerMode_Activate = iEnbExMode.flg_TriggerMode_Activat;
+            //     bEnb_TriggerMode_Activate = iEnbExMode.flg_TriggerMode_Activat;
 
-                if (bEnb_TriggerMode_Activate)
-                {
-                    bEnb_AutoRunningMode_Activate = true;
-                }
-                else
-                {
-                    /* send msgQ to mainCtl for indicating the fail of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                    bEnb_AutoRunningMode_Activate = false;
-                    bStatus_AutoRunMode = 0;
-                    resume_mp(bStatus_AutoRunMode);
-                    continue;
-                }
+            //     if (bEnb_TriggerMode_Activate)
+            //     {
+            //         bEnb_AutoRunningMode_Activate = true;
+            //     }
+            //     else
+            //     {
+            //         /* send msgQ to mainCtl for indicating the fail of auto mode */
+            //         innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
+            //         bEnb_AutoRunningMode_Activate = false;
+            //         bStatus_AutoRunMode = 0;
+            //         resume_mp(bStatus_AutoRunMode);
+            //         continue;
+            //     }
 
-                int szVector = vecMthParmTasksRespo.size();
-                if (0 == szVector)
-                {
-                    /* send msgQ to mainCtl for indicating the fail of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                    bEnb_AutoRunningMode_Activate = false;
-                    bStatus_AutoRunMode = 0;
-                    resume_mp(bStatus_AutoRunMode);
-                    continue;
-                }
+            //     int szVector = vecMthParmTasksRespo.size();
+            //     if (0 == szVector)
+            //     {
+            //         /* send msgQ to mainCtl for indicating the fail of auto mode */
+            //         innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
+            //         bEnb_AutoRunningMode_Activate = false;
+            //         bStatus_AutoRunMode = 0;
+            //         resume_mp(bStatus_AutoRunMode);
+            //         continue;
+            //     }
 
-                ///////////////////////////////////////////////////////////////////////////////////////
-                // Send the state of Auto-Run Mode was enabled to the Backend.
+            //     ///////////////////////////////////////////////////////////////////////////////////////
+            //     // Send the state of Auto-Run Mode was enabled to the Backend.
 
-                int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
-                cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
+            //     int nID = cAlgoMthParam.mAlgoMethod.emAlgoId;
+            //     cAlgoMthParam.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], cAlgoMthParam.mAlgoMethod.pRes, cAlgoMthParam.mAlgoMethod.pJsonBuf, iCamId);
 
-                ///////////////////////////////////////////////////////////////////////////////////////
-                int iLoopCnt = 1;
-                for (int i = 0; i < szVector; i++)
-                {
+            //     ///////////////////////////////////////////////////////////////////////////////////////
+            //     int iLoopCnt = 1;
+            //     for (int i = 0; i < szVector; i++)
+            //     {
 
-                    CAlgoMethodParametr vecCAlgoMthdParm;
+            //         CAlgoMethodParametr vecCAlgoMthdParm;
 
-                    vecCAlgoMthdParm = vecMthParmTasksRespo[i];
+            //         vecCAlgoMthdParm = vecMthParmTasksRespo[i];
 
-                    if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING]))
-                    {
+            //         if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[FLAGE_AUTO_RUNNING]))
+            //         {
 
-                        if (!bPrev_AutoRunningMode_Activate && bEnb_AutoRunningMode_Activate)
-                        {
+            //             if (!bPrev_AutoRunningMode_Activate && bEnb_AutoRunningMode_Activate)
+            //             {
 
-                            bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
-                            seAllParam = seAllParamTable_MeasGW_Annulus();
-                        }
-                        else if (bPrev_AutoRunningMode_Activate && !bEnb_AutoRunningMode_Activate)
-                        {
+            //                 bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
+            //                 seAllParam = seAllParamTable_MeasGW_Annulus();
+            //             }
+            //             else if (bPrev_AutoRunningMode_Activate && !bEnb_AutoRunningMode_Activate)
+            //             {
 
-                            bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
-                            seAllParam = seAllParamTable_MeasGW_Annulus();
-                        }
-                        else
-                        {
-                        }
-                    }
+            //                 bPrev_AutoRunningMode_Activate = bEnb_AutoRunningMode_Activate;
+            //                 seAllParam = seAllParamTable_MeasGW_Annulus();
+            //             }
+            //             else
+            //             {
+            //             }
+            //         }
 
-                    // Selection the handle pointer
-                    if ((!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
+            //         // Selection the handle pointer
+            //         if ((!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Release])) ||
 
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                        (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
-                    {
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+            //             (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
+            //         {
 
-                        MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-                        phandler = pter_hdl_GigE_Dual[iCamId];
+            //             MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
+            //             phandler = pter_hdl_GigE_Dual[iCamId];
 
-                        if (imgBuf.pbImgBuf)
-                        {
+            //             if (imgBuf.pbImgBuf)
+            //             {
 
-                            MAINLOG(0, "@===> Release imgBuf.pbImgBuf\n");
-                            delete[] imgBuf.pbImgBuf;
-                            imgBuf.pbImgBuf = nullptr;
-                        }
-                    }
-                    else
-                    {
+            //                 MAINLOG(0, "@===> Release imgBuf.pbImgBuf\n");
+            //                 delete[] imgBuf.pbImgBuf;
+            //                 imgBuf.pbImgBuf = nullptr;
+            //             }
+            //         }
+            //         else
+            //         {
 
-                        MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
-                        phandler = pter_hdl_IPL;
-                    }
+            //             MAINLOG(0, "### === !===> phandler = pter_hdl_IPL\n");
+            //             phandler = pter_hdl_IPL;
+            //         }
 
-                    // Get the handle of Parameter convert method.
-                    ptrParamCvt = vecCAlgoMthdParm.mAlgoMethod.ParamConverter;
-                    nID = vecCAlgoMthdParm.mAlgoMethod.emAlgoId;
+            //         // Get the handle of Parameter convert method.
+            //         ptrParamCvt = vecCAlgoMthdParm.mAlgoMethod.ParamConverter;
+            //         nID = vecCAlgoMthdParm.mAlgoMethod.emAlgoId;
 
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
-                        // Convert the all parameter to function parameter.
-                        //[[ AP to P ]]
-                        if (ptrParamCvt != nullptr)
-                        {
-                            (*(*ptrParamCvt)[0])(&vecCAlgoMthdParm, &seAllParam);
-                        }
-                    }
+            //         if (bEnb_AutoRunningMode_Activate)
+            //         {
+            //             // Convert the all parameter to function parameter.
+            //             //[[ AP to P ]]
+            //             if (ptrParamCvt != nullptr)
+            //             {
+            //                 (*(*ptrParamCvt)[0])(&vecCAlgoMthdParm, &seAllParam);
+            //             }
+            //         }
 
-                    // Algorithm Running !!!
-                    res = vecCAlgoMthdParm.mAlgoMethod.AlgoMthd(phandler, &imgBuf, &vecCAlgoMthdParm, vecCAlgoMthdParm.mAlgoMethod.pRes, &imgBuf);
-                    if (res)
-                    {
+            //         // Algorithm Running !!!
+            //         res = vecCAlgoMthdParm.mAlgoMethod.AlgoMthd(phandler, &imgBuf, &vecCAlgoMthdParm, vecCAlgoMthdParm.mAlgoMethod.pRes, &imgBuf);
+            //         if (res)
+            //         {
 
-                        vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
-                        bEnb_AutoRunningMode_Activate = 0;
-                        bPrev_AutoRunningMode_Activate = 0;
+            //             vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
+            //             bEnb_AutoRunningMode_Activate = 0;
+            //             bPrev_AutoRunningMode_Activate = 0;
 
-                        if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
-                            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
-                            (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
+            //             if ((!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Inquiry])) ||
+            //                 (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Config])) ||
+            //                 (!strcmp(cAlgoMthParam.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture])) ||
 
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
-                            (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
-                        {
+            //                 (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Initialize])) ||
+            //                 (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Start])) ||
+            //                 (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Capture])) ||
+            //                 (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Stop])) ||
+            //                 (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Streaming_Release])))
+            //             {
 
-                            seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
+            //                 seGigECamCapture_Ret *pResult = (seGigECamCapture_Ret *)cAlgoMthParam.mAlgoMethod.pRes;
 
-                            if (pResult->retState)
-                            {
-                                ipsComp_IPL_Release();
-                                ipsComp_Camera_Release_Dual(iCamId);
-                                usleep(2000); /* delay 2 ms */
-                                ipsComp_IPL_Init();
-                                ipsComp_Camera_Init_Dual(iCamId);
+            //                 if (pResult->retState)
+            //                 {
+            //                     ipsComp_IPL_Release();
+            //                     ipsComp_Camera_Release_Dual(iCamId);
+            //                     usleep(2000); /* delay 2 ms */
+            //                     ipsComp_IPL_Init();
+            //                     ipsComp_Camera_Init_Dual(iCamId);
 
-                                MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
-                            }
-                        }
-                        printf("Error ==> %s  <===\n", enum_Publish_CAMReg[nID]);
-                        /* send msgQ to mainCtl for indicating the fail of auto mode */
-                        innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
-                        bStatus_AutoRunMode = -1;
-                        resume_mp(bStatus_AutoRunMode);
-                        break;
-                    }
+            //                     MAINLOG(0, "@@@@ === !===> phandler = pter_hdl_GigE_Dual[%d]\n", iCamId);
+            //                 }
+            //             }
+            //             printf("Error ==> %s  <===\n", enum_Publish_CAMReg[nID]);
+            //             /* send msgQ to mainCtl for indicating the fail of auto mode */
+            //             innerQ_IPS_EnQ_Dual("Auto_Mode_Fail", iCamId);   // Dual camera
+            //             bStatus_AutoRunMode = -1;
+            //             resume_mp(bStatus_AutoRunMode);
+            //             break;
+            //         }
 
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
-                        // Convert the Result Parameter to All parameter.
-                        //[[ RetP to AP ]]
-                        if (ptrParamCvt != nullptr)
-                        {
-                            (*(*ptrParamCvt)[1])(vecCAlgoMthdParm.mAlgoMethod.pRes, &seAllParam);
-                        }
-                    }
+            //         if (bEnb_AutoRunningMode_Activate)
+            //         {
+            //             // Convert the Result Parameter to All parameter.
+            //             //[[ RetP to AP ]]
+            //             if (ptrParamCvt != nullptr)
+            //             {
+            //                 (*(*ptrParamCvt)[1])(vecCAlgoMthdParm.mAlgoMethod.pRes, &seAllParam);
+            //             }
+            //         }
 
-                    if (bEnb_AutoRunningMode_Activate)
-                    {
+            //         if (bEnb_AutoRunningMode_Activate)
+            //         {
 
-                        // When the camera capture image was finished, send the result immediately to Back-end.
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture]))
-                        {
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
-                        }
+            //             // When the camera capture image was finished, send the result immediately to Back-end.
+            //             if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[METHOD_GigeCam_Capture]))
+            //             {
+            //                 vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, vecCAlgoMthdParm.mAlgoMethod.pJsonBuf, iCamId);
+            //             }
 
-                        // # MeasGlueWidth_Annulus
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus]))
-                        {
+            //             // # MeasGlueWidth_Annulus
+            //             if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Annulus]))
+            //             {
 
-                            // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
-                            // The value of roi_id in pJsonBuf only for continuity testing mode.
-                            std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
+            //                 // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
+            //                 // The value of roi_id in pJsonBuf only for continuity testing mode.
+            //                 std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
 
-                            printf("ALGO_MeasGW_Annulus:\n %s\n\n", strPSetInfo.c_str());
+            //                 printf("ALGO_MeasGW_Annulus:\n %s\n\n", strPSetInfo.c_str());
 
-                            std::size_t found = strPSetInfo.rfind("}");
-                            std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
+            //                 std::size_t found = strPSetInfo.rfind("}");
+            //                 std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
 
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
+            //                 vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
 
-                            iLoopCnt++;
-                        }
+            //                 iLoopCnt++;
+            //             }
 
-                        // # MeasGlueWidth_Rectangle
-                        if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect]))
-                        {
+            //             // # MeasGlueWidth_Rectangle
+            //             if (!strcmp(vecCAlgoMthdParm.mAlgoMethod.strCmd, enum_Subscribe_CAMReg[ALGO_MeasGW_Rect]))
+            //             {
 
-                            // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
-                            // The value of roi_id in pJsonBuf only for continuity testing mode.
-                            std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
+            //                 // seAlgoMthd.pJsonBuf is "TriggerMode_Activate" and the Json context has important of "msgId" info.
+            //                 // The value of roi_id in pJsonBuf only for continuity testing mode.
+            //                 std::string strPSetInfo(cAlgoMthParam.mAlgoMethod.pJsonBuf);
 
-                            printf("ALGO_MeasGW_Rectangle:\n %s\n\n", strPSetInfo.c_str());
+            //                 printf("ALGO_MeasGW_Rectangle:\n %s\n\n", strPSetInfo.c_str());
 
-                            std::size_t found = strPSetInfo.rfind("}");
-                            std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
+            //                 std::size_t found = strPSetInfo.rfind("}");
+            //                 std::string strAddROI_Id = strPSetInfo.substr(0, found) + ",\"roi_id\":" + std::to_string(iLoopCnt) + "}";
 
-                            vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
+            //                 vecCAlgoMthdParm.mAlgoMethod.JsonGenerator(enum_Publish_CAMReg[nID], vecCAlgoMthdParm.mAlgoMethod.pRes, strAddROI_Id.c_str(), iCamId);
 
-                            iLoopCnt++;
-                        }
-                    }
-                }
-                if (0 == res)
-                {
-                    /* send msgQ to mainCtl for indicating the done of auto mode */
-                    innerQ_IPS_EnQ_Dual("Auto_Mode_Done", iCamId);   // Dual camera
-                    bStatus_AutoRunMode = 1;
-                    resume_mp(bStatus_AutoRunMode);
-                }
+            //                 iLoopCnt++;
+            //             }
+            //         }
+            //     }
+            //     if (0 == res)
+            //     {
+            //         /* send msgQ to mainCtl for indicating the done of auto mode */
+            //         innerQ_IPS_EnQ_Dual("Auto_Mode_Done", iCamId);   // Dual camera
+            //         bStatus_AutoRunMode = 1;
+            //         resume_mp(bStatus_AutoRunMode);
+            //     }
 
-                MAINLOG(0, "@ <=== === AutoRun Mode <=== ===\n");
+            //     MAINLOG(0, "@ <=== === AutoRun Mode <=== ===\n");
 
-                usleep(1000); /* delay 1 ms */
+            //     usleep(1000); /* delay 1 ms */
 
-                continue;
-            }
+            //     continue;
+            // }
 
             /////////////////////////////////////////////////////////////////
             //<Without Trigger Mode_Activate> Normal Mode and AutoRunn Mode.
