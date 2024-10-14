@@ -269,11 +269,11 @@ void sigExit_main(int sig)
     close_io();
     close_mp();
 
-    ext_mqtt_release();
+    // ext_mqtt_release();
 
-    ipsComp_Camera_Release_Dual(0);     //Dual camera >> Camera handle 
-    ipsComp_Camera_Release_Dual(1);     //Dual camera >> Camera handle 
-    ipsComp_IPL_Release();
+    // ipsComp_Camera_Release_Dual(0);     //Dual camera >> Camera handle 
+    // ipsComp_Camera_Release_Dual(1);     //Dual camera >> Camera handle 
+    // ipsComp_IPL_Release();
 
     usleep(30000);
 
