@@ -2979,39 +2979,39 @@ int main(int argc, char **argv)
     // ipsComp_Camera_Init_Dual(1);    //Dual camera >> Camera handle
 
     /* initial inner queue(std::deque)  */
-    innerQ_Main_Init();
+    // innerQ_Main_Init();
     
-    innerQ_IPS_Init_Dual(0);    //Dual camera
-    innerQ_IPS_Init_Dual(1);    //Dual camera
+    // innerQ_IPS_Init_Dual(0);    //Dual camera
+    // innerQ_IPS_Init_Dual(1);    //Dual camera
 
-    innerQ_IOS_Init();
+    // innerQ_IOS_Init();
 
     // /* initial IPS task queue(std::deque)  */
     //Dual camera for IPS_Dual
-    JsonQ_Init_Dual(0);
-    JsonQ_Init_Dual(1);
-    TasksQ_Init_Dual(0);
-    TasksQ_Init_Dual(1);
-    ExModeQ_Init_Dual(0);
-    ExModeQ_Init_Dual(1);
+    // JsonQ_Init_Dual(0);
+    // JsonQ_Init_Dual(1);
+    // TasksQ_Init_Dual(0);
+    // TasksQ_Init_Dual(1);
+    // ExModeQ_Init_Dual(0);
+    // ExModeQ_Init_Dual(1);
     
     // /* initial IOS task queue(std::deque)  */
-    IO_JsonQ_Init();
+    // IO_JsonQ_Init();
 
     // /* initial AIS task queue(std::deque)  */
 
     /* initial hash tabe of Mqtt parse and Method assign */
-    createHashMap_Param();
-    createHashMap_Method();
+    // createHashMap_Param();
+    // createHashMap_Method();
     
-    createHashMap_IO_Param();
+    // createHashMap_IO_Param();
 
-    usleep(100000);
+    // usleep(100000);
 
-    /* internal Mqtt commmand for StreamingMode enable. */
-    FW_Mqtt_PriorityPass_Internal(0);
+    // /* internal Mqtt commmand for StreamingMode enable. */
+    // FW_Mqtt_PriorityPass_Internal(0);
 
-    usleep(100000);
+    // usleep(100000);
 
     /* create a thread for main handler  */
     ret = pthread_create(&thread1, nullptr, mainCtl, nullptr);
@@ -3022,13 +3022,13 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
-    if (ret < 0)
-    {
-        xlog("%s:%d, pthread_create error:thread 2!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 2 !!\n");
-        exit(1);
-    }
+    // ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
+    // if (ret < 0)
+    // {
+    //     xlog("%s:%d, pthread_create error:thread 2!! \n\r", __func__, __LINE__);
+    //     // perror("Cannot create thread 2 !!\n");
+    //     exit(1);
+    // }
 
     /* create a thread for IP process */
     int iCamId[2] = {0 ,1}; //dual camera
