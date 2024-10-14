@@ -249,7 +249,7 @@ void sigExit_main(int sig)
     usleep(30000);
     close(sfcCtl_serial_port);
 
-    ExModeQ_Destory();          //Single camera
+    // ExModeQ_Destory();          //Single camera
     // ExModeQ_Destory_Dual(0);    //Dual camera
     // ExModeQ_Destory_Dual(1);    //Dual camera
     // TasksQ_Destory();           //Single camera
@@ -1222,6 +1222,8 @@ void Show_Process_State(uint8_t currentState)
  *************************************************************/
 void Process_Flow_Handler(void)
 {
+    return;
+    
     std::string strInfo;
 
     if (!Process_Node.Active)
@@ -1303,11 +1305,11 @@ void Process_Flow_Handler(void)
 
                     if (wakeIPSFlag == 0) {
                         iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
-                        pAlgoParam = &gAlgoParamReg[iId];
+                        // pAlgoParam = &gAlgoParamReg[iId];
                         pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
                         pJP->bFlg_TriggerMode_Activate = true;
                         iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
-                        ExModeQ_EnQ_Dual(iEnbExMode, 0);
+                        // ExModeQ_EnQ_Dual(iEnbExMode, 0);
                         //setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
                         setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 0);
                         resume_ip_Dual(0);
@@ -1510,11 +1512,11 @@ void Process_Flow_Handler_Dual(void)
 
                     if (wakeIPSFlag_Dual == 0) {
                         iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
-                        pAlgoParam = &gAlgoParamReg[iId];
+                        // pAlgoParam = &gAlgoParamReg[iId];
                         pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
                         pJP->bFlg_TriggerMode_Activate = true;
                         iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
-                        ExModeQ_EnQ_Dual(iEnbExMode, 1);
+                        // ExModeQ_EnQ_Dual(iEnbExMode, 1);
                         // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
                         setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 1);
                         resume_ip_Dual(1);
