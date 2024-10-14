@@ -1223,206 +1223,206 @@ void Show_Process_State(uint8_t currentState)
 void Process_Flow_Handler(void)
 {
     return;
-    
-    std::string strInfo;
 
-    if (!Process_Node.Active)
-    {
-        return;
-    }
-    switch (Process_Node.autoMode)
-    {
-        case GLUE_INSPECTION:
-        {
-            int iId = 0, iStatus = 0, m;
-            uint8_t rec_data[MAX_MSG_SIZE];
-            seAlgoParamReg *pAlgoParam = nullptr;
-            seMode_TriggerModeType *pJP = nullptr;
-            seExpansionMode iEnbExMode = tagExpansionMode();
+    // std::string strInfo;
+
+    // if (!Process_Node.Active)
+    // {
+    //     return;
+    // }
+    // switch (Process_Node.autoMode)
+    // {
+    //     case GLUE_INSPECTION:
+    //     {
+    //         int iId = 0, iStatus = 0, m;
+    //         uint8_t rec_data[MAX_MSG_SIZE];
+    //         seAlgoParamReg *pAlgoParam = nullptr;
+    //         seMode_TriggerModeType *pJP = nullptr;
+    //         seExpansionMode iEnbExMode = tagExpansionMode();
 
             
-            switch (Process_Node.giFlow)
-            {
-                case GI_START: {
-                    /* firstall, check msqIosID whether exists remaining queue */
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
+    //         switch (Process_Node.giFlow)
+    //         {
+    //             case GI_START: {
+    //                 /* firstall, check msqIosID whether exists remaining queue */
+    //                 m = innerQ_IOS_IsEmpty();
+    //                 if (m != 1)
+    //                 {
 
-                        for (int i = 0; i < m; i++)
-                        {
-                            innerQ_IOS_DeQ(&strInfo);
-                            strcpy((char*)rec_data, strInfo.c_str());
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
-                        }
-                    }
+    //                     for (int i = 0; i < m; i++)
+    //                     {
+    //                         innerQ_IOS_DeQ(&strInfo);
+    //                         strcpy((char*)rec_data, strInfo.c_str());
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
+    //                     }
+    //                 }
                     
-                    if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 0) == 1)
-                    {
+    //                 if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 0) == 1)
+    //                 {
                         
-                        strcpy((char*)Process_Node.TestResult, "");
-                        ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
-                        ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
-                        wakeIPSFlag = 0;
-                        setStatus_mp(-1);
-                        /* go next step */
-                        Process_Node.giFlow = GI_WAIT_TRIGGER;
+    //                     strcpy((char*)Process_Node.TestResult, "");
+    //                     ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
+    //                     ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
+    //                     wakeIPSFlag = 0;
+    //                     setStatus_mp(-1);
+    //                     /* go next step */
+    //                     Process_Node.giFlow = GI_WAIT_TRIGGER;
                         
-                    }
+    //                 }
                     
-                    break;
-                }
-                case GI_WAIT_TRIGGER: {
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
+    //                 break;
+    //             }
+    //             case GI_WAIT_TRIGGER: {
+    //                 m = innerQ_IOS_IsEmpty();
+    //                 if (m != 1)
+    //                 {
 
-                        printf("%s()%d: msqIosId has received...\n", __FUNCTION__, __LINE__);
+    //                     printf("%s()%d: msqIosId has received...\n", __FUNCTION__, __LINE__);
 
-                        innerQ_IOS_DeQ(&strInfo);
-                        strcpy((char*)rec_data, strInfo.c_str());
-                        printf("%s()%d: rec_data=%s\n", __FUNCTION__, __LINE__, rec_data);
-                        if (strcmp((char*)rec_data, "Din_Trigger") == 0)
-                        {
-                            ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0);
-                            ios_Control_Light_Handler(LIGHT_SOURCE_1, TRUE);
-                            ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
-                            Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
-                        }
-                        else
-                        {
-                            usleep(10000);
-                            innerQ_IOS_EnQ((char *)"Din_Trigger_Dual");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
-                        }
-                    }
-                    break;
-                }
-                case GI_EXCUTE_AUTO_GI: {
-                    usleep(10000);
-                    /* waiting for Rex release audo mode API */ //<---TBD
-                    MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI ===> \n", __func__);
+    //                     innerQ_IOS_DeQ(&strInfo);
+    //                     strcpy((char*)rec_data, strInfo.c_str());
+    //                     printf("%s()%d: rec_data=%s\n", __FUNCTION__, __LINE__, rec_data);
+    //                     if (strcmp((char*)rec_data, "Din_Trigger") == 0)
+    //                     {
+    //                         ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0);
+    //                         ios_Control_Light_Handler(LIGHT_SOURCE_1, TRUE);
+    //                         ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
+    //                         Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
+    //                     }
+    //                     else
+    //                     {
+    //                         usleep(10000);
+    //                         innerQ_IOS_EnQ((char *)"Din_Trigger_Dual");
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
+    //                     }
+    //                 }
+    //                 break;
+    //             }
+    //             case GI_EXCUTE_AUTO_GI: {
+    //                 usleep(10000);
+    //                 /* waiting for Rex release audo mode API */ //<---TBD
+    //                 MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI ===> \n", __func__);
 
-                    if (wakeIPSFlag == 0) {
-                        iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
-                        // pAlgoParam = &gAlgoParamReg[iId];
-                        pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
-                        pJP->bFlg_TriggerMode_Activate = true;
-                        iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
-                        // ExModeQ_EnQ_Dual(iEnbExMode, 0);
-                        //setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
-                        setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 0);
-                        resume_ip_Dual(0);
-                        wakeIPSFlag = 1;
-                    }
-                    // suspend_mp();
+    //                 if (wakeIPSFlag == 0) {
+    //                     iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
+    //                     // pAlgoParam = &gAlgoParamReg[iId];
+    //                     pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
+    //                     pJP->bFlg_TriggerMode_Activate = true;
+    //                     iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
+    //                     // ExModeQ_EnQ_Dual(iEnbExMode, 0);
+    //                     //setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
+    //                     setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 0);
+    //                     resume_ip_Dual(0);
+    //                     wakeIPSFlag = 1;
+    //                 }
+    //                 // suspend_mp();
 
-                    // pthread_mutex_lock(&mp_suspendMutex);
-                    // while (mp_suspendFlag != 0)
-                    // {
-                    //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
-                    // }
-                    // pthread_mutex_unlock(&mp_suspendMutex);
+    //                 // pthread_mutex_lock(&mp_suspendMutex);
+    //                 // while (mp_suspendFlag != 0)
+    //                 // {
+    //                 //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
+    //                 // }
+    //                 // pthread_mutex_unlock(&mp_suspendMutex);
 
-                    getStatus_mp(&iStatus);
-                    if (iStatus == 0)
-                    { // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
-                        Process_Node.giFlow = GI_GET_TEST_RESULT;
-                    }
-                    else if (iStatus == 1)
-                    { // This numbe of 1 is mean done the AutiRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
-                        Process_Node.giFlow = GI_GET_TEST_RESULT;
-                    } else {
-                        Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
-                    }
-                            // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
-                    break;
-                }
-                case GI_GET_TEST_RESULT: {
-                    /* result be judged by web backend, we dirctly go back to GI_START */
+    //                 getStatus_mp(&iStatus);
+    //                 if (iStatus == 0)
+    //                 { // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
+    //                     MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
+    //                     ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
+    //                     Process_Node.giFlow = GI_GET_TEST_RESULT;
+    //                 }
+    //                 else if (iStatus == 1)
+    //                 { // This numbe of 1 is mean done the AutiRun Mode flow.
+    //                     MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
+    //                     ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
+    //                     Process_Node.giFlow = GI_GET_TEST_RESULT;
+    //                 } else {
+    //                     Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
+    //                 }
+    //                         // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
+    //                 break;
+    //             }
+    //             case GI_GET_TEST_RESULT: {
+    //                 /* result be judged by web backend, we dirctly go back to GI_START */
 
-                    m = innerQ_IPS_IsEmpty_Dual(0);
-                    if (m != 1)
-                    {
-                        innerQ_IPS_DeQ_Dual(&strInfo, 0);
-                        strcpy((char*)rec_data, strInfo.c_str());
+    //                 m = innerQ_IPS_IsEmpty_Dual(0);
+    //                 if (m != 1)
+    //                 {
+    //                     innerQ_IPS_DeQ_Dual(&strInfo, 0);
+    //                     strcpy((char*)rec_data, strInfo.c_str());
 
-                        if (strcmp((char*)rec_data, "Auto_Mode_Done") == 0)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
-                        }
-                        else
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
-                        }
+    //                     if (strcmp((char*)rec_data, "Auto_Mode_Done") == 0)
+    //                     {
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
+    //                     }
+    //                     else
+    //                     {
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
+    //                     }
 
-                        ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
-                        /* Dout ON for indicating auto mode done */
-                        /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                            snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                            ext_mqtt_publisher_Dual(&job_t[0], 0);
-                        }*/
-                    }
-                    /* wait for test result */
-                    if ((strcmp((const char*)Process_Node.TestResult, "PASS") == 0) ||
-                        (strcmp((const char*)Process_Node.TestResult, "NG") == 0))
-                    {
-                        if (strcmp((const char*)Process_Node.TestResult, "PASS") == 0)
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 0) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
-                                /* go back to start state */
-                                Process_Node.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        else
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
-                                /* go back to start state */
-                                Process_Node.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        usleep(500000);
-                        Process_Node.giFlow = GI_START;
-                        if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
-                        {
-                            // MAINLOG(0, "Turn ON Dout\n");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                                    snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                                    ext_mqtt_publisher_Dual(&job_t[0], 0);
-                                }
-                    }
-                    //MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Result=[%s] <=== \n", __func__, Process_Node.TestResult);
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
+    //                     ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
+    //                     /* Dout ON for indicating auto mode done */
+    //                     /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
+    //                     {
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+    //                         unsigned int rvalue = 0;
+    //                         char job_t[512];
+    //                         snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+    //                         ext_mqtt_publisher_Dual(&job_t[0], 0);
+    //                     }*/
+    //                 }
+    //                 /* wait for test result */
+    //                 if ((strcmp((const char*)Process_Node.TestResult, "PASS") == 0) ||
+    //                     (strcmp((const char*)Process_Node.TestResult, "NG") == 0))
+    //                 {
+    //                     if (strcmp((const char*)Process_Node.TestResult, "PASS") == 0)
+    //                     {
+    //                         if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 0) == 1)
+    //                         {
+    //                             MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
+    //                             /* go back to start state */
+    //                             Process_Node.giFlow = GI_START;
+    //                             MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+    //                         }
+    //                     }
+    //                     else
+    //                     {
+    //                         if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0) == 1)
+    //                         {
+    //                             MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
+    //                             /* go back to start state */
+    //                             Process_Node.giFlow = GI_START;
+    //                             MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+    //                         }
+    //                     }
+    //                     usleep(500000);
+    //                     Process_Node.giFlow = GI_START;
+    //                     if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
+    //                     {
+    //                         // MAINLOG(0, "Turn ON Dout\n");
+    //                         MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+    //                         unsigned int rvalue = 0;
+    //                         char job_t[512];
+    //                                 snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+    //                                 ext_mqtt_publisher_Dual(&job_t[0], 0);
+    //                             }
+    //                 }
+    //                 //MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Result=[%s] <=== \n", __func__, Process_Node.TestResult);
+    //                 break;
+    //             }
+    //             default: {
+    //                 break;
+    //             }
+    //         }
             
-            Show_Process_State(Process_Node.giFlow);
-        }
-        break;
+    //         Show_Process_State(Process_Node.giFlow);
+    //     }
+    //     break;
 
-        case NON_AUTO:
-        default:
-            break;
-    }
+    //     case NON_AUTO:
+    //     default:
+    //         break;
+    // }
 }
 
 /***********************************************************
