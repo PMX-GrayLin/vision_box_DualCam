@@ -152,9 +152,16 @@ OBJ_GIGE = $(patsubst %.cpp,%.o,$(SRC_GIGE))
 SRC_TPL = $(wildcard ipsCtl/Merge_Measure_GlueWidth/ThirdPartyLibrary/*.cpp)
 OBJ_TPL = $(patsubst %.cpp,%.o,$(SRC_TPL))
 
-all: i2ctools $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL)
+BUILD_OBJs+=$(IOS_OBJS)
+BUILD_OBJs+=$(IPS_OBJS)
+BUILD_OBJs+=$(OBJ_IPL)
+BUILD_OBJs+=$(OBJ_GIGE)
+BUILD_OBJs+=$(OBJ_MLDL)
+BUILD_OBJs+=$(OBJ_TPL)
+
+all: i2ctools $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(BUILD_OBJs)
 	@echo ""
-	$(PP) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(IOS_OBJS) $(IPS_OBJS) $(OBJ_IPL) $(OBJ_GIGE) $(OBJ_MLDL) $(OBJ_TPL) $(LDFLAG) $(OCVLDFLAG) $(SPINNAKER_LIB) $(ARAVIS_LIB) $(HIK_LIB) $(BASLER_LIB) $(OPT_LIB) -o $(TARGET) 
+	$(PP) $(DFLAG) $(CPPFLAG) $(CPPOBJECTS) $(COBJECTS) $(MAIN_OBJS) $(BUILD_OBJs) $(LDFLAG) $(OCVLDFLAG) $(SPINNAKER_LIB) $(ARAVIS_LIB) $(HIK_LIB) $(BASLER_LIB) $(OPT_LIB) -o $(TARGET) 
 	ls -l $(TARGET)
 
 i2ctools:
