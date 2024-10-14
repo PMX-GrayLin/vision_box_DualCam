@@ -2974,9 +2974,9 @@ int main(int argc, char **argv)
     init_value_set_to_default();
 
     /* initial vailable */
-    ipsComp_IPL_Init();
-    ipsComp_Camera_Init_Dual(0);    //Dual camera >> Camera handle
-    ipsComp_Camera_Init_Dual(1);    //Dual camera >> Camera handle
+    // ipsComp_IPL_Init();
+    // ipsComp_Camera_Init_Dual(0);    //Dual camera >> Camera handle
+    // ipsComp_Camera_Init_Dual(1);    //Dual camera >> Camera handle
 
     /* initial inner queue(std::deque)  */
     innerQ_Main_Init();
