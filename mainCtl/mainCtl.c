@@ -241,8 +241,8 @@ void sigExit_main(int sig)
 {
     fprintf(stderr, "%s()%d: Error: something crash fail.\n", __FUNCTION__, __LINE__);
 
-    suspend_ip_Dual(0);         //Dual camera
-    suspend_ip_Dual(1);         //Dual camera
+    // suspend_ip_Dual(0);         //Dual camera
+    // suspend_ip_Dual(1);         //Dual camera
     suspend_io();
     bTearDown = true;
     suspend_mp();
@@ -250,22 +250,22 @@ void sigExit_main(int sig)
     close(sfcCtl_serial_port);
 
     ExModeQ_Destory();          //Single camera
-    ExModeQ_Destory_Dual(0);    //Dual camera
-    ExModeQ_Destory_Dual(1);    //Dual camera
-    TasksQ_Destory();           //Single camera
-    TasksQ_Destory_Dual(0);     //Dual camera
-    TasksQ_Destory_Dual(1);     //Dual camera
-    JsonQ_Destory();            //Single camera
-    JsonQ_Destory_Dual(0);      //Dual camera
-    JsonQ_Destory_Dual(1);      //Dual camera
-    innerQ_IOS_Destory();
-    innerQ_IPS_Destory_Dual(0); //Dual camera
-    innerQ_IPS_Destory_Dual(1); //Dual camera
-    innerQ_Main_Destory();
-    usleep(30000);
+    // ExModeQ_Destory_Dual(0);    //Dual camera
+    // ExModeQ_Destory_Dual(1);    //Dual camera
+    // TasksQ_Destory();           //Single camera
+    // TasksQ_Destory_Dual(0);     //Dual camera
+    // TasksQ_Destory_Dual(1);     //Dual camera
+    // JsonQ_Destory();            //Single camera
+    // JsonQ_Destory_Dual(0);      //Dual camera
+    // JsonQ_Destory_Dual(1);      //Dual camera
+    // innerQ_IOS_Destory();
+    // innerQ_IPS_Destory_Dual(0); //Dual camera
+    // innerQ_IPS_Destory_Dual(1); //Dual camera
+    // innerQ_Main_Destory();
+    // usleep(30000);
 
-    close_ip_Dual(0);           //Dual camera
-    close_ip_Dual(1);           //Dual camera
+    // close_ip_Dual(0);           //Dual camera
+    // close_ip_Dual(1);           //Dual camera
     close_io();
     close_mp();
 

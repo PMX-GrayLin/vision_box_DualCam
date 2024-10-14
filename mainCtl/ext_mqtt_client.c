@@ -204,12 +204,12 @@ int ext_json_parse_Dual(uint8_t *payload, uint8_t *setFunc, const int iID)
                 
                 std::string strCAM = json_object_get_string(j_subsystem);
                 
-                setAlgo_ParamAssign_Dual(strCAM.c_str(), (struct json_object *)root, &seInfo, iID);
+                // setAlgo_ParamAssign_Dual(strCAM.c_str(), (struct json_object *)root, &seInfo, iID);
                 
                 memset(setFunc, '\0', strlen((const char *)setFunc));
                 memcpy(setFunc, seInfo.szCmd, strlen(seInfo.szCmd));
                 fprintf(stderr, "%s()%d: c_str=[%s] 1111111111111111111\n", __FUNCTION__, __LINE__, strCAM.c_str());
-                JsonQ_EnQ_Dual(seInfo, iID);
+                // JsonQ_EnQ_Dual(seInfo, iID);
                 
                 memset(&seInfo, 0x00, sizeof(seJsonInfo));
 
@@ -280,11 +280,11 @@ int ext_json_parse_Dual(uint8_t *payload, uint8_t *setFunc, const int iID)
                     std::string strCAM = json_object_get_string(tmp_obj_element);
                     MAINLOG(0, "@===> %s [ %d ] = %s\n", strKey.c_str(), x, json_object_get_string(tmp_obj_element));
 
-                    setAlgo_ParamAssign_Dual(strCAM.c_str(), (struct json_object *)elem_obj_id, &seInfo, iID);
+                    // setAlgo_ParamAssign_Dual(strCAM.c_str(), (struct json_object *)elem_obj_id, &seInfo, iID);
 
                     memcpy(setFunc, seInfo.szCmd, strlen(seInfo.szCmd));
 
-                    JsonQ_EnQ_Dual(seInfo, iID);
+                    // JsonQ_EnQ_Dual(seInfo, iID);
                     usleep(50); /* delay 0.05 ms */
 
                     innerQ_Main_EnQ(seInfo.szCmd);
