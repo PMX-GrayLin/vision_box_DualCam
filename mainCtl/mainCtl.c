@@ -3031,26 +3031,26 @@ int main(int argc, char **argv)
     // }
 
     /* create a thread for IP process */
-    int iCamId[2] = {0 ,1}; //dual camera
-    // fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
-    ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
-    if (ret < 0)
-    {
-        xlog("%s:%d, pthread_create error:thread 3!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
-        exit(1);
-    }
+    // int iCamId[2] = {0 ,1}; //dual camera
+    // // fprintf(stderr, "%s()%d: >> thread3() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[0]);
+    // ret = pthread_create(&thread3, nullptr, ips_process_Dual, &iCamId[0]);
+    // if (ret < 0)
+    // {
+    //     xlog("%s:%d, pthread_create error:thread 3!! \n\r", __func__, __LINE__);
+    //     // perror("Cannot create thread 3 _ ips_process_Dual(...) !!\n");
+    //     exit(1);
+    // }
 
-    usleep(10000);
+    // usleep(10000);
 
-    // fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
-    ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
-    if (ret < 0)
-    {
-        xlog("%s:%d, pthread_create error:thread 4!! \n\r", __func__, __LINE__);
-        // perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
-        exit(1);
-    }    
+    // // fprintf(stderr, "%s()%d: >> thread4() iCamId = %d\n", __FUNCTION__, __LINE__, iCamId[1]);    
+    // ret = pthread_create(&thread4, nullptr, ips_process_Dual, &iCamId[1]);
+    // if (ret < 0)
+    // {
+    //     xlog("%s:%d, pthread_create error:thread 4!! \n\r", __func__, __LINE__);
+    //     // perror("Cannot create thread 4 _ ips_process_Dual(...) !!\n");
+    //     exit(1);
+    // }    
 
     // fprintf(stderr, "%s()%d: >> thread4() ios\n", __FUNCTION__, __LINE__);    
     ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
@@ -3070,8 +3070,8 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    suspend_ip_Dual(0);
-    suspend_ip_Dual(1);
+    // suspend_ip_Dual(0);
+    // suspend_ip_Dual(1);
     suspend_io();
     /* read the input character from keyborad be pressed  */
 
