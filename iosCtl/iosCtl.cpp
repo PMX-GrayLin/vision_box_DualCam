@@ -2724,7 +2724,7 @@ int iosCtl_init()
     iosPWM_init(LIGHTING_PWM1_NUM);
     iosPWM_init(LIGHTING_PWM2_NUM);
     // iosGPIO_init();
-    iosLED_init();
+    // iosLED_init();
     sfcCtl_init();
     SPI_Open();
     tof_init();
