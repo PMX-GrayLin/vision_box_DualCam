@@ -1758,8 +1758,8 @@ int tof_init(void) {
     return -1;
   }
 
-  status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
-  xlog("VL53L1X Model_ID:0x%X", byteData);
+  // status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
+  // xlog("VL53L1X Model_ID:0x%X", byteData);
   // status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
   // xlog("VL53L1X Module_Type:0x%X", byteData);
   // status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
