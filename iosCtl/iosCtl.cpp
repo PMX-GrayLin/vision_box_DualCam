@@ -2722,11 +2722,11 @@ int iosCtl_init()
     /* initial vailable */
     iosPWM_init(LIGHTING_PWM1_NUM);
     iosPWM_init(LIGHTING_PWM2_NUM);
-    iosGPIO_init();
+    // iosGPIO_init();
     iosLED_init();
     sfcCtl_init();
     SPI_Open();
-    // tof_init();
+    tof_init();
 
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     if (ret < 0) {
