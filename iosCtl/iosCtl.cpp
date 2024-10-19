@@ -1755,16 +1755,15 @@ int tof_init(void) {
   file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
   if (file == -1) {
     xlog("VL53L1X_UltraLite_Linux_I2C_Init fail");
-    // IOSLOG(0, "[IOS](%s): Error: file is %d fail.\n", __func__, adapter_nr);
     return -1;
   }
 
   status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
   xlog("VL53L1X Model_ID:0x%X", byteData);
-  status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
-  xlog("VL53L1X Module_Type:0x%X", byteData);
-  status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
-  xlog("VL53L1X wordData:0x%X", wordData);
+  // status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
+  // xlog("VL53L1X Module_Type:0x%X", byteData);
+  // status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
+  // xlog("VL53L1X wordData:0x%X", wordData);
   // ??
   // while (sensorState == 0) {
   // 	status += VL53L1X_BootState(tof_Dev, &sensorState);
@@ -2723,11 +2722,11 @@ int iosCtl_init()
     /* initial vailable */
     iosPWM_init(LIGHTING_PWM1_NUM);
     iosPWM_init(LIGHTING_PWM2_NUM);
-    // iosGPIO_init();
+    iosGPIO_init();
     iosLED_init();
     sfcCtl_init();
     SPI_Open();
-    tof_init();
+    // tof_init();
 
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     if (ret < 0) {
