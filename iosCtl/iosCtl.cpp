@@ -52,6 +52,10 @@
 #include "gpio.h"
 #include "pwm.h"
 #include "spi.h"
+    
+    #include "VL53L1X_api.h"
+    #include "VL53L1X_calibration.h"
+    #include "vl53l1_platform.h"
 
 #if defined (__cplusplus)
 extern "C" {
@@ -60,7 +64,7 @@ extern "C" {
     // #include "i2cbusses.h"
     #include "ext_mqtt_client.hpp"
 
-    #include "VL53L1X_api.h"
+    // #include "VL53L1X_api.h"
     #include "VL53L1X_calibration.h"
     #include "vl53l1_platform.h"
 
