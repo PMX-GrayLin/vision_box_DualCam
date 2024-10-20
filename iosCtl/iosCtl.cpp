@@ -1791,10 +1791,10 @@ int tofReadDistance(void) {
 
   // ??
   /* Get the data the new way */
-  // status += VL53L1X_GetResult(tof_Dev, &Results);
+  status += VL53L1X_GetResult(tof_Dev, &Results);
 
-  IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
-         Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+  // IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
+  //        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
 
   // ??
   /* trigger next ranging */

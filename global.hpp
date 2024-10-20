@@ -1,8 +1,8 @@
 #pragma once 
 
-// #include <cstdint>
+#define USE_TOF
+#define DEBUG_TOF
 
-// #define SPI_DEBUG
 #define DEBUGX
 
 #ifndef DEBUGX

@@ -2709,12 +2709,11 @@ void* ios_process(void *argu)
                 ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
                 ext_mqtt_publisher_Dual(job_t, ios_cameraid);
             } else if (seInfo.emAlgoId == IO_TOF_GET_PARAM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_TOF_GET_PARAM]);
+                xlog("new_job:%s", ios_cmdStr[IO_TOF_GET_PARAM]);
                 ios_tof.distance = tofReadDistance();
-                MAINLOG(0, "[MAIN] : Distance=[%d]\n", ios_tof.distance);
                 ios_get_tof_json_create(job_t);
                 ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[IO_TOF_GET_PARAM]);
+                xlog("IOS processing %s done, Distance:%d", ios_cmdStr[IO_TOF_GET_PARAM], ios_tof.distance);
             } else {
                 MAINLOG(0, RED "[MAIN] : Unknow cmd emAlgoId=[%d] szCmd=[%s] fail.\n", seInfo.emAlgoId, seInfo.szCmd);
                 ios_sys_get_params_json_create(job_t);
