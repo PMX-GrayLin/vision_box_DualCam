@@ -151,7 +151,6 @@ LDFLAG += -ljson-c -lmodbus -lmosquitto -lcurl -li2c
 LDFLAG += $(shell pkg-config --libs opencv4)
 LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/
 LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/core/
-LDFLAG += -lst-tof-module
 
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
