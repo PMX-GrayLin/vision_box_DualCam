@@ -2735,12 +2735,11 @@ int iosCtl_init()
     // not necessary in AICamera G2 
     // iosGPIO_init();
 
-    iosLED_init();
-
     // temp disable
     // sfcCtl_init();
 
     SPI_Open();
+    iosLED_init();
 
     // init tof
     ret = tof_init();

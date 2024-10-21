@@ -285,7 +285,7 @@ void signalHandler(int signal) {
   if (signal == 10) {
     // get tof
     tofReadDistance();
-    
+
   } else if (signal == 12) {
     /* code */
   }
@@ -2770,10 +2770,8 @@ int main(int argc, char **argv) {
 
   /* initial inner queue(std::deque)  */
   innerQ_Main_Init();
-
   innerQ_IPS_Init_Dual(0);  // Dual camera
   innerQ_IPS_Init_Dual(1);  // Dual camera
-
   innerQ_IOS_Init();
 
   // /* initial IPS task queue(std::deque)  */

@@ -3,6 +3,8 @@
 #define USE_TOF
 #define DEBUG_TOF
 
+#define DEBUG_SPI
+
 #define DEBUGX
 
 #ifndef DEBUGX

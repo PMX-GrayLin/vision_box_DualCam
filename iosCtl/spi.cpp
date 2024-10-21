@@ -45,7 +45,7 @@ int SPI_Transfer(const uint8_t *TxBuf, uint8_t *RxBuf, int len)
     if (ret < 1) {
       xlog("ioctl error");
     } else {
-#ifdef SPI_DEBUG
+#ifdef DEBUG_SPI
       int i;
       // printf("nsend spi message Succeed\n");
       printf("%s()%d: nSPI Send [Len:%d]: ", __FUNCTION__, __LINE__, len);
@@ -77,7 +77,7 @@ int SPI_Write(uint8_t *TxBuf, int len) {
   if (ret < 0)
     perror("SPI Write error\n");
   else {
-#ifdef SPI_DEBUG
+#ifdef DEBUG_SPI
     int i;
     printf("SPI Write [Len:%d]: \n", len);
     for (i = 0; i < len; i++) {
@@ -101,7 +101,7 @@ int SPI_Read(uint8_t *RxBuf, int len)
         printf("SPI Read error\n");
     else
     {
-#ifdef SPI_DEBUG
+#ifdef DEBUG_SPI
         int i;
         printf("%s()%d: SPI Read [len:%d]:", __FUNCTION__, __LINE__, len);
         for (i = 0; i < len; i++)
