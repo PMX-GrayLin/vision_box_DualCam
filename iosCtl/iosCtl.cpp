@@ -1778,6 +1778,7 @@ int tof_init(void) {
     status += VL53L1X_BootState(tof_Dev, &sensorState);
     VL53L1_WaitMs(tof_Dev, 10);
     counterCheck++;
+    xlog("sensorState:%d, counterCheck:%d", sensorState, counterCheck);
     if (counterCheck > 10) {
       xlog("VL53L1X_BootState error");
       return -1;
@@ -2734,7 +2735,7 @@ int iosCtl_init()
     sfcCtl_init();
     SPI_Open();
 
-    // tof_init();
+    tof_init();
     // ret = tof_init();
     // if (ret != 0) {
     //   xlog("tof_init fail");
