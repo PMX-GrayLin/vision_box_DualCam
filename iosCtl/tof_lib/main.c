@@ -90,21 +90,20 @@ int main(int argc, char **argv)
 	printf("VL53L1X Module_Type: %X\n", byteData);
 	status += VL53L1_RdWord(Dev, 0x010F, &wordData);
 	printf("VL53L1X: %X\n", wordData);
-	// ??
-	// while (sensorState == 0) {
-	// 	status += VL53L1X_BootState(Dev, &sensorState);
-	// 	VL53L1_WaitMs(Dev, 2);
-	// }
+
+	while (sensorState == 0) {
+		status += VL53L1X_BootState(Dev, &sensorState);
+		VL53L1_WaitMs(Dev, 2);
+	}
 	printf("Chip booted\n");
 
 	status = VL53L1X_SensorInit(Dev);
 	/* status += VL53L1X_SetInterruptPolarity(Dev, 0); */
 
-	// ??
-	// status += VL53L1X_SetDistanceMode(Dev, 2); /* 1=short, 2=long */
-	// status += VL53L1X_SetTimingBudgetInMs(Dev, 100);
-	// status += VL53L1X_SetInterMeasurementInMs(Dev, 100);
-	// status += VL53L1X_StartRanging(Dev);
+	status += VL53L1X_SetDistanceMode(Dev, 2); /* 1=short, 2=long */
+	status += VL53L1X_SetTimingBudgetInMs(Dev, 100);
+	status += VL53L1X_SetInterMeasurementInMs(Dev, 100);
+	status += VL53L1X_StartRanging(Dev);
 
 	/* read and display data loop */
 	while (1) {

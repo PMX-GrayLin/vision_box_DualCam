@@ -87,7 +87,7 @@ typedef enum __HANDLER_TO_AIRPLAY_CMD__
 	AIR_GO_NEXT,
 	AIR_GO_VDOWN,
 	AIR_GO_VUP,
-	AIR_GO_BUSY,		// ??, Airplay should not is busy
+	AIR_GO_BUSY,
 	AIR_GO_NONBUSY,
 	AIR_GO_UNKNOWN,
 }HANDLER_TO_AIRPLAY_CMD;
@@ -249,7 +249,7 @@ typedef enum __HANDLER_TO_DLNA_CMD__
 	DLNA_GO_NEXT,
 	DLNA_GO_VDOWN_,
 	DLNA_GO_VUP_,
-	DLNA_GO_BUSY,		// ??, Airplay should not is busy
+	DLNA_GO_BUSY,
 	DLNA_GO_NONBUSY,
 	DLNA_GO_UNKNOWN,
 }HANDLER_TO_DLNA_CMD;

@@ -1800,23 +1800,21 @@ int tofReadDistance(void) {
   VL53L1X_Result_t Results;
   int status = 0;
 
-  // ??
   /* Get the data the new way */
   status += VL53L1X_GetResult(tof_Dev, &Results);
 
   // IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
   //        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
 
-  // ??
   /* trigger next ranging */
-  // status += VL53L1X_ClearInterrupt(tof_Dev);
-  // if (first_range) {
-  // 	/* very first measurement shall be ignored
-  // 	 * thus requires twice call
-  // 	 */
-  // 	status += VL53L1X_ClearInterrupt(tof_Dev);
-  // 	first_range = 0;
-  // }
+  status += VL53L1X_ClearInterrupt(tof_Dev);
+  if (first_range) {
+  	/* very first measurement shall be ignored
+  	 * thus requires twice call
+  	 */
+  	status += VL53L1X_ClearInterrupt(tof_Dev);
+  	first_range = 0;
+  }
 
   return Results.Distance;
 }
@@ -1862,7 +1860,6 @@ int iosGPIO_init() {
   xlog("");
   {  
     // DI
-    // ?? DI1_VB do twice
     gpio_export(DI1_VB);
     gpio_export(DI1_VB);
     gpio_export(DI3_VB);
@@ -2746,13 +2743,13 @@ int iosCtl_init()
       xlog("tof_init fail");
     }
 
-    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
-    if (ret < 0) {
-      xlog("Create iosCtl iosThread fail");
-      return -1;
-    } else {
-      xlog("create iosThread success");
-    }
+    // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create iosCtl iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create iosThread success");
+    // }
 
     // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
     // if (ret < 0) {
@@ -2762,13 +2759,13 @@ int iosCtl_init()
     //   xlog("create didoThread success");
     // }
 
-    ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
-    if (ret < 0) {
-      xlog("Create ledThread iosThread fail");
-      return -1;
-    } else {
-      xlog("create ledThread success");
-    }
+    // ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create ledThread iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create ledThread success");
+    // }
 
     ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
     return ret;
