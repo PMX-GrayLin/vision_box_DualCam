@@ -280,7 +280,7 @@ void sigExit_main(int sig) {
 
 // for test
 void signalHandler(int signal) {
-    std::cout << "Caught signal " << signal << std::endl;
+    xlog("signal:%d", signal);
 }
 
 /***********************************************************
