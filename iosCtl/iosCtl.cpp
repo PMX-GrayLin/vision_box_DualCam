@@ -1789,17 +1789,12 @@ int tof_init(void) {
   status = VL53L1X_SensorInit(tof_Dev);
   // /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
-  xlog("");
   status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
-  xlog("");
   status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
-  xlog("");
   status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
-  xlog("");
   status += VL53L1X_StartRanging(tof_Dev);
-  xlog("");
 
-  return 0;
+  return status;
 }
 
 int tofReadDistance(void) {
@@ -2741,37 +2736,34 @@ int iosCtl_init()
     sfcCtl_init();
     SPI_Open();
 
-xlog("");
-    tof_init();
-    // ret = tof_init();
-    // if (ret != 0) {
-    //   xlog("tof_init fail");
-    // }
-    xlog("");
+    ret = tof_init();
+    if (ret != 0) {
+      xlog("tof_init fail");
+    }
 
-    // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
-    // if (ret < 0) {
-    //   xlog("Create iosCtl iosThread fail");
-    //   return -1;
-    // } else {
-    //   xlog("create iosThread success");
-    // }
+    ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
+    if (ret < 0) {
+      xlog("Create iosCtl iosThread fail");
+      return -1;
+    } else {
+      xlog("create iosThread success");
+    }
 
-    // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
-    // if (ret < 0) {
-    //   xlog("Create didoThread iosThread fail");
-    //   return -1;
-    // } else {
-    //   xlog("create didoThread success");
-    // }
+    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
+    if (ret < 0) {
+      xlog("Create didoThread iosThread fail");
+      return -1;
+    } else {
+      xlog("create didoThread success");
+    }
 
-    // ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
-    // if (ret < 0) {
-    //   xlog("Create ledThread iosThread fail");
-    //   return -1;
-    // } else {
-    //   xlog("create ledThread success");
-    // }
+    ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
+    if (ret < 0) {
+      xlog("Create ledThread iosThread fail");
+      return -1;
+    } else {
+      xlog("create ledThread success");
+    }
 
     ios_setStatusLed(LED3_COM, LED_GREEN);  // Green
     return ret;
