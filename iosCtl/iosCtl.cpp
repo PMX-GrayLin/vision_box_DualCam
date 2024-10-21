@@ -2699,11 +2699,7 @@ int iosCtl_init()
 {
     int ret = 0;
     
-    xlog("");
-    // IOSLOG(0, "*********************************\n");
-    // IOSLOG(0, "*****   IOS Controller Init.    *****\n");
-    // IOSLOG(0, "*********************************\n");
-    
+    xlog("");    
     //pid_t signal_pid = getpid();
     
     struct sigaction sig;
@@ -2738,7 +2734,7 @@ int iosCtl_init()
     sfcCtl_init();
     SPI_Open();
 
-    tof_init();
+    // tof_init();
     // ret = tof_init();
     // if (ret != 0) {
     //   xlog("tof_init fail");

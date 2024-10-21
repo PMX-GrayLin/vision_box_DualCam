@@ -12,43 +12,44 @@
  */
 
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
-#include <stdio.h>
+#include "mainCtl.hpp"
+
+#include <arpa/inet.h>  //inet_addr
+#include <errno.h>
+#include <ev.h>
+#include <fcntl.h>
+#include <linux/input.h>
+#include <mqueue.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <signal.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* memset */
-#include <fcntl.h>
-#include <pthread.h>
-#include <termios.h>
-#include <unistd.h>
-#include <signal.h>
-#include <errno.h>
-#include <mqueue.h>
-#include <linux/input.h>
-#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <arpa/inet.h> //inet_addr
-#include <ev.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <unistd.h>
+
 #include <chrono>
 #include <deque>
 #include <string>
-#include <semaphore.h>
-#include "ipsCtl/IPS_CompAlgorithm.h"
-#include "ipsCtl/IPS_CompFunction.h"
-#include "ipsCtl/IPS_MethodStructureDef.h"
-#include "IPLAlgoDataStructureDef.h"
 
+#include "IOS_CompFunction.h"
+#include "IPLAlgoDataStructureDef.h"
 #include "common.hpp"
-#include "mainCtl.hpp"
-#include "spi.h"
 #include "ext_mqtt_client.hpp"
 #include "global.hpp"
 #include "iosCtl.h"
-#include "IOS_CompFunction.h"
+#include "ipsCtl/IPS_CompAlgorithm.h"
+#include "ipsCtl/IPS_CompFunction.h"
+#include "ipsCtl/IPS_MethodStructureDef.h"
 #include "json.h"
-
+#include "spi.h"
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
 /* define msgQ type
@@ -59,7 +60,6 @@
 #define IOS_SEND_MSGQ (int)3
 #define IPS_SEND_MSGQ (int)4
 
-
 /* MACRO DECLARATIONS ---------------------------------------------------------------- */
 #define VERSION_PRINT(...) printf("\e[1;34m[%s]\e[m", VSB_VERSION);
 
@@ -67,60 +67,55 @@
 
 #define COLOR_RED(...) printf("\e[1;31m[%s][%4d] =>\e[m", __func__, __LINE__);
 
-
 /*********************************************************************
         Tools
 *********************************************************************/
-#define LOG(x)                           \
-    {                                    \
-        static char str[32];             \
-        if (strcmp(x, &str) != 0)        \
-        {                                \
-            printf(x);                   \
-            memset(str, 0, sizeof(str)); \
-            strcpy(str, x);              \
-        }                                \
-    }
-
+#define LOG(x)                     \
+  {                                \
+    static char str[32];           \
+    if (strcmp(x, &str) != 0) {    \
+      printf(x);                   \
+      memset(str, 0, sizeof(str)); \
+      strcpy(str, x);              \
+    }                              \
+  }
 
 /* TYPE DECLARATIONS ----------------------------------------------------------------- */
-typedef struct __MSGBUF__
-{
-    long mtype;
-    char mtext[MAX_MSG_SIZE];
-    /* vision box specific */
-    uint8_t mcmd; /* record command from backend */
-    void *mpointer;
+typedef struct __MSGBUF__ {
+  long mtype;
+  char mtext[MAX_MSG_SIZE];
+  /* vision box specific */
+  uint8_t mcmd; /* record command from backend */
+  void *mpointer;
 } MSGBUF;
 
-
 /* GLOBAL VARIABLE DECLARATIONS ------------------------------------------------------- */
-static const char *setfuncStr[]={
-  "NO_SETFUNC",
-  "CAMERA", 
-  "CALIBRATION",
-  "ALIGNMENT",
-  "THRESHOLD",
-  "PROCESS",
-  "HARD_GRAB",
-  "SOFT_GRAB",
-  "STOP_HARD_GRAB",
-  "LIGHT",
-  "TriggerSetProcess",
-  "TriggerGetProcess",
-  "DinSetProcess",
-  "DinGetProcess",
-  "IOSGetStatus",
-  "LightSetPWM",
-  "LightGetPWM",
-  "LedSetProcess",
-  "LedGetProcess",
-  "DoutSetProcess",
-  "ModbusSetParams",
-  "ModbusGetParams",
-  "Start_Streaming",
-  "Stop_Streaming",
-  "SETFUNC_MAX",
+static const char *setfuncStr[] = {
+    "NO_SETFUNC",
+    "CAMERA",
+    "CALIBRATION",
+    "ALIGNMENT",
+    "THRESHOLD",
+    "PROCESS",
+    "HARD_GRAB",
+    "SOFT_GRAB",
+    "STOP_HARD_GRAB",
+    "LIGHT",
+    "TriggerSetProcess",
+    "TriggerGetProcess",
+    "DinSetProcess",
+    "DinGetProcess",
+    "IOSGetStatus",
+    "LightSetPWM",
+    "LightGetPWM",
+    "LedSetProcess",
+    "LedGetProcess",
+    "DoutSetProcess",
+    "ModbusSetParams",
+    "ModbusGetParams",
+    "Start_Streaming",
+    "Stop_Streaming",
+    "SETFUNC_MAX",
 };
 
 JES jes;
@@ -141,27 +136,27 @@ pthread_mutex_t mp_suspendMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t mp_resumeCond = PTHREAD_COND_INITIALIZER;
 extern unsigned char ios_cameraid;
 
-int msqMainId; // for mainCtl & MQTT subscriber callback using
-int msqIosId;  // for iosCtl & mainCtl using
-int msqIpsId;  // for ips_process & mainCtl using
+int msqMainId;  // for mainCtl & MQTT subscriber callback using
+int msqIosId;   // for iosCtl & mainCtl using
+int msqIpsId;   // for ips_process & mainCtl using
 pthread_mutex_t msgQMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t msgQIosMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t msgQIpsMutex = PTHREAD_MUTEX_INITIALIZER;
 uint8_t ip_suspendFlag, io_suspendFlag, mp_suspendFlag;
-uint8_t ip_doneFlag=0, io_doneFlag=0, mp_doneFlag=0;
+uint8_t ip_doneFlag = 0, io_doneFlag = 0, mp_doneFlag = 0;
 
 uint8_t ip_suspendFlag_Dual[2];
-uint8_t ip_doneFlag_Dual[2]={0, 0};
+uint8_t ip_doneFlag_Dual[2] = {0, 0};
 
-static int mp_FlowStatus = -1;  // default
-static uint32_t watchDogCounter = 0; //, count = 0;
+static int mp_FlowStatus = -1;        // default
+static uint32_t watchDogCounter = 0;  //, count = 0;
 bool enable_warchDog = FALSE;
 IOS_TRIGGER_SET_PROCESS ios_trigger_previous_value;
 bool bTearDown = false;
 char trig_pin[6];
-char trig_edge[6][16];          // rising / falling
+char trig_edge[6][16];  // rising / falling
 char trig_dout_pin[6];
-char trig_dout_active[6][16];   // rising / falling
+char trig_dout_active[6][16];  // rising / falling
 char trig_DinMode = 0;
 char trig_DinMode_Dual = 0;
 char trig_trigger1 = 0;
@@ -169,8 +164,7 @@ char trig_trigger2 = 0;
 uint8_t wakeIPSFlag = 0;
 uint8_t wakeIPSFlag_Dual = 0;
 
-extern const char* enum_Publish_CAMReg[];
-
+extern const char *enum_Publish_CAMReg[];
 
 /* EXPORTED SUBPROGRAM SPECIFICATION ------------------------------------------------- */
 extern int ios_triggerSetProcess(IOS_TRIGGER_SET_PROCESS *);
@@ -203,7 +197,6 @@ extern int tofReadDistance(void);
 extern int mqtt_init();
 int msgQ_send(uint8_t *msg);
 
-
 /* EXPORTED SUBPROGRAM BODIES -------------------------------------------------------- */
 /***********************************************************
  *	Function 	: sigExit_main
@@ -211,69 +204,78 @@ int msgQ_send(uint8_t *msg);
  *	Param 		: int sig : Signal number
  *	Return		: NONE
  *************************************************************/
-void sigExit_main(int sig)
-{
-    xlog("sig:%d", sig);
-    // fprintf(stderr, "%s()%d: Error: something crash fail.\n", __FUNCTION__, __LINE__);
+void sigExit_main(int sig) {
+  xlog("sig:%d", sig);
+  // fprintf(stderr, "%s()%d: Error: something crash fail.\n", __FUNCTION__, __LINE__);
 
-    suspend_ip_Dual(0);         //Dual camera
-    suspend_ip_Dual(1);         //Dual camera
-    suspend_io();
-    suspend_mp();
-    usleep(30000);
-    close(sfcCtl_serial_port);
+  suspend_ip_Dual(0);  // Dual camera
+  suspend_ip_Dual(1);  // Dual camera
+  suspend_io();
+  suspend_mp();
+  usleep(30000);
+  close(sfcCtl_serial_port);
 
-    ExModeQ_Destory();          //Single camera
-    ExModeQ_Destory_Dual(0);    //Dual camera
-    ExModeQ_Destory_Dual(1);    //Dual camera
-    TasksQ_Destory();           //Single camera
-    TasksQ_Destory_Dual(0);     //Dual camera
-    TasksQ_Destory_Dual(1);     //Dual camera
-    JsonQ_Destory();            //Single camera
-    JsonQ_Destory_Dual(0);      //Dual camera
-    JsonQ_Destory_Dual(1);      //Dual camera
-    innerQ_IOS_Destory();
-    innerQ_IPS_Destory_Dual(0); //Dual camera
-    innerQ_IPS_Destory_Dual(1); //Dual camera
-    innerQ_Main_Destory();
-    usleep(30000);
+  ExModeQ_Destory();        // Single camera
+  ExModeQ_Destory_Dual(0);  // Dual camera
+  ExModeQ_Destory_Dual(1);  // Dual camera
+  TasksQ_Destory();         // Single camera
+  TasksQ_Destory_Dual(0);   // Dual camera
+  TasksQ_Destory_Dual(1);   // Dual camera
+  JsonQ_Destory();          // Single camera
+  JsonQ_Destory_Dual(0);    // Dual camera
+  JsonQ_Destory_Dual(1);    // Dual camera
+  innerQ_IOS_Destory();
+  innerQ_IPS_Destory_Dual(0);  // Dual camera
+  innerQ_IPS_Destory_Dual(1);  // Dual camera
+  innerQ_Main_Destory();
+  usleep(30000);
 
-    close_ip_Dual(0);           //Dual camera
-    close_ip_Dual(1);           //Dual camera
-    close_io();
-    close_mp();
+  close_ip_Dual(0);  // Dual camera
+  close_ip_Dual(1);  // Dual camera
+  close_io();
+  close_mp();
 
-    ext_mqtt_release();
+  ext_mqtt_release();
 
-    ipsComp_Camera_Release_Dual(0);     //Dual camera >> Camera handle 
-    ipsComp_Camera_Release_Dual(1);     //Dual camera >> Camera handle 
-    ipsComp_IPL_Release();
+  ipsComp_Camera_Release_Dual(0);  // Dual camera >> Camera handle
+  ipsComp_Camera_Release_Dual(1);  // Dual camera >> Camera handle
+  ipsComp_IPL_Release();
 
-    usleep(30000);
+  usleep(30000);
 
-    MAINLOG(0, "[MAIN]  pthread_join(thread3, NULL)\n");
-    if (pthread_join(thread3, NULL) != 0) { MAINLOG(0, " !! __ Error, pthread_join() of thread 4\n"); }    
+  MAINLOG(0, "[MAIN]  pthread_join(thread3, NULL)\n");
+  if (pthread_join(thread3, NULL) != 0) {
+    MAINLOG(0, " !! __ Error, pthread_join() of thread 4\n");
+  }
 
-    MAINLOG(0, "[MAIN]  pthread_join(thread4, NULL)\n");
-    if (pthread_join(thread4, NULL) != 0) { MAINLOG(0, " !! __ Error, pthread_join() of thread 4\n"); }
+  MAINLOG(0, "[MAIN]  pthread_join(thread4, NULL)\n");
+  if (pthread_join(thread4, NULL) != 0) {
+    MAINLOG(0, " !! __ Error, pthread_join() of thread 4\n");
+  }
 
-    MAINLOG(0, "[MAIN]  pthread_join(thread5, NULL)\n");
-    if (pthread_join(thread5, NULL) != 0) { MAINLOG(0, " !! __ Error, pthread_join() of thread 5\n"); }
+  MAINLOG(0, "[MAIN]  pthread_join(thread5, NULL)\n");
+  if (pthread_join(thread5, NULL) != 0) {
+    MAINLOG(0, " !! __ Error, pthread_join() of thread 5\n");
+  }
 
-    MAINLOG(0, "[MAIN]  pthread_join(thread2, NULL)\n");
-    if (pthread_join(thread2, NULL) != 0) { MAINLOG(0, " !! __ Error, pthread_join() of thread 2\n"); }
+  MAINLOG(0, "[MAIN]  pthread_join(thread2, NULL)\n");
+  if (pthread_join(thread2, NULL) != 0) {
+    MAINLOG(0, " !! __ Error, pthread_join() of thread 2\n");
+  }
 
-    MAINLOG(0, "[MAIN]  pthread_join(thread1, NULL)\n");
-    if (pthread_join(thread1, NULL) != 0) { MAINLOG(0, " !! __ Error, pthread_join() of thread 1\n"); }
+  MAINLOG(0, "[MAIN]  pthread_join(thread1, NULL)\n");
+  if (pthread_join(thread1, NULL) != 0) {
+    MAINLOG(0, " !! __ Error, pthread_join() of thread 1\n");
+  }
 
-    bTearDown = true;
+  bTearDown = true;
 
-    MAINLOG(0, "[MAIN] Got %s signal\n", __func__);
-    MAINLOG(0, "[MAIN] signal %d caught\n", sig);
+  MAINLOG(0, "[MAIN] Got %s signal\n", __func__);
+  MAINLOG(0, "[MAIN] signal %d caught\n", sig);
 
-    fflush(stderr);
-    fflush(stdout);
-    exit(1);
+  fflush(stderr);
+  fflush(stdout);
+  exit(1);
 }
 
 /***********************************************************
@@ -282,14 +284,13 @@ void sigExit_main(int sig)
  *	Param 		: NONE
  *	Return		: msec
  *************************************************************/
-static uint32_t main_gettime_ms(void)
-{
-    struct timeval tv;
+static uint32_t main_gettime_ms(void) {
+  struct timeval tv;
 #if !defined(_MSC_VER)
-    gettimeofday(&tv, nullptr);
-    return (uint32_t)tv.tv_sec * 1000 + tv.tv_usec / 1000;
+  gettimeofday(&tv, nullptr);
+  return (uint32_t)tv.tv_sec * 1000 + tv.tv_usec / 1000;
 #else
-    return GetTickCount();
+  return GetTickCount();
 #endif
 }
 
@@ -301,28 +302,27 @@ static uint32_t main_gettime_ms(void)
  *                const char *pset : copy from backend args contents
  *	Return		: error number
  *************************************************************/
-int ios_response_json_create(char *jstring, const char *cmd, const char *pset)
-{
-    struct json_object *root, *obj_2, *obj_3;
+int ios_response_json_create(char *jstring, const char *cmd, const char *pset) {
+  struct json_object *root, *obj_2, *obj_3;
 
-    if (jstring == nullptr || cmd == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string(cmd));
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "pset", json_object_new_string(pset));
+  if (jstring == nullptr || cmd == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string(cmd));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "pset", json_object_new_string(pset));
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -331,30 +331,29 @@ int ios_response_json_create(char *jstring, const char *cmd, const char *pset)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_trigger_get_process_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3;
+int ios_trigger_get_process_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("TRIGGER_SET_PROCESS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("TRIGGER_SET_PROCESS"));
 
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
 
-    /* only send the command, other parameter has been deposited in the structure */
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  /* only send the command, other parameter has been deposited in the structure */
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -363,30 +362,29 @@ int ios_trigger_get_process_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_din_get_process_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3;
+int ios_din_get_process_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("DIN_SET_PROCESS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("DIN_SET_PROCESS"));
 
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
 
-    /* only send the command, other parameter has been deposited in the structure */
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  /* only send the command, other parameter has been deposited in the structure */
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -395,40 +393,39 @@ int ios_din_get_process_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_get_status_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_get_status_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("DIO_SET_STATUS"));
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    json_object_object_add(obj_3, "result", obj_4);
-    json_object_object_add(obj_4, "dout1", json_object_new_int(ios_getstatus.dout1));
-    json_object_object_add(obj_4, "dout2", json_object_new_int(ios_getstatus.dout2));
-    json_object_object_add(obj_4, "dout3", json_object_new_int(ios_getstatus.dout3));
-    json_object_object_add(obj_4, "dout4", json_object_new_int(ios_getstatus.dout4));
-    json_object_object_add(obj_4, "din1", json_object_new_int(ios_getstatus.din1));
-    json_object_object_add(obj_4, "din2", json_object_new_int(ios_getstatus.din2));
-    json_object_object_add(obj_4, "din3", json_object_new_int(ios_getstatus.din3));
-    json_object_object_add(obj_4, "din4", json_object_new_int(ios_getstatus.din4));
-    json_object_object_add(obj_4, "ailed_detect", json_object_new_int(ios_getstatus.ailed_detect));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("DIO_SET_STATUS"));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  json_object_object_add(obj_3, "result", obj_4);
+  json_object_object_add(obj_4, "dout1", json_object_new_int(ios_getstatus.dout1));
+  json_object_object_add(obj_4, "dout2", json_object_new_int(ios_getstatus.dout2));
+  json_object_object_add(obj_4, "dout3", json_object_new_int(ios_getstatus.dout3));
+  json_object_object_add(obj_4, "dout4", json_object_new_int(ios_getstatus.dout4));
+  json_object_object_add(obj_4, "din1", json_object_new_int(ios_getstatus.din1));
+  json_object_object_add(obj_4, "din2", json_object_new_int(ios_getstatus.din2));
+  json_object_object_add(obj_4, "din3", json_object_new_int(ios_getstatus.din3));
+  json_object_object_add(obj_4, "din4", json_object_new_int(ios_getstatus.din4));
+  json_object_object_add(obj_4, "ailed_detect", json_object_new_int(ios_getstatus.ailed_detect));
 
-    /* only send the command, other parameter has been deposited in the structure */
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  /* only send the command, other parameter has been deposited in the structure */
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -437,29 +434,28 @@ int ios_get_status_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_light_set_pwm_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3;
+int ios_light_set_pwm_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("LIGHT_GET_PWM"));
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    /* only send the command, other parameter has been deposited in the structure */
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("LIGHT_GET_PWM"));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -468,34 +464,33 @@ int ios_light_set_pwm_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_light_get_brightness_json_create(char *jstring, uint16_t *brightness)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_light_get_brightness_json_create(char *jstring, uint16_t *brightness) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("LIGHT_SET_BRIGHTNESS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("LIGHT_SET_BRIGHTNESS"));
 
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    json_object_object_add(obj_3, "result", obj_4);
-    json_object_object_add(obj_4, "lightSource1", json_object_new_int(brightness[0]));
-    json_object_object_add(obj_4, "lightSource2", json_object_new_int(brightness[1]));
-    /* only send the command, other parameter has been deposited in the structure */
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  json_object_object_add(obj_3, "result", obj_4);
+  json_object_object_add(obj_4, "lightSource1", json_object_new_int(brightness[0]));
+  json_object_object_add(obj_4, "lightSource2", json_object_new_int(brightness[1]));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -504,29 +499,28 @@ int ios_light_get_brightness_json_create(char *jstring, uint16_t *brightness)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_light_get_pwm_json_create(char *jstring)
-{
-    struct json_object *root, *obj_3;
+int ios_light_get_pwm_json_create(char *jstring) {
+  struct json_object *root, *obj_3;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("LIGHT_SET_PWM"));
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "args", obj_3);
-    // obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    /* only send the command, other parameter has been deposited in the structure */
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("LIGHT_SET_PWM"));
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "args", obj_3);
+  // obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -535,30 +529,29 @@ int ios_light_get_pwm_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_led_get_mode_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_led_get_mode_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("LED_GET_MODE"));
-    json_object_object_add(root, "args", obj_2);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    json_object_object_add(obj_3, "result", obj_4);
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("LED_GET_MODE"));
+  json_object_object_add(root, "args", obj_2);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  json_object_object_add(obj_3, "result", obj_4);
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -567,39 +560,38 @@ int ios_led_get_mode_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_led_get_process_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_led_get_process_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "IOS", obj_2);
-    json_object_object_add(obj_2, "cmd", json_object_new_string("LED_SET_PROCESS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "IOS", obj_2);
+  json_object_object_add(obj_2, "cmd", json_object_new_string("LED_SET_PROCESS"));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_2, "args", obj_3);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_2, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_2, "args", obj_3);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_2, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
 
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "result", obj_4);
-    json_object_object_add(obj_4, "outPin", json_object_new_int(ios_setled.outPin));
-    json_object_object_add(obj_4, "outMode", json_object_new_string((char *)ios_setled.outMode));
-    json_object_object_add(obj_4, "outStatus", json_object_new_string((char *)ios_setled.outStatus));
-    json_object_object_add(obj_4, "outBlinkDelay", json_object_new_int64(ios_setled.outBlinkDelay));
-    json_object_object_add(obj_4, "outOffDelay", json_object_new_int64(ios_setled.outOffDelay));
-    /* only send the command, other parameter has been deposited in the structure */
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "result", obj_4);
+  json_object_object_add(obj_4, "outPin", json_object_new_int(ios_setled.outPin));
+  json_object_object_add(obj_4, "outMode", json_object_new_string((char *)ios_setled.outMode));
+  json_object_object_add(obj_4, "outStatus", json_object_new_string((char *)ios_setled.outStatus));
+  json_object_object_add(obj_4, "outBlinkDelay", json_object_new_int64(ios_setled.outBlinkDelay));
+  json_object_object_add(obj_4, "outOffDelay", json_object_new_int64(ios_setled.outOffDelay));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -608,39 +600,38 @@ int ios_led_get_process_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_modbus_get_params_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_modbus_get_params_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "IOS", obj_2);
-    json_object_object_add(obj_2, "cmd", json_object_new_string("MODBUS_SET_PARAMS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "IOS", obj_2);
+  json_object_object_add(obj_2, "cmd", json_object_new_string("MODBUS_SET_PARAMS"));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_2, "args", obj_3);
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_2, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_2, "args", obj_3);
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_2, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
 
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "result", obj_4);
-    json_object_object_add(obj_4, "Baudrate", json_object_new_int64(ios_modbusSetParams.RTU_BAUDRATE));
-    json_object_object_add(obj_4, "GITriggerRegister", json_object_new_int(ios_modbusSetParams.GI_Testing_Register));
-    json_object_object_add(obj_4, "GIStatusRegister", json_object_new_int(ios_modbusSetParams.GI_Test_Status_Register));
-    json_object_object_add(obj_4, "GIResultRegister", json_object_new_int(ios_modbusSetParams.GI_Testing_Result_Register));
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "result", obj_4);
+  json_object_object_add(obj_4, "Baudrate", json_object_new_int64(ios_modbusSetParams.RTU_BAUDRATE));
+  json_object_object_add(obj_4, "GITriggerRegister", json_object_new_int(ios_modbusSetParams.GI_Testing_Register));
+  json_object_object_add(obj_4, "GIStatusRegister", json_object_new_int(ios_modbusSetParams.GI_Test_Status_Register));
+  json_object_object_add(obj_4, "GIResultRegister", json_object_new_int(ios_modbusSetParams.GI_Testing_Result_Register));
 
-    /* only send the command, other parameter has been deposited in the structure */
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -649,44 +640,43 @@ int ios_modbus_get_params_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: error number
  *************************************************************/
-int ios_ips_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4, *obj_5;
+int ios_ips_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4, *obj_5;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create IOS format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "IOS", obj_2);
-    json_object_object_add(obj_2, "cmd", json_object_new_string("TRIGGER_SET_PROCESS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create IOS format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "IOS", obj_2);
+  json_object_object_add(obj_2, "cmd", json_object_new_string("TRIGGER_SET_PROCESS"));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_2, "args", obj_3);
-    json_object_object_add(obj_3, "InMode", json_object_new_string("PNP"));
-    json_object_object_add(obj_3, "InPin", json_object_new_int(1));
-    json_object_object_add(obj_3, "Delay", json_object_new_int(1000));
-    json_object_object_add(obj_3, "OutMode", json_object_new_string("PNP"));
-    json_object_object_add(obj_3, "OutPin", json_object_new_int(4));
-    /* create IPS format */
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "IPS", obj_4);
-    json_object_object_add(obj_4, "cmd", json_object_new_string("CAMERA_SET_MODE"));
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_2, "args", obj_3);
+  json_object_object_add(obj_3, "InMode", json_object_new_string("PNP"));
+  json_object_object_add(obj_3, "InPin", json_object_new_int(1));
+  json_object_object_add(obj_3, "Delay", json_object_new_int(1000));
+  json_object_object_add(obj_3, "OutMode", json_object_new_string("PNP"));
+  json_object_object_add(obj_3, "OutPin", json_object_new_int(4));
+  /* create IPS format */
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "IPS", obj_4);
+  json_object_object_add(obj_4, "cmd", json_object_new_string("CAMERA_SET_MODE"));
 
-    obj_5 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_4, "args", obj_5);
-    json_object_object_add(obj_5, "CameraType", json_object_new_string("Mono"));
-    json_object_object_add(obj_5, "TriggerMode", json_object_new_string("Software"));
-    json_object_object_add(obj_5, "ExposureTime", json_object_new_int(100));
-    json_object_object_add(obj_5, "SaveImgOpt", json_object_new_string("Every Image"));
-    json_object_object_add(obj_5, "SaveImgPath", json_object_new_string("ExeCurrentFile/ProjectName/Grab/source.png"));
+  obj_5 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_4, "args", obj_5);
+  json_object_object_add(obj_5, "CameraType", json_object_new_string("Mono"));
+  json_object_object_add(obj_5, "TriggerMode", json_object_new_string("Software"));
+  json_object_object_add(obj_5, "ExposureTime", json_object_new_int(100));
+  json_object_object_add(obj_5, "SaveImgOpt", json_object_new_string("Every Image"));
+  json_object_object_add(obj_5, "SaveImgPath", json_object_new_string("ExeCurrentFile/ProjectName/Grab/source.png"));
 
-    memset(jstring, '\0', strlen(jstring));
-    // sprintf(jstring, (char *)json_object_to_json_string(root));
-    strcpy(jstring, (char *)json_object_to_json_string(root));
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  // sprintf(jstring, (char *)json_object_to_json_string(root));
+  strcpy(jstring, (char *)json_object_to_json_string(root));
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -695,55 +685,54 @@ int ios_ips_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: NONE
  *************************************************************/
-int ios_sys_get_params_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_sys_get_params_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("IO_SYS_GET_PARAMS"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("IO_SYS_GET_PARAMS"));
 
-    json_object_object_add(root, "args", obj_2);
-    char buf[128];
-    ios_readVersionFile(&buf[0]);
-    json_object_object_add(obj_2, "fw_vision", json_object_new_string(&buf[0]));
+  json_object_object_add(root, "args", obj_2);
+  char buf[128];
+  ios_readVersionFile(&buf[0]);
+  json_object_object_add(obj_2, "fw_vision", json_object_new_string(&buf[0]));
 
-    std::string strVSB_VERSION(VSB_VERSION);
-    json_object_object_add(obj_2, "vsb_vision", json_object_new_string(strVSB_VERSION.c_str()));
+  std::string strVSB_VERSION(VSB_VERSION);
+  json_object_object_add(obj_2, "vsb_vision", json_object_new_string(strVSB_VERSION.c_str()));
 
-    std::string strIOS_VERSION(IOS_VERSION);
-    json_object_object_add(obj_2, "ios_vision", json_object_new_string(strIOS_VERSION.c_str()));
-    
-    ios_readEthAddr((char *)"eth0", &buf[0]);
-    json_object_object_add(obj_2, "eth0_ipaddr", json_object_new_string(&buf[0]));
-    
-    ios_readEthAddr((char *)"eth1", &buf[0]);
-    json_object_object_add(obj_2, "eth1_ipaddr", json_object_new_string(&buf[0]));
-    
-    ios_readEthAddr((char *)"eth2", &buf[0]);
-    json_object_object_add(obj_2, "eth2_ipaddr", json_object_new_string(&buf[0]));
-    
-    ios_readEthAddr((char *)"wlan0", &buf[0]);
-    json_object_object_add(obj_2, "wlan0_ipaddr", json_object_new_string(&buf[0]));
+  std::string strIOS_VERSION(IOS_VERSION);
+  json_object_object_add(obj_2, "ios_vision", json_object_new_string(strIOS_VERSION.c_str()));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  ios_readEthAddr((char *)"eth0", &buf[0]);
+  json_object_object_add(obj_2, "eth0_ipaddr", json_object_new_string(&buf[0]));
 
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", obj_4);
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    /* only send the command, other parameter has been deposited in the structure */
+  ios_readEthAddr((char *)"eth1", &buf[0]);
+  json_object_object_add(obj_2, "eth1_ipaddr", json_object_new_string(&buf[0]));
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  ios_readEthAddr((char *)"eth2", &buf[0]);
+  json_object_object_add(obj_2, "eth2_ipaddr", json_object_new_string(&buf[0]));
+
+  ios_readEthAddr((char *)"wlan0", &buf[0]);
+  json_object_object_add(obj_2, "wlan0_ipaddr", json_object_new_string(&buf[0]));
+
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", obj_4);
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  /* only send the command, other parameter has been deposited in the structure */
+
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -752,34 +741,32 @@ int ios_sys_get_params_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: NONE
  *************************************************************/
-int ios_sfc_params_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_sfc_params_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("IO_SHOP_FLOOR_CONTROL"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("IO_SHOP_FLOOR_CONTROL"));
 
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  json_object_object_add(obj_3, "msg", json_object_new_string(&ios_sfc.msg[0]));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
-    json_object_object_add(obj_3, "msg", json_object_new_string(&ios_sfc.msg[0]));
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", obj_4);
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", obj_4);
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    /* only send the command, other parameter has been deposited in the structure */
-
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 /***********************************************************
@@ -788,37 +775,36 @@ int ios_sfc_params_json_create(char *jstring)
  *	Param 		: char * string
  *	Return		: NONE
  *************************************************************/
-int ios_get_tof_json_create(char *jstring)
-{
-    struct json_object *root, *obj_2, *obj_3, *obj_4;
+int ios_get_tof_json_create(char *jstring) {
+  struct json_object *root, *obj_2, *obj_3, *obj_4;
 
-    if (jstring == nullptr)
-        return -1;
-    /* create json format */
-    root = (struct json_object *)json_object_new_object();
-    obj_2 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "cmd", json_object_new_string("IO_TOF_GET_PARAM"));
+  if (jstring == nullptr)
+    return -1;
+  /* create json format */
+  root = (struct json_object *)json_object_new_object();
+  obj_2 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "cmd", json_object_new_string("IO_TOF_GET_PARAM"));
 
-    json_object_object_add(root, "args", obj_2);
-    char buf[128];
-    ios_readVersionFile(&buf[0]);
-    json_object_object_add(obj_2, "distance", json_object_new_int(ios_tof.distance));
+  json_object_object_add(root, "args", obj_2);
+  char buf[128];
+  ios_readVersionFile(&buf[0]);
+  json_object_object_add(obj_2, "distance", json_object_new_int(ios_tof.distance));
 
-    obj_3 = (struct json_object *)json_object_new_object();
-    json_object_object_add(root, "response", obj_3);
-    json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
+  obj_3 = (struct json_object *)json_object_new_object();
+  json_object_object_add(root, "response", obj_3);
+  json_object_object_add(obj_3, "status", json_object_new_string("Ack"));
 
-    obj_4 = (struct json_object *)json_object_new_object();
-    json_object_object_add(obj_3, "pset", obj_4);
-    json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
-    /* only send the command, other parameter has been deposited in the structure */
+  obj_4 = (struct json_object *)json_object_new_object();
+  json_object_object_add(obj_3, "pset", obj_4);
+  json_object_object_add(obj_3, "pset", json_object_new_string((char *)ios_CmdInfo));
+  /* only send the command, other parameter has been deposited in the structure */
 
-    memset(jstring, '\0', strlen(jstring));
-    const char *buf_cst = json_object_to_json_string(root);
-    sprintf(jstring, "%s", buf_cst);
-    MAINLOG(0, "%s json : %s\n", __func__, jstring);
-    json_object_put(root);
-    return 0;
+  memset(jstring, '\0', strlen(jstring));
+  const char *buf_cst = json_object_to_json_string(root);
+  sprintf(jstring, "%s", buf_cst);
+  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  json_object_put(root);
+  return 0;
 }
 
 pthread_mutex_t _innerQ_main_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -829,11 +815,10 @@ std::deque<std::string> buf_innerQ_main;
  *	Param 		: NONE
  *	Return		: error number
  *************************************************************/
-int innerQ_Main_Init()
-{
-    /* init mutex lock */
-    int res = pthread_mutex_init(&_innerQ_main_lock, nullptr);
-    return res;
+int innerQ_Main_Init() {
+  /* init mutex lock */
+  int res = pthread_mutex_init(&_innerQ_main_lock, nullptr);
+  return res;
 }
 
 /***********************************************************
@@ -842,15 +827,14 @@ int innerQ_Main_Init()
  *	Param 		: std::string msg
  *	Return		: error number
  *************************************************************/
-int innerQ_Main_EnQ(std::string msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_main_lock);
+int innerQ_Main_EnQ(std::string msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_main_lock);
 
-    buf_innerQ_main.push_back(msg);
+  buf_innerQ_main.push_back(msg);
 
-    pthread_mutex_unlock(&_innerQ_main_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_main_lock);
+  return res;
 }
 
 /***********************************************************
@@ -859,26 +843,20 @@ int innerQ_Main_EnQ(std::string msg)
  *	Param 		: return message: std::string *msg
  *	Return		: error number
  *************************************************************/
-int innerQ_Main_DeQ(std::string *msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_main_lock);
+int innerQ_Main_DeQ(std::string *msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_main_lock);
 
-    if (!buf_innerQ_main.empty())
-    {
+  if (!buf_innerQ_main.empty()) {
+    *msg = *buf_innerQ_main.begin();
 
-        *msg = *buf_innerQ_main.begin();
+    buf_innerQ_main.pop_front();
+  } else {
+    res = -1;
+  }
 
-        buf_innerQ_main.pop_front();
-    }
-    else
-    {
-
-        res = -1;
-    }
-
-    pthread_mutex_unlock(&_innerQ_main_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_main_lock);
+  return res;
 }
 
 /***********************************************************
@@ -887,13 +865,12 @@ int innerQ_Main_DeQ(std::string *msg)
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-bool innerQ_Main_IsEmpty()
-{
-    bool isEmpty = false;
-    pthread_mutex_lock(&_innerQ_main_lock);
-    isEmpty = buf_innerQ_main.empty();
-    pthread_mutex_unlock(&_innerQ_main_lock);
-    return isEmpty;
+bool innerQ_Main_IsEmpty() {
+  bool isEmpty = false;
+  pthread_mutex_lock(&_innerQ_main_lock);
+  isEmpty = buf_innerQ_main.empty();
+  pthread_mutex_unlock(&_innerQ_main_lock);
+  return isEmpty;
 }
 
 /***********************************************************
@@ -902,9 +879,8 @@ bool innerQ_Main_IsEmpty()
  *	Param 		: NONE
  *	Return		: NONE
  *************************************************************/
-void innerQ_Main_Destory()
-{
-    pthread_mutex_destroy(&_innerQ_main_lock);
+void innerQ_Main_Destory() {
+  pthread_mutex_destroy(&_innerQ_main_lock);
 }
 
 pthread_mutex_t _innerQ_ips_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -915,11 +891,10 @@ std::deque<std::string> buf_innerQ_ips;
  *	Param 		: NONE
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_Init()
-{
-    /* init mutex lock */
-    int res = pthread_mutex_init(&_innerQ_ips_lock, nullptr);
-    return res;
+int innerQ_IPS_Init() {
+  /* init mutex lock */
+  int res = pthread_mutex_init(&_innerQ_ips_lock, nullptr);
+  return res;
 }
 
 /***********************************************************
@@ -928,15 +903,14 @@ int innerQ_IPS_Init()
  *	Param 		: std::string msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_EnQ(std::string msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ips_lock);
+int innerQ_IPS_EnQ(std::string msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ips_lock);
 
-    buf_innerQ_ips.push_back(msg);
+  buf_innerQ_ips.push_back(msg);
 
-    pthread_mutex_unlock(&_innerQ_ips_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ips_lock);
+  return res;
 }
 
 /***********************************************************
@@ -945,26 +919,20 @@ int innerQ_IPS_EnQ(std::string msg)
  *	Param 		: return message: std::string *msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_DeQ(std::string *msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ips_lock);
+int innerQ_IPS_DeQ(std::string *msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ips_lock);
 
-    if (!buf_innerQ_ips.empty())
-    {
+  if (!buf_innerQ_ips.empty()) {
+    *msg = *buf_innerQ_ips.begin();
 
-        *msg = *buf_innerQ_ips.begin();
+    buf_innerQ_ips.pop_front();
+  } else {
+    res = -1;
+  }
 
-        buf_innerQ_ips.pop_front();
-    }
-    else
-    {
-
-        res = -1;
-    }
-
-    pthread_mutex_unlock(&_innerQ_ips_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ips_lock);
+  return res;
 }
 
 /***********************************************************
@@ -973,14 +941,12 @@ int innerQ_IPS_DeQ(std::string *msg)
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-bool innerQ_IPS_IsEmpty()
-{
-
-    bool isEmpty = false;
-    pthread_mutex_lock(&_innerQ_ips_lock);
-    isEmpty = buf_innerQ_ips.empty();
-    pthread_mutex_unlock(&_innerQ_ips_lock);
-    return isEmpty;
+bool innerQ_IPS_IsEmpty() {
+  bool isEmpty = false;
+  pthread_mutex_lock(&_innerQ_ips_lock);
+  isEmpty = buf_innerQ_ips.empty();
+  pthread_mutex_unlock(&_innerQ_ips_lock);
+  return isEmpty;
 }
 
 /***********************************************************
@@ -989,9 +955,8 @@ bool innerQ_IPS_IsEmpty()
  *	Param 		: NONE
  *	Return		: NONE
  *************************************************************/
-void innerQ_IPS_Destory()
-{
-    pthread_mutex_destroy(&_innerQ_ips_lock);
+void innerQ_IPS_Destory() {
+  pthread_mutex_destroy(&_innerQ_ips_lock);
 }
 
 pthread_mutex_t _innerQ_ips_lock_Dual[2] = {PTHREAD_MUTEX_INITIALIZER, PTHREAD_MUTEX_INITIALIZER};
@@ -1002,11 +967,10 @@ std::vector<std::deque<std::string>> buf_innerQ_ips_Dual(2);
  *	Param 		: NONE
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_Init_Dual(const int iID)
-{
-    /* init mutex lock */
-    int res = pthread_mutex_init(&_innerQ_ips_lock_Dual[iID], nullptr);
-    return res;
+int innerQ_IPS_Init_Dual(const int iID) {
+  /* init mutex lock */
+  int res = pthread_mutex_init(&_innerQ_ips_lock_Dual[iID], nullptr);
+  return res;
 }
 
 /***********************************************************
@@ -1015,15 +979,14 @@ int innerQ_IPS_Init_Dual(const int iID)
  *	Param 		: std::string msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_EnQ_Dual(std::string msg, const int iID)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
+int innerQ_IPS_EnQ_Dual(std::string msg, const int iID) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
 
-    buf_innerQ_ips_Dual[iID].push_back(msg);
+  buf_innerQ_ips_Dual[iID].push_back(msg);
 
-    pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
+  return res;
 }
 
 /***********************************************************
@@ -1032,24 +995,20 @@ int innerQ_IPS_EnQ_Dual(std::string msg, const int iID)
  *	Param 		: return message: std::string *msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IPS_DeQ_Dual(std::string *msg, const int iID)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
+int innerQ_IPS_DeQ_Dual(std::string *msg, const int iID) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
 
-    if (!buf_innerQ_ips_Dual[iID].empty())
-    {
-        *msg = *buf_innerQ_ips_Dual[iID].begin();
+  if (!buf_innerQ_ips_Dual[iID].empty()) {
+    *msg = *buf_innerQ_ips_Dual[iID].begin();
 
-        buf_innerQ_ips_Dual[iID].pop_front();
-    }
-    else
-    {
-        res = -1;
-    }
+    buf_innerQ_ips_Dual[iID].pop_front();
+  } else {
+    res = -1;
+  }
 
-    pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
+  return res;
 }
 
 /***********************************************************
@@ -1058,14 +1017,12 @@ int innerQ_IPS_DeQ_Dual(std::string *msg, const int iID)
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-bool innerQ_IPS_IsEmpty_Dual(const int iID)
-{
-
-    bool isEmpty = false;
-    pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
-    isEmpty = buf_innerQ_ips_Dual[iID].empty();
-    pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
-    return isEmpty;
+bool innerQ_IPS_IsEmpty_Dual(const int iID) {
+  bool isEmpty = false;
+  pthread_mutex_lock(&_innerQ_ips_lock_Dual[iID]);
+  isEmpty = buf_innerQ_ips_Dual[iID].empty();
+  pthread_mutex_unlock(&_innerQ_ips_lock_Dual[iID]);
+  return isEmpty;
 }
 
 /***********************************************************
@@ -1074,9 +1031,8 @@ bool innerQ_IPS_IsEmpty_Dual(const int iID)
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-void innerQ_IPS_Destory_Dual(const int iID)
-{
-    pthread_mutex_destroy(&_innerQ_ips_lock_Dual[iID]);
+void innerQ_IPS_Destory_Dual(const int iID) {
+  pthread_mutex_destroy(&_innerQ_ips_lock_Dual[iID]);
 }
 
 pthread_mutex_t _innerQ_ios_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -1087,11 +1043,10 @@ std::deque<std::string> buf_innerQ_ios;
  *	Param 		: NONE
  *	Return		: error number
  *************************************************************/
-int innerQ_IOS_Init()
-{
-    /* init mutex lock */
-    int res = pthread_mutex_init(&_innerQ_ios_lock, nullptr);
-    return res;
+int innerQ_IOS_Init() {
+  /* init mutex lock */
+  int res = pthread_mutex_init(&_innerQ_ios_lock, nullptr);
+  return res;
 }
 
 /***********************************************************
@@ -1100,15 +1055,14 @@ int innerQ_IOS_Init()
  *	Param 		: std::string msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IOS_EnQ(std::string msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ios_lock);
+int innerQ_IOS_EnQ(std::string msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ios_lock);
 
-    buf_innerQ_ios.push_back(msg);
+  buf_innerQ_ios.push_back(msg);
 
-    pthread_mutex_unlock(&_innerQ_ios_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ios_lock);
+  return res;
 }
 
 /***********************************************************
@@ -1117,25 +1071,20 @@ int innerQ_IOS_EnQ(std::string msg)
  *	Param 		: return message: std::string *msg
  *	Return		: error number
  *************************************************************/
-int innerQ_IOS_DeQ(std::string *msg)
-{
-    int res = 0;
-    pthread_mutex_lock(&_innerQ_ios_lock);
+int innerQ_IOS_DeQ(std::string *msg) {
+  int res = 0;
+  pthread_mutex_lock(&_innerQ_ios_lock);
 
-    if (!buf_innerQ_ios.empty())
-    {
-        *msg = *buf_innerQ_ios.begin();
+  if (!buf_innerQ_ios.empty()) {
+    *msg = *buf_innerQ_ios.begin();
 
-        buf_innerQ_ios.pop_front();
-    }
-    else
-    {
+    buf_innerQ_ios.pop_front();
+  } else {
+    res = -1;
+  }
 
-        res = -1;
-    }
-
-    pthread_mutex_unlock(&_innerQ_ios_lock);
-    return res;
+  pthread_mutex_unlock(&_innerQ_ios_lock);
+  return res;
 }
 
 /***********************************************************
@@ -1144,14 +1093,12 @@ int innerQ_IOS_DeQ(std::string *msg)
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-bool innerQ_IOS_IsEmpty()
-{
-
-    bool isEmpty = false;
-    pthread_mutex_lock(&_innerQ_ios_lock);
-    isEmpty = buf_innerQ_ios.empty();
-    pthread_mutex_unlock(&_innerQ_ios_lock);
-    return isEmpty;
+bool innerQ_IOS_IsEmpty() {
+  bool isEmpty = false;
+  pthread_mutex_lock(&_innerQ_ios_lock);
+  isEmpty = buf_innerQ_ios.empty();
+  pthread_mutex_unlock(&_innerQ_ios_lock);
+  return isEmpty;
 }
 
 /***********************************************************
@@ -1160,9 +1107,8 @@ bool innerQ_IOS_IsEmpty()
  *	Param 		: NONE
  *	Return		: true, false
  *************************************************************/
-void innerQ_IOS_Destory()
-{
-    pthread_mutex_destroy(&_innerQ_ios_lock);
+void innerQ_IOS_Destory() {
+  pthread_mutex_destroy(&_innerQ_ios_lock);
 }
 
 /***********************************************************
@@ -1173,31 +1119,29 @@ void innerQ_IOS_Destory()
  *	Param 		: NONE
  *	Return		: 0, 1
  *************************************************************/
-int kbhit(void)
-{
-    struct termios oldt, newt;
-    int ch;
-    int oldf;
+int kbhit(void) {
+  struct termios oldt, newt;
+  int ch;
+  int oldf;
 
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
 
-    ch = getchar();
+  ch = getchar();
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  fcntl(STDIN_FILENO, F_SETFL, oldf);
 
-    if (ch != EOF)
-    {
-        ungetc(ch, stdin);
-        return 1;
-    }
+  if (ch != EOF) {
+    ungetc(ch, stdin);
+    return 1;
+  }
 
-    return 0;
+  return 0;
 }
 
 /***********************************************************
@@ -1209,23 +1153,18 @@ int kbhit(void)
 uint32_t ShowProcessCounter = 0;
 uint32_t ShowProcessCountTarget = 1000;
 uint8_t PreState = 254;
-void Show_Process_State(uint8_t currentState)
-{
-    if (PreState != currentState)
-    {
-        PreState = currentState;
-        MAINLOG(0, RED "[Main](%s):(Diff)  Current state of Process is : %d\n", __func__, currentState);
-    }
+void Show_Process_State(uint8_t currentState) {
+  if (PreState != currentState) {
+    PreState = currentState;
+    MAINLOG(0, RED "[Main](%s):(Diff)  Current state of Process is : %d\n", __func__, currentState);
+  }
 
-    if (ShowProcessCounter == ShowProcessCountTarget)
-    {
-        MAINLOG(0, RED "[Main](%s):(Times) Current state of Process is : %d\n", __func__, currentState);
-        ShowProcessCounter = 0;
-    }
-    else
-    {
-        ShowProcessCounter += 1;
-    }
+  if (ShowProcessCounter == ShowProcessCountTarget) {
+    MAINLOG(0, RED "[Main](%s):(Times) Current state of Process is : %d\n", __func__, currentState);
+    ShowProcessCounter = 0;
+  } else {
+    ShowProcessCounter += 1;
+  }
 }
 
 /***********************************************************
@@ -1234,207 +1173,175 @@ void Show_Process_State(uint8_t currentState)
  *	Param 		: NONE
  *	Return		: NONE
  *************************************************************/
-void Process_Flow_Handler(void)
-{
-    std::string strInfo;
+void Process_Flow_Handler(void) {
+  std::string strInfo;
 
-    if (!Process_Node.Active)
-    {
-        return;
-    }
-    switch (Process_Node.autoMode)
-    {
-        case GLUE_INSPECTION:
-        {
-            int iId = 0, iStatus = 0, m;
-            uint8_t rec_data[MAX_MSG_SIZE];
-            seAlgoParamReg *pAlgoParam = nullptr;
-            seMode_TriggerModeType *pJP = nullptr;
-            seExpansionMode iEnbExMode = tagExpansionMode();
+  if (!Process_Node.Active) {
+    return;
+  }
+  switch (Process_Node.autoMode) {
+    case GLUE_INSPECTION: {
+      int iId = 0, iStatus = 0, m;
+      uint8_t rec_data[MAX_MSG_SIZE];
+      seAlgoParamReg *pAlgoParam = nullptr;
+      seMode_TriggerModeType *pJP = nullptr;
+      seExpansionMode iEnbExMode = tagExpansionMode();
 
-            
-            switch (Process_Node.giFlow)
-            {
-                case GI_START: {
-                    /* firstall, check msqIosID whether exists remaining queue */
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
-
-                        for (int i = 0; i < m; i++)
-                        {
-                            innerQ_IOS_DeQ(&strInfo);
-                            strcpy((char*)rec_data, strInfo.c_str());
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
-                        }
-                    }
-                    
-                    if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 0) == 1)
-                    {
-                        
-                        strcpy((char*)Process_Node.TestResult, "");
-                        ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
-                        ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
-                        wakeIPSFlag = 0;
-                        setStatus_mp(-1);
-                        /* go next step */
-                        Process_Node.giFlow = GI_WAIT_TRIGGER;
-                        
-                    }
-                    
-                    break;
-                }
-                case GI_WAIT_TRIGGER: {
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
-
-                        printf("%s()%d: msqIosId has received...\n", __FUNCTION__, __LINE__);
-
-                        innerQ_IOS_DeQ(&strInfo);
-                        strcpy((char*)rec_data, strInfo.c_str());
-                        printf("%s()%d: rec_data=%s\n", __FUNCTION__, __LINE__, rec_data);
-                        if (strcmp((char*)rec_data, "Din_Trigger") == 0)
-                        {
-                            ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0);
-                            ios_Control_Light_Handler(LIGHT_SOURCE_1, TRUE);
-                            ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
-                            Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
-                        }
-                        else
-                        {
-                            usleep(10000);
-                            innerQ_IOS_EnQ((char *)"Din_Trigger_Dual");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
-                        }
-                    }
-                    break;
-                }
-                case GI_EXCUTE_AUTO_GI: {
-                    usleep(10000);
-                    /* waiting for Rex release audo mode API */ //<---TBD
-                    MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI ===> \n", __func__);
-
-                    if (wakeIPSFlag == 0) {
-                        iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
-                        pAlgoParam = &gAlgoParamReg[iId];
-                        pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
-                        pJP->bFlg_TriggerMode_Activate = true;
-                        iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
-                        ExModeQ_EnQ_Dual(iEnbExMode, 0);
-                        //setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
-                        setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 0);
-                        resume_ip_Dual(0);
-                        wakeIPSFlag = 1;
-                    }
-                    // suspend_mp();
-
-                    // pthread_mutex_lock(&mp_suspendMutex);
-                    // while (mp_suspendFlag != 0)
-                    // {
-                    //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
-                    // }
-                    // pthread_mutex_unlock(&mp_suspendMutex);
-
-                    getStatus_mp(&iStatus);
-                    if (iStatus == 0)
-                    { // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
-                        Process_Node.giFlow = GI_GET_TEST_RESULT;
-                    }
-                    else if (iStatus == 1)
-                    { // This numbe of 1 is mean done the AutiRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
-                        Process_Node.giFlow = GI_GET_TEST_RESULT;
-                    } else {
-                        Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
-                    }
-                            // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
-                    break;
-                }
-                case GI_GET_TEST_RESULT: {
-                    /* result be judged by web backend, we dirctly go back to GI_START */
-
-                    m = innerQ_IPS_IsEmpty_Dual(0);
-                    if (m != 1)
-                    {
-                        innerQ_IPS_DeQ_Dual(&strInfo, 0);
-                        strcpy((char*)rec_data, strInfo.c_str());
-
-                        if (strcmp((char*)rec_data, "Auto_Mode_Done") == 0)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
-                        }
-                        else
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
-                        }
-
-                        ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
-                        /* Dout ON for indicating auto mode done */
-                        /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                            snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                            ext_mqtt_publisher_Dual(&job_t[0], 0);
-                        }*/
-                    }
-                    /* wait for test result */
-                    if ((strcmp((const char*)Process_Node.TestResult, "PASS") == 0) ||
-                        (strcmp((const char*)Process_Node.TestResult, "NG") == 0))
-                    {
-                        if (strcmp((const char*)Process_Node.TestResult, "PASS") == 0)
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 0) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
-                                /* go back to start state */
-                                Process_Node.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        else
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
-                                /* go back to start state */
-                                Process_Node.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        usleep(500000);
-                        Process_Node.giFlow = GI_START;
-                        if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
-                        {
-                            // MAINLOG(0, "Turn ON Dout\n");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                                    snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                                    ext_mqtt_publisher_Dual(&job_t[0], 0);
-                                }
-                    }
-                    //MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Result=[%s] <=== \n", __func__, Process_Node.TestResult);
-                    break;
-                }
-                default: {
-                    break;
-                }
+      switch (Process_Node.giFlow) {
+        case GI_START: {
+          /* firstall, check msqIosID whether exists remaining queue */
+          m = innerQ_IOS_IsEmpty();
+          if (m != 1) {
+            for (int i = 0; i < m; i++) {
+              innerQ_IOS_DeQ(&strInfo);
+              strcpy((char *)rec_data, strInfo.c_str());
+              MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
             }
-            
-            Show_Process_State(Process_Node.giFlow);
-        }
-        break;
+          }
 
-        case NON_AUTO:
-        default:
-            break;
-    }
+          if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 0) == 1) {
+            strcpy((char *)Process_Node.TestResult, "");
+            ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
+            ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
+            wakeIPSFlag = 0;
+            setStatus_mp(-1);
+            /* go next step */
+            Process_Node.giFlow = GI_WAIT_TRIGGER;
+          }
+
+          break;
+        }
+        case GI_WAIT_TRIGGER: {
+          m = innerQ_IOS_IsEmpty();
+          if (m != 1) {
+            printf("%s()%d: msqIosId has received...\n", __FUNCTION__, __LINE__);
+
+            innerQ_IOS_DeQ(&strInfo);
+            strcpy((char *)rec_data, strInfo.c_str());
+            printf("%s()%d: rec_data=%s\n", __FUNCTION__, __LINE__, rec_data);
+            if (strcmp((char *)rec_data, "Din_Trigger") == 0) {
+              ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0);
+              ios_Control_Light_Handler(LIGHT_SOURCE_1, TRUE);
+              ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
+              Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
+            } else {
+              usleep(10000);
+              innerQ_IOS_EnQ((char *)"Din_Trigger_Dual");
+              MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
+            }
+          }
+          break;
+        }
+        case GI_EXCUTE_AUTO_GI: {
+          usleep(10000);
+          /* waiting for Rex release audo mode API */  //<---TBD
+          MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI ===> \n", __func__);
+
+          if (wakeIPSFlag == 0) {
+            iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
+            pAlgoParam = &gAlgoParamReg[iId];
+            pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
+            pJP->bFlg_TriggerMode_Activate = true;
+            iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
+            ExModeQ_EnQ_Dual(iEnbExMode, 0);
+            // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
+            setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 0);
+            resume_ip_Dual(0);
+            wakeIPSFlag = 1;
+          }
+          // suspend_mp();
+
+          // pthread_mutex_lock(&mp_suspendMutex);
+          // while (mp_suspendFlag != 0)
+          // {
+          //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
+          // }
+          // pthread_mutex_unlock(&mp_suspendMutex);
+
+          getStatus_mp(&iStatus);
+          if (iStatus == 0) {  // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
+            MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
+            ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
+            Process_Node.giFlow = GI_GET_TEST_RESULT;
+          } else if (iStatus == 1) {  // This numbe of 1 is mean done the AutiRun Mode flow.
+            MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
+            ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
+            Process_Node.giFlow = GI_GET_TEST_RESULT;
+          } else {
+            Process_Node.giFlow = GI_EXCUTE_AUTO_GI;
+          }
+          // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
+          break;
+        }
+        case GI_GET_TEST_RESULT: {
+          /* result be judged by web backend, we dirctly go back to GI_START */
+
+          m = innerQ_IPS_IsEmpty_Dual(0);
+          if (m != 1) {
+            innerQ_IPS_DeQ_Dual(&strInfo, 0);
+            strcpy((char *)rec_data, strInfo.c_str());
+
+            if (strcmp((char *)rec_data, "Auto_Mode_Done") == 0) {
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
+            } else {
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
+            }
+
+            ios_Control_Light_Handler(LIGHT_SOURCE_1, FALSE);
+            /* Dout ON for indicating auto mode done */
+            /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1)
+            {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+                unsigned int rvalue = 0;
+                char job_t[512];
+                snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+                ext_mqtt_publisher_Dual(&job_t[0], 0);
+            }*/
+          }
+          /* wait for test result */
+          if ((strcmp((const char *)Process_Node.TestResult, "PASS") == 0) ||
+              (strcmp((const char *)Process_Node.TestResult, "NG") == 0)) {
+            if (strcmp((const char *)Process_Node.TestResult, "PASS") == 0) {
+              if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 0) == 1) {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
+                /* go back to start state */
+                Process_Node.giFlow = GI_START;
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+              }
+            } else {
+              if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 0) == 1) {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node.TestResult);
+                /* go back to start state */
+                Process_Node.giFlow = GI_START;
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+              }
+            }
+            usleep(500000);
+            Process_Node.giFlow = GI_START;
+            if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 0) == 1) {
+              // MAINLOG(0, "Turn ON Dout\n");
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+              unsigned int rvalue = 0;
+              char job_t[512];
+              snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM1_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+              ext_mqtt_publisher_Dual(&job_t[0], 0);
+            }
+          }
+          // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Result=[%s] <=== \n", __func__, Process_Node.TestResult);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      Show_Process_State(Process_Node.giFlow);
+    } break;
+
+    case NON_AUTO:
+    default:
+      break;
+  }
 }
 
 /***********************************************************
@@ -1443,205 +1350,176 @@ void Process_Flow_Handler(void)
  *	Param 		: NONE
  *	Return		: NONE
  *************************************************************/
-void Process_Flow_Handler_Dual(void)
-{
-    std::string strInfo;
+void Process_Flow_Handler_Dual(void) {
+  std::string strInfo;
 
-    if (!Process_Node_Dual.Active)
-    {
-        return;
-    }    
+  if (!Process_Node_Dual.Active) {
+    return;
+  }
 
-    switch (Process_Node_Dual.autoMode)
-    {
-        case GLUE_INSPECTION:
-        {
-            int iId = 0, iStatus = 0, m;
-            uint8_t rec_data[MAX_MSG_SIZE];
-            seAlgoParamReg *pAlgoParam = nullptr;
-            seMode_TriggerModeType *pJP = nullptr;
-            seExpansionMode iEnbExMode = tagExpansionMode();
+  switch (Process_Node_Dual.autoMode) {
+    case GLUE_INSPECTION: {
+      int iId = 0, iStatus = 0, m;
+      uint8_t rec_data[MAX_MSG_SIZE];
+      seAlgoParamReg *pAlgoParam = nullptr;
+      seMode_TriggerModeType *pJP = nullptr;
+      seExpansionMode iEnbExMode = tagExpansionMode();
 
-            switch (Process_Node_Dual.giFlow)
-            {   
-                case GI_START: {
-                    /* firstall, check msqIosID whether exists remaining queue */
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
-
-                        for (int i = 0; i < m; i++)
-                        {
-                            innerQ_IOS_DeQ(&strInfo);
-                            strcpy((char*)rec_data, strInfo.c_str());
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
-                        }
-                    }
-
-                    if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 1) == 1)
-                    {
-                        strcpy((char*)Process_Node_Dual.TestResult, "");
-                        ios_Control_Light_Handler(LIGHT_SOURCE_2, FALSE);
-                        ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
-                        wakeIPSFlag_Dual = 0;
-                        setStatus_mp(-1);
-                        /* go next step */
-                        Process_Node_Dual.giFlow = GI_WAIT_TRIGGER;
-                    }
-                    break;
-                }
-                case GI_WAIT_TRIGGER: {
-                    m = innerQ_IOS_IsEmpty();
-                    if (m != 1)
-                    {
-
-                        printf("%s()%d: msqIosId has received dual...\n", __FUNCTION__, __LINE__);
-
-                        innerQ_IOS_DeQ(&strInfo);
-                        strcpy((char*)rec_data, strInfo.c_str());
-
-                        printf("%s()%d: rec_data dual=%s\n", __FUNCTION__, __LINE__, rec_data);
-                        if (strcmp((char*)rec_data, "Din_Trigger_Dual") == 0)
-                        {
-                            ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 1);
-                            ios_Control_Light_Handler(LIGHT_SOURCE_2, TRUE);
-                            ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
-                            Process_Node_Dual.giFlow = GI_EXCUTE_AUTO_GI;
-                        }
-                        else
-                        {
-                            usleep(10000);
-                            innerQ_IOS_EnQ("Din_Trigger");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
-                        }
-                    }
-                    break;
-                }
-                case GI_EXCUTE_AUTO_GI: {
-                    usleep(10000);
-                    /* waiting for Rex release audo mode API */ //<---TBD
-                    MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI Dual ===> \n", __func__);
-
-                    if (wakeIPSFlag_Dual == 0) {
-                        iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
-                        pAlgoParam = &gAlgoParamReg[iId];
-                        pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
-                        pJP->bFlg_TriggerMode_Activate = true;
-                        iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
-                        ExModeQ_EnQ_Dual(iEnbExMode, 1);
-                        // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
-                        setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 1);
-                        resume_ip_Dual(1);
-                        wakeIPSFlag_Dual = 1;
-                    }         
-                    // suspend_mp();
-
-                    // pthread_mutex_lock(&mp_suspendMutex);
-                    // while (mp_suspendFlag != 0)
-                    // {
-                    //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
-                    // }
-                    // pthread_mutex_unlock(&mp_suspendMutex);
-
-                    getStatus_mp(&iStatus);
-                    if (iStatus == 0)
-                    { // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
-                        Process_Node_Dual.giFlow = GI_GET_TEST_RESULT;
-                    }
-                    else if (iStatus == 1)
-                    { // This numbe of 1 is mean done the AutiRun Mode flow.
-                        MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
-                        ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
-                        Process_Node_Dual.giFlow = GI_GET_TEST_RESULT;
-                    } else {
-                        Process_Node_Dual.giFlow = GI_EXCUTE_AUTO_GI;
-                    }
-                    // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
-                    break;
-                }
-                case GI_GET_TEST_RESULT: {
-                    /* result be judged by web backend, we dirctly go back to GI_START */
-
-                    m = innerQ_IPS_IsEmpty_Dual(1);
-                    if (m != 1)
-                    {
-                        innerQ_IPS_DeQ_Dual(&strInfo, 1);
-                        strcpy((char*)rec_data, strInfo.c_str());
-
-                        if (strcmp((char*)rec_data, "Auto_Mode_Done") == 0)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
-                        }
-                        else
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
-                        }
-
-                        ios_Control_Light_Handler(LIGHT_SOURCE_2, FALSE);
-
-                        /* Dout ON for indicating auto mode done */
-                        /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 1) == 1)
-                        {
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                            snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM2_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                            ext_mqtt_publisher_Dual(&job_t[0], 0);
-                        }*/
-                    }
-                    /* wait for test result */
-                    if ((strcmp((const char*)Process_Node_Dual.TestResult, (char *)"PASS") == 0) ||
-                        (strcmp((const char*)Process_Node_Dual.TestResult, (char *)"NG") == 0))
-                    {
-                        if (strcmp((const char*)Process_Node_Dual.TestResult, (char *)"PASS") == 0)
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 1) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node_Dual.TestResult);
-                                /* go back to start state */
-                                Process_Node_Dual.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        else
-                        {
-                            if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 1) == 1)
-                            {
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node_Dual.TestResult);
-                                /* go back to start state */
-                                Process_Node_Dual.giFlow = GI_START;
-                                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
-                            }
-                        }
-                        usleep(500000);
-                        Process_Node_Dual.giFlow = GI_START;
-                        if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 1) == 1)
-                        {
-                            // MAINLOG(0, "Turn ON Dout\n");
-                            MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
-                            unsigned int rvalue = 0;
-                            char job_t[512];
-                            snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM2_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
-                            ext_mqtt_publisher_Dual(&job_t[0], 0);
-                        }
-                    }
-                    // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Dual Result=[%s] <=== \n", __func__, Process_Node.TestResult);
-                    break;
-                }
-                default: {
-                    break;
-                }
+      switch (Process_Node_Dual.giFlow) {
+        case GI_START: {
+          /* firstall, check msqIosID whether exists remaining queue */
+          m = innerQ_IOS_IsEmpty();
+          if (m != 1) {
+            for (int i = 0; i < m; i++) {
+              innerQ_IOS_DeQ(&strInfo);
+              strcpy((char *)rec_data, strInfo.c_str());
+              MAINLOG(0, BLUE "[MAINCTL](%s) : removed one Q from msqIosId\n", __func__);
             }
-            Show_Process_State(Process_Node_Dual.giFlow);
-        }
-        break;
+          }
 
-        case NON_AUTO:
-        default:
-            break;
-    }
+          if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", FALSE, 1) == 1) {
+            strcpy((char *)Process_Node_Dual.TestResult, "");
+            ios_Control_Light_Handler(LIGHT_SOURCE_2, FALSE);
+            ios_modbusGITesting(0, 0); /* Test Status: VB Ready; Testing Result: No Result */
+            wakeIPSFlag_Dual = 0;
+            setStatus_mp(-1);
+            /* go next step */
+            Process_Node_Dual.giFlow = GI_WAIT_TRIGGER;
+          }
+          break;
+        }
+        case GI_WAIT_TRIGGER: {
+          m = innerQ_IOS_IsEmpty();
+          if (m != 1) {
+            printf("%s()%d: msqIosId has received dual...\n", __FUNCTION__, __LINE__);
+
+            innerQ_IOS_DeQ(&strInfo);
+            strcpy((char *)rec_data, strInfo.c_str());
+
+            printf("%s()%d: rec_data dual=%s\n", __FUNCTION__, __LINE__, rec_data);
+            if (strcmp((char *)rec_data, "Din_Trigger_Dual") == 0) {
+              ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 1);
+              ios_Control_Light_Handler(LIGHT_SOURCE_2, TRUE);
+              ios_modbusGITesting(1, 0); /* Test Status: VB Busy; Testing Result: No Result */
+              Process_Node_Dual.giFlow = GI_EXCUTE_AUTO_GI;
+            } else {
+              usleep(10000);
+              innerQ_IOS_EnQ("Din_Trigger");
+              MAINLOG(0, BLUE "[MAINCTL](%s) : _____GI_WAIT_TRIGGER\n", __func__);
+            }
+          }
+          break;
+        }
+        case GI_EXCUTE_AUTO_GI: {
+          usleep(10000);
+          /* waiting for Rex release audo mode API */  //<---TBD
+          MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI Dual ===> \n", __func__);
+
+          if (wakeIPSFlag_Dual == 0) {
+            iId = (enum_IdReg)FLAGE_TRIGGERMODETYPE;
+            pAlgoParam = &gAlgoParamReg[iId];
+            pJP = (seMode_TriggerModeType *)pAlgoParam->pParam;
+            pJP->bFlg_TriggerMode_Activate = true;
+            iEnbExMode.flg_TriggerMode_Activat = pJP->bFlg_TriggerMode_Activate;
+            ExModeQ_EnQ_Dual(iEnbExMode, 1);
+            // setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }");
+            setAlgo_MethodAssign_Dual(enum_Subscribe_CAMReg[iId], "{ \"Enb_TriggerMode_Activate\": 1 }", 1);
+            resume_ip_Dual(1);
+            wakeIPSFlag_Dual = 1;
+          }
+          // suspend_mp();
+
+          // pthread_mutex_lock(&mp_suspendMutex);
+          // while (mp_suspendFlag != 0)
+          // {
+          //     pthread_cond_wait(&mp_resumeCond, &mp_suspendMutex);
+          // }
+          // pthread_mutex_unlock(&mp_suspendMutex);
+
+          getStatus_mp(&iStatus);
+          if (iStatus == 0) {  // This number of -1 or 0 is mean not finish the AutoRun Mode flow.
+            MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Error!! Go to GI_GET_TEST_RESULT\n", __func__);
+            ios_modbusGITesting(1, 2); /* Test Status: VB Busy; Testing Result: Fail */
+            Process_Node_Dual.giFlow = GI_GET_TEST_RESULT;
+          } else if (iStatus == 1) {  // This numbe of 1 is mean done the AutiRun Mode flow.
+            MAINLOG(0, BLUE "[MAINCTL](%s) : AutoRunMode is Done!! Go to GI_GET_TEST_RESULT\n", __func__);
+            ios_modbusGITesting(1, 1); /* Test Status: VB Busy; Testing Result: Pass */
+            Process_Node_Dual.giFlow = GI_GET_TEST_RESULT;
+          } else {
+            Process_Node_Dual.giFlow = GI_EXCUTE_AUTO_GI;
+          }
+          // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_EXCUTE_AUTO_GI iStatus=[%d] <=== \n", __func__, iStatus);
+          break;
+        }
+        case GI_GET_TEST_RESULT: {
+          /* result be judged by web backend, we dirctly go back to GI_START */
+
+          m = innerQ_IPS_IsEmpty_Dual(1);
+          if (m != 1) {
+            innerQ_IPS_DeQ_Dual(&strInfo, 1);
+            strcpy((char *)rec_data, strInfo.c_str());
+
+            if (strcmp((char *)rec_data, "Auto_Mode_Done") == 0) {
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode done \n", __func__);
+            } else {
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Auto mode fail \n", __func__);
+            }
+
+            ios_Control_Light_Handler(LIGHT_SOURCE_2, FALSE);
+
+            /* Dout ON for indicating auto mode done */
+            /*if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 1) == 1)
+            {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+                unsigned int rvalue = 0;
+                char job_t[512];
+                snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM2_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+                ext_mqtt_publisher_Dual(&job_t[0], 0);
+            }*/
+          }
+          /* wait for test result */
+          if ((strcmp((const char *)Process_Node_Dual.TestResult, (char *)"PASS") == 0) ||
+              (strcmp((const char *)Process_Node_Dual.TestResult, (char *)"NG") == 0)) {
+            if (strcmp((const char *)Process_Node_Dual.TestResult, (char *)"PASS") == 0) {
+              if (ios_Control_Dout_Handler_Dual((char *)"Result", TRUE, 1) == 1) {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node_Dual.TestResult);
+                /* go back to start state */
+                Process_Node_Dual.giFlow = GI_START;
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+              }
+            } else {
+              if (ios_Control_Dout_Handler_Dual((char *)"Result", FALSE, 1) == 1) {
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Test Result: %s\n", __func__, Process_Node_Dual.TestResult);
+                /* go back to start state */
+                Process_Node_Dual.giFlow = GI_START;
+                MAINLOG(0, BLUE "[MAINCTL](%s) : Go to Start State!!!\n", __func__);
+              }
+            }
+            usleep(500000);
+            Process_Node_Dual.giFlow = GI_START;
+            if (ios_Control_Dout_Handler_Dual((char *)"AutoDone", TRUE, 1) == 1) {
+              // MAINLOG(0, "Turn ON Dout\n");
+              MAINLOG(0, BLUE "[MAINCTL](%s) : Set Dout ON for AutoDone \n", __func__);
+              unsigned int rvalue = 0;
+              char job_t[512];
+              snprintf(&job_t[0], sizeof(job_t), "{\"cmd\":\"CAM2_AUTODONE_RESP\", \"args\":{ \"result\":%d }}", rvalue);
+              ext_mqtt_publisher_Dual(&job_t[0], 0);
+            }
+          }
+          // MAINLOG(0, BLUE "[MAINCTL](%s) : GI_GET_TEST_RESULT Dual Result=[%s] <=== \n", __func__, Process_Node.TestResult);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      Show_Process_State(Process_Node_Dual.giFlow);
+    } break;
+
+    case NON_AUTO:
+    default:
+      break;
+  }
 }
 
 /***********************************************************
@@ -1650,36 +1528,31 @@ void Process_Flow_Handler_Dual(void)
  *	Param 		: int nIsEndFunc
  *	Return		: error number
  *************************************************************/
-int FW_Mqtt_PriorityPass_Internal(int nIsEndFunc = 0)
-{
-    int nRet = 0;
+int FW_Mqtt_PriorityPass_Internal(int nIsEndFunc = 0) {
+  int nRet = 0;
 
-    if (!nIsEndFunc)
-    {
+  if (!nIsEndFunc) {
+    return 0;
+  }
 
-        return 0;
-    }
+  seExpansionMode iEnbExMode;
 
-    seExpansionMode iEnbExMode;
+  int iId_PriorityPass[] = {
+      (enum_IdReg)METHOD_GigeCam_Inquiry,
+  };
 
-    int iId_PriorityPass[] = {
-        (enum_IdReg)METHOD_GigeCam_Inquiry,
-    };
+  const int PriorityPass_Cnt = (sizeof(iId_PriorityPass) / sizeof(iId_PriorityPass[0]));
 
-    const int PriorityPass_Cnt = (sizeof(iId_PriorityPass) / sizeof(iId_PriorityPass[0]));
+  for (int i = 0; i < PriorityPass_Cnt; i++) {
+    int iId = iId_PriorityPass[i];
+    ExModeQ_EnQ(iEnbExMode);
+    setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"status\": \"FW_Mqtt_PriorityPass\" }");
+  }
 
-    for (int i = 0; i < PriorityPass_Cnt; i++)
-    {
+  resume_ip_Dual(0);
+  resume_ip_Dual(1);
 
-        int iId = iId_PriorityPass[i];
-        ExModeQ_EnQ(iEnbExMode);
-        setAlgo_MethodAssign(enum_Subscribe_CAMReg[iId], "{ \"status\": \"FW_Mqtt_PriorityPass\" }");
-    }
-
-    resume_ip_Dual(0);
-    resume_ip_Dual(1);
-
-    return nRet;
+  return nRet;
 }
 
 /***********************************************************
@@ -1689,119 +1562,107 @@ int FW_Mqtt_PriorityPass_Internal(int nIsEndFunc = 0)
  *	Param     : void *argu --> none
  *	Return    : NONE
  *************************************************************/
-void *mainCtl(void *argu)
-{
-    uint8_t rec_data[MAX_MSG_SIZE];
-    int m;
+void *mainCtl(void *argu) {
+  uint8_t rec_data[MAX_MSG_SIZE];
+  int m;
 
-    char job_t[512];        /* need to define this buffer size */
-      
-    /* init mutex lock */
-    pthread_mutex_init(&msgQMutex, nullptr);
-    pthread_mutex_init(&msgQIosMutex, nullptr);
+  char job_t[512]; /* need to define this buffer size */
 
-    /* init value */
-    ips_status.new_job = NO_SETFUNC;
-    jes.new_job = NO_SETFUNC;
-    memset(&Process_Node, 0, sizeof(Process_Node));
-    Process_Node.autoMode = NON_AUTO;
-    Process_Node.giFlow = GI_START;
-    
-    memset(&Process_Node_Dual, 0, sizeof(Process_Node_Dual));
-    Process_Node_Dual.autoMode = NON_AUTO;
-    Process_Node_Dual.giFlow = GI_START;
+  /* init mutex lock */
+  pthread_mutex_init(&msgQMutex, nullptr);
+  pthread_mutex_init(&msgQIosMutex, nullptr);
 
-    seJsonInfo seInfo;
+  /* init value */
+  ips_status.new_job = NO_SETFUNC;
+  jes.new_job = NO_SETFUNC;
+  memset(&Process_Node, 0, sizeof(Process_Node));
+  Process_Node.autoMode = NON_AUTO;
+  Process_Node.giFlow = GI_START;
 
-    std::string strInfo;
+  memset(&Process_Node_Dual, 0, sizeof(Process_Node_Dual));
+  Process_Node_Dual.autoMode = NON_AUTO;
+  Process_Node_Dual.giFlow = GI_START;
 
-    while (!mp_doneFlag)
-    {
-        m = innerQ_Main_IsEmpty();
+  seJsonInfo seInfo;
 
-        if (m != 1)
-        {
+  std::string strInfo;
 
-            innerQ_Main_DeQ(&strInfo);
-            strcpy((char*)rec_data, strInfo.c_str());
+  while (!mp_doneFlag) {
+    m = innerQ_Main_IsEmpty();
 
-            {
-                //=================   IOS process.START (Single camera)   ===================
-                //seIO_JsonInfo seIOInfo;
-                //if (!IO_JsonQ_DeQ(&seIOInfo))
-                if(!IO_JsonQ_IsEmpty())
-                {
+    if (m != 1) {
+      innerQ_Main_DeQ(&strInfo);
+      strcpy((char *)rec_data, strInfo.c_str());
 
-                    MAINLOG(0, "%s : ======   IOS process.START   ======\n", __func__);
+      {
+        //=================   IOS process.START (Single camera)   ===================
+        // seIO_JsonInfo seIOInfo;
+        // if (!IO_JsonQ_DeQ(&seIOInfo))
+        if (!IO_JsonQ_IsEmpty()) {
+          MAINLOG(0, "%s : ======   IOS process.START   ======\n", __func__);
 
-                    //MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seIOInfo.emAlgoId);
-                    //MAINLOG(0, "%s : szCmd : %s\n", __func__, seIOInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+          // MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seIOInfo.emAlgoId);
+          // MAINLOG(0, "%s : szCmd : %s\n", __func__, seIOInfo.szCmd);
+          MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    MAINLOG(0, "%s : ======   IOS process.END   ======\n", __func__);
-                    resume_io();
-                }
-                //=================   IOS process.END (Single camera)    ===================
+          MAINLOG(0, "%s : ======   IOS process.END   ======\n", __func__);
+          resume_io();
+        }
+        //=================   IOS process.END (Single camera)    ===================
 
-                //=================   IPS process.START (Single camera)   ===================
+        //=================   IPS process.START (Single camera)   ===================
 
-                if (!JsonQ_DeQ(&seInfo))
-                {
+        if (!JsonQ_DeQ(&seInfo)) {
+          MAINLOG(0, "%s : ======   IPS process.START   ======\n", __func__);
 
-                    MAINLOG(0, "%s : ======   IPS process.START   ======\n", __func__);
+          MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+          MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+          MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+          MAINLOG(0, "%s : ======   IPS process.END   ======\n", __func__);
+        }
+        //=================   IPS process.END (Single camera)    ===================
 
-                    MAINLOG(0, "%s : ======   IPS process.END   ======\n", __func__);
-                }
-                //=================   IPS process.END (Single camera)    ===================
+        //=================   IPS process.START (Dual camera)    ===================
+        if (!JsonQ_DeQ_Dual(&seInfo, 0)) {
+          MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 0)   ======\n", __func__);
 
-                //=================   IPS process.START (Dual camera)    ===================
-                if (!JsonQ_DeQ_Dual(&seInfo, 0))
-                {
+          MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+          MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+          MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
 
-                    MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 0)   ======\n", __func__);
+          resume_ip_Dual(0);
 
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
-
-                    resume_ip_Dual(0);
-
-                    MAINLOG(0, "%s : ======   IPS process.END (JsonQ_DeQ_Dual 0)   ======\n", __func__);
-                }
-
-                if (!JsonQ_DeQ_Dual(&seInfo, 1))
-                {
-
-                    MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 1)   ======\n", __func__);
-
-                    MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
-                    MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
-                    MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
-
-                    resume_ip_Dual(1);
-
-                    MAINLOG(0, "%s : ======   IPS process.END  (JsonQ_DeQ_Dual 1)   ======\n", __func__);
-                }                
-
-                //=================   IPS process.END (Dual camera)    ===================
-            }
-            //=================   end of IPS process    ===================
+          MAINLOG(0, "%s : ======   IPS process.END (JsonQ_DeQ_Dual 0)   ======\n", __func__);
         }
 
-        ///******** for auto mode process **********/
-        Process_Flow_Handler();
-        Process_Flow_Handler_Dual();
-        ios_LED_Status_Handler();
+        if (!JsonQ_DeQ_Dual(&seInfo, 1)) {
+          MAINLOG(0, "%s : ======   IPS process.START (JsonQ_DeQ_Dual 1)   ======\n", __func__);
 
-        usleep(1000); /* delay 1 ms */
+          MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seInfo.emAlgoId);
+          MAINLOG(0, "%s : szCmd : %s\n", __func__, seInfo.szCmd);
+          MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+
+          resume_ip_Dual(1);
+
+          MAINLOG(0, "%s : ======   IPS process.END  (JsonQ_DeQ_Dual 1)   ======\n", __func__);
+        }
+
+        //=================   IPS process.END (Dual camera)    ===================
+      }
+      //=================   end of IPS process    ===================
     }
 
-    MAINLOG(0, " ## exit of mainCtl ##\n");
-    return NULL;
+    ///******** for auto mode process **********/
+    Process_Flow_Handler();
+    Process_Flow_Handler_Dual();
+    ios_LED_Status_Handler();
+
+    usleep(1000); /* delay 1 ms */
+  }
+
+  MAINLOG(0, " ## exit of mainCtl ##\n");
+  return NULL;
 }
 
 /***********************************************************
@@ -1810,13 +1671,12 @@ void *mainCtl(void *argu)
  *	Param       : void *argu --> none
  *	Return      : NONE
  *************************************************************/
-void *ext_mqtt_sub_Dual(void *argu)
-{
-    /* for backend */
-    ext_mqtt_subscriber_Dual();
+void *ext_mqtt_sub_Dual(void *argu) {
+  /* for backend */
+  ext_mqtt_subscriber_Dual();
 
-    MAINLOG(0, " ## exit of ext_mqtt_sub ##\n");
-    return NULL;
+  MAINLOG(0, " ## exit of ext_mqtt_sub ##\n");
+  return NULL;
 }
 
 /***********************************************************
@@ -1826,10 +1686,9 @@ void *ext_mqtt_sub_Dual(void *argu)
  *	Param       : uint32_t time
  *	Return      : time (unit is ms)
  *************************************************************/
-void start_watch_dog(uint32_t time)
-{
-    watchDogCounter = time;
-    enable_warchDog = TRUE;
+void start_watch_dog(uint32_t time) {
+  watchDogCounter = time;
+  enable_warchDog = TRUE;
 }
 
 /***********************************************************
@@ -1838,15 +1697,14 @@ void start_watch_dog(uint32_t time)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void stop_watch_dog()
-{
-    watchDogCounter = 0;
-    enable_warchDog = FALSE;
+void stop_watch_dog() {
+  watchDogCounter = 0;
+  enable_warchDog = FALSE;
 }
 
 /***********************************************************
  *	Function 	: ips_process_Dual
- *	Description : Image process Dual camera subsystem 
+ *	Description : Image process Dual camera subsystem
  *                thread fucntion
  *	Param       : void *argu --> none
  *	Return      : NONE
@@ -1865,8 +1723,8 @@ void *ips_process_Dual(void *argu) {
     iCamId = *(int *)argu;
   }
 
-//   fprintf(stderr, "%s()%d: >> *(int*) argu = %d\n", __FUNCTION__, __LINE__, *(int *)argu);
-//   fprintf(stderr, "%s()%d: >> iCamId = %d\n", __FUNCTION__, __LINE__, iCamId);
+  //   fprintf(stderr, "%s()%d: >> *(int*) argu = %d\n", __FUNCTION__, __LINE__, *(int *)argu);
+  //   fprintf(stderr, "%s()%d: >> iCamId = %d\n", __FUNCTION__, __LINE__, iCamId);
 
   void *phandler = nullptr;
 
@@ -2288,458 +2146,407 @@ void *ips_process_Dual(void *argu) {
  *	Param       : void *argu --> none
  *	Return      : NONE
  *************************************************************/
-void* ios_process(void *argu)
-{
-    uint8_t rec_data[MAX_MSG_SIZE];
-    char job_t[4096] = {'\0'}; /* need to define this buffer size */
-    
-    while (!io_doneFlag)
-    {
-        pthread_mutex_lock(&io_suspendMutex);
-        while (io_suspendFlag != 0)
-            pthread_cond_wait(&io_resumeCond, &io_suspendMutex);
-        pthread_mutex_unlock(&io_suspendMutex);
+void *ios_process(void *argu) {
+  uint8_t rec_data[MAX_MSG_SIZE];
+  char job_t[4096] = {'\0'}; /* need to define this buffer size */
 
-        // for(int i = 0; i < cnt_Tasks; i++)
-        while (!IO_JsonQ_IsEmpty())
-        {
-            seIO_JsonInfo seInfo;
-            IO_JsonQ_DeQ(&seInfo);
-            strcpy((char *)rec_data, seInfo.szCmd);
-            MAINLOG(0, YELLOW " @@@ === >>> IO_JsonQ_DeQ() = [%d][%s]\n", seInfo.emAlgoId, seInfo.szCmd);
-            
-            if (seInfo.emAlgoId == TRIGGER_SET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_SET_PROCESS]);
-                jes.new_job = TriggerSetProcess;
-                ios_triggerSetProcess(&ios_trigger);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[TRIGGER_SET_PROCESS]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
-            } else if (seInfo.emAlgoId == TRIGGER_GET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_GET_PROCESS]);
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                MAINLOG(0, "[MAINCTL] : current_job=%s\n", setfuncStr[jes.current_job]);
-                jes.new_job = TriggerGetProcess;
-                ios_triggerGetProcess(&ios_trigger);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[TRIGGER_GET_PROCESS]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
-            } else if (seInfo.emAlgoId == DIN_SET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_SET_PROCESS]);
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                jes.new_job = DinSetProcess;
-                //ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[DIN_SET_PROCESS]);
-                ios_din_get_process_json_create((char *)job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == DIN_GET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_GET_PROCESS]);
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                jes.new_job = DinGetProcess;
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[DIN_GET_PROCESS]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IOS_GET_STATUS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IOS_GET_STATUS]);
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                jes.new_job = IOSGetStatus;
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[IOS_GET_STATUS]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == LIGHT_SET_PWM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_SET_PWM]);
-                Process_Node.Brightness[0] = Process_Node.Brightness[1] = ios_setpwm.value;
-                ios_Control_Light_Handler(ios_setpwm.inLight, TRUE);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[LIGHT_SET_PWM]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == LIGHT_GET_PWM || seInfo.emAlgoId == LIGHT_GET_BRIGHTNESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_GET_PWM]);
-                jes.new_job = LightGetPWM;
-                uint16_t brightness[2];
+  while (!io_doneFlag) {
+    pthread_mutex_lock(&io_suspendMutex);
+    while (io_suspendFlag != 0)
+      pthread_cond_wait(&io_resumeCond, &io_suspendMutex);
+    pthread_mutex_unlock(&io_suspendMutex);
 
-                IOS_LIGHT_SET_PWM  ios_setpwm_tmp;
-                ios_setpwm_tmp.inLight = LIGHT_SOURCE_1;
-                ios_lightGetPWM(&ios_setpwm_tmp);
-                brightness[0] = ios_setpwm_tmp.value;
-                ios_setpwm_tmp.inLight = LIGHT_SOURCE_2;
-                ios_lightGetPWM(&ios_setpwm_tmp);
-                brightness[1] = ios_setpwm_tmp.value;
-                
-                Process_Node.Brightness[0] = brightness[0];
-                Process_Node.Brightness[1] = brightness[1];
+    // for(int i = 0; i < cnt_Tasks; i++)
+    while (!IO_JsonQ_IsEmpty()) {
+      seIO_JsonInfo seInfo;
+      IO_JsonQ_DeQ(&seInfo);
+      strcpy((char *)rec_data, seInfo.szCmd);
+      MAINLOG(0, YELLOW " @@@ === >>> IO_JsonQ_DeQ() = [%d][%s]\n", seInfo.emAlgoId, seInfo.szCmd);
 
-                ios_light_get_brightness_json_create(job_t, brightness);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == LED_SET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                jes.new_job = LedSetProcess;
-                ios_ledSetProcess(&ios_setled);
-                ios_led_get_process_json_create(job_t);
-                // # ext_mqtt_publisher(job_t);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == LED_GET_PROCESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
-                jes.new_job = LedGetProcess;
-                //ios_led_get_process_json_create(job_t);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[LED_GET_PROCESS]);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
-            } else if (seInfo.emAlgoId == LED_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LED_SET_MODE]);
-                // MAINLOG(0, "%d ios_setLedMode.Indication = %d\n", __LINE__, strlen(ios_setLedMode.Indication));
-                MAINLOG(0, "%d ios_setLedMode.Indication = %s\n", __LINE__, ios_setLedMode.Indication);
-                if (strlen((char *)ios_setLedMode.Indication) != 0)
-                {
-                    // printf("ios_setLedMode.Indication\n");
-                    if (strcmp((char *)ios_setLedMode.Indication, (char *)"ON") == 0)
-                    {
-                        if (strcmp((char *)ios_setLedMode.Color, (char *)"Red") == 0)
-                        {MAINLOG(0, "%d \n", __LINE__);
-                            sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
-                        }
-                        else if (strcmp((char *)ios_setLedMode.Color, (char *)"Green") == 0)
-                        {
-                            sprintf((char *)ios_setled.outStatus, "%s", (char *)"Green ON");
-                        }
-                        else if (strcmp((char *)ios_setLedMode.Color, (char *)"Orange") == 0)
-                        {
-                            sprintf((char *)ios_setled.outStatus, "%s", (char *)"Orange ON");
-                        }
-                        ios_setled.outBlinkDelay = 0;
-                        ios_setled.outOffDelay = 0;
-                    }
-                    else if (strcmp((char *)ios_setLedMode.Indication, (char *)"OFF") == 0)
-                    {
-                        sprintf((char *)ios_setled.outStatus, "%s", "OFF");
-                        ios_setled.outBlinkDelay = 0;
-                        ios_setled.outOffDelay = 0;
-                    }
-                    else if (strcmp((char *)ios_setLedMode.Indication, (char *)"Blink") == 0)
-                    {
-                        if (strcmp((char *)ios_setLedMode.Color, "Red") == 0)
-                        {
-                            sprintf((char *)ios_setled.outStatus, "%s", "Red Blinking");
-                        }
-                        else if (strcmp((char *)ios_setLedMode.Color, (char *)"Green") == 0)
-                        {
-                            sprintf((char *)ios_setled.outStatus, "%s", "Green Blinking");
-                        }
-                        else if (strcmp((char *)ios_setLedMode.Color, "Orange") == 0)
-                        {
-                            sprintf((char *)ios_setled.outStatus, "%s", "Orange Blinking");
-                        }
-                        ios_setled.outBlinkDelay = 10000;
-                        ios_setled.outOffDelay = 0;
-                        /* so far, must fill out outMode to indicated LED */
-                        sprintf((char *)ios_setled.outMode, "%s", "AI status");
-                    }
-                }
-                else
-                {
-                    // printf("ios_setLedMode.ledMode=%s\n", ios_setLedMode.ledMode);
-                    if (strcmp((char *)ios_setLedMode.ledMode, (char *)"AI status") == 0)
-                    {
-                        sprintf((char *)ios_setled.outMode, "%s", "AI status");
-                        sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
-                    }
-                    else if (strcmp((char *)ios_setLedMode.ledMode, (char *)"Light status") == 0)
-                    {MAINLOG(0, "%d \n", __LINE__);
-                        /* turn off LED */
-                        usleep(50000); /* delay 50  ms */
-                        sprintf((char *)ios_setled.outStatus, "%s", "OFF");
-                        ios_setled.outPin = UserDef2LED;
-                        ios_ledSetProcess(&ios_setled);
-                        usleep(50000); /* delay 50  ms */
-                        ios_setled.outPin = UserDef1LED;
-                        ios_ledSetProcess(&ios_setled);
-                        /* fills other LED later */
-                    }
-                    ios_setled.outBlinkDelay = 0;
-                    ios_setled.outOffDelay = 0;
-                }
-                if (ios_setLedMode.led == 1)
-                {
-                    ios_setled.outPin = UserDef1LED;
-                    strcpy((char *)Process_Node.UsrDef1Mode, (char *)ios_setLedMode.ledMode);
-                }
-                else if (ios_setLedMode.led == 2)
-                {
-                    ios_setled.outPin = UserDef2LED;
-                    strcpy((char *)Process_Node.UsrDef2Mode, (char *)ios_setLedMode.ledMode);
-                }
-                else
-                {
-                    MAINLOG(0, "[MAINCTL] : user define LED number is wrong !!");
-                }
-                        
-                        
-    if(!strcasecmp((char *)&ios_setled.outStatus[0], "OFF")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
-        ios_setStatusLed(ios_setLedMode.led, 0);
-    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Red ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
-        ios_setStatusLed(ios_setLedMode.led, 1);
-    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Green ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
-        ios_setStatusLed(ios_setLedMode.led, 2);
-    } else if(!strcasecmp((char *)&ios_setled.outStatus[0], "Orange ON")) {IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
-        ios_setStatusLed(ios_setLedMode.led, 3);
-    } else {
-        MAINLOG(0, "[MAINCTL] : ios_setled outStatus [%s] is wrong !!", ios_setled.outStatus);
-    }
-      
-                
-                usleep(50000); /* delay 50  ms */
-                ios_LED_Status_Handler();
-                //ios_ledSetProcess(&ios_setled);
-                ios_response_json_create(job_t, ios_respStr[LED_SET_MODE], (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
-            } else if (seInfo.emAlgoId == DIN_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_SET_MODE]);
-                ios_di.inPin = ios_setDinMode.DinPin;
-                strcpy((char *)ios_di.inMode, (char *)ios_setDinMode.DinPolarity);
-                ios_di.inControlMode = 0;
-                ios_di.outPin = 0;                         // inform MCU don't handle Dout pin when Din is triggered
-                                                           // strcpy(ios_di.outMode, ios_setDinMode.DinPolarity); // this line is free when outPin = 0
-                sprintf((char *)ios_di.outMode, "%s", ""); // this line is free when outPin = 0
-                ios_di.outControlMode = 0;
-                ios_di.outDelay = 0;
-                ios_di.onoffSetting = 0;
-                ios_dinSetProcess(&ios_di);
-                if (strcmp((char *)ios_setDinMode.SelectMode, (char *)"Glue inspection") == 0)
-                {
-                    /* avoiding SelectMode's string be modified by backend, we always keep the internal defined string */
-                    if(ios_cameraid == 0) {
-                        Process_Node.autoMode = GLUE_INSPECTION;
-                    } else if(ios_cameraid == 0) {
-                        Process_Node_Dual.autoMode = GLUE_INSPECTION;
-                    }
-                    Process_Node_Dual.autoMode = Process_Node.autoMode = GLUE_INSPECTION;
-                }
-                ios_response_json_create(job_t, ios_respStr[DIN_SET_MODE], (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DIN_SET_MODE]);
-            } else if (seInfo.emAlgoId == DOUT_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DOUT_SET_MODE]);
-                if(ios_doutMode.CameraId == 0) {
-                    if (ios_doutMode.outPin == 1)
-                    {
-                        strcpy((char *)Process_Node.Dout1Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node.Dout1selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 2)
-                    {
-                        strcpy((char *)Process_Node.Dout2Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node.Dout2selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 3)
-                    {
-                        strcpy((char *)Process_Node.Dout3Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node.Dout3selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 4)
-                    {
-                        strcpy((char *)Process_Node.Dout4Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node.Dout4selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                } else {
-                    if (ios_doutMode.outPin == 1)
-                    {
-                        strcpy((char *)Process_Node_Dual.Dout1Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node_Dual.Dout1selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 2)
-                    {
-                        strcpy((char *)Process_Node_Dual.Dout2Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node_Dual.Dout2selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 3)
-                    {
-                        strcpy((char *)Process_Node_Dual.Dout3Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node_Dual.Dout3selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                    else if (ios_doutMode.outPin == 4)
-                    {
-                        strcpy((char *)Process_Node_Dual.Dout4Mode, (char *)ios_doutMode.polarity);
-                        strcpy((char *)Process_Node_Dual.Dout4selectMode, (char *)ios_doutMode.selectMode);
-                    }
-                }
-                ios_Control_Dout_Handler_Dual((char* )ios_doutMode.selectMode, TRUE, ios_doutMode.CameraId);
-                usleep(50000);
-                ios_Control_Dout_Handler_Dual((char* )ios_doutMode.selectMode, FALSE, ios_doutMode.CameraId);
-                ios_response_json_create(job_t, ios_respStr[DOUT_SET_MODE], (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_doutMode.CameraId);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DOUT_SET_MODE]);
-            } else if (seInfo.emAlgoId == DIO_GET_STATUS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIO_GET_STATUS]);
-                ios_getStatus(&ios_getstatus);
-                // printf("ios_getstatus.dout1=%d\n", ios_getstatus.dout1);
-                // printf("ios_getstatus.dout2=%d\n", ios_getstatus.dout2);
-                // printf("ios_getstatus.dout3=%d\n", ios_getstatus.dout3);
-                // printf("ios_getstatus.dout4=%d\n", ios_getstatus.dout4);
-                // printf("ios_getstatus.din1=%d\n", ios_getstatus.din1);
-                // printf("ios_getstatus.din2=%d\n", ios_getstatus.din2);
-                // printf("ios_getstatus.din3=%d\n", ios_getstatus.din3);
-                // printf("ios_getstatus.din4=%d\n", ios_getstatus.din4);
-                ios_get_status_json_create(job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DIO_GET_STATUS]);
-            } else if (seInfo.emAlgoId == DOUT_MANUAL_CONTROL) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DOUT_MANUAL_CONTROL]);
-                ios_doutSetProcess(&ios_dout);
-                ios_response_json_create(job_t, ios_respStr[DOUT_MANUAL_CONTROL], (char *)ios_CmdInfo);
-                // ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DOUT_MANUAL_CONTROL]);
-            } else if (seInfo.emAlgoId == LIGHT_SET_BRIGHTNESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_SET_BRIGHTNESS]);
-                jes.new_job = LightSetPWM;
+      if (seInfo.emAlgoId == TRIGGER_SET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_SET_PROCESS]);
+        jes.new_job = TriggerSetProcess;
+        ios_triggerSetProcess(&ios_trigger);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[TRIGGER_SET_PROCESS]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
+      } else if (seInfo.emAlgoId == TRIGGER_GET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_GET_PROCESS]);
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        MAINLOG(0, "[MAINCTL] : current_job=%s\n", setfuncStr[jes.current_job]);
+        jes.new_job = TriggerGetProcess;
+        ios_triggerGetProcess(&ios_trigger);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[TRIGGER_GET_PROCESS]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
+      } else if (seInfo.emAlgoId == DIN_SET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_SET_PROCESS]);
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        jes.new_job = DinSetProcess;
+        // ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[DIN_SET_PROCESS]);
+        ios_din_get_process_json_create((char *)job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == DIN_GET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_GET_PROCESS]);
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        jes.new_job = DinGetProcess;
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[DIN_GET_PROCESS]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IOS_GET_STATUS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IOS_GET_STATUS]);
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        jes.new_job = IOSGetStatus;
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[IOS_GET_STATUS]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == LIGHT_SET_PWM) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_SET_PWM]);
+        Process_Node.Brightness[0] = Process_Node.Brightness[1] = ios_setpwm.value;
+        ios_Control_Light_Handler(ios_setpwm.inLight, TRUE);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[LIGHT_SET_PWM]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == LIGHT_GET_PWM || seInfo.emAlgoId == LIGHT_GET_BRIGHTNESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_GET_PWM]);
+        jes.new_job = LightGetPWM;
+        uint16_t brightness[2];
 
-                if (ios_setpwm.inLight == LIGHT_SOURCE_1)
-                {
-                    Process_Node.Brightness[0] = ios_setpwm.value;
-                }
-                else if (ios_setpwm.inLight == LIGHT_SOURCE_2)
-                {
-                    Process_Node.Brightness[1] = ios_setpwm.value;
-                }
+        IOS_LIGHT_SET_PWM ios_setpwm_tmp;
+        ios_setpwm_tmp.inLight = LIGHT_SOURCE_1;
+        ios_lightGetPWM(&ios_setpwm_tmp);
+        brightness[0] = ios_setpwm_tmp.value;
+        ios_setpwm_tmp.inLight = LIGHT_SOURCE_2;
+        ios_lightGetPWM(&ios_setpwm_tmp);
+        brightness[1] = ios_setpwm_tmp.value;
 
-                if (strcmp((char *)ios_setpwm.LightSwitch, (char *)"ON") == 0)
-                {
-                    ios_Control_Light_Handler(ios_setpwm.inLight, TRUE);
-                }
-                else
-                {
-                    ios_Control_Light_Handler(ios_setpwm.inLight, FALSE);
-                }
-                ios_response_json_create(job_t, ios_respStr[LIGHT_SET_BRIGHTNESS], (char *)ios_CmdInfo);
-                // ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[LIGHT_SET_BRIGHTNESS]);
-            } else if (seInfo.emAlgoId == LIGHT_GET_BRIGHTNESS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_GET_BRIGHTNESS]);
-                jes.new_job = LightGetPWM;
-                uint16_t brightness[2];
-                brightness[0] = Process_Node.Brightness[0];
-                brightness[1] = Process_Node.Brightness[1];
+        Process_Node.Brightness[0] = brightness[0];
+        Process_Node.Brightness[1] = brightness[1];
 
-                ios_light_get_brightness_json_create(job_t, brightness);
-                // # ext_mqtt_publisher(job_t);
-            } else if (seInfo.emAlgoId == MODBUS_SET_PARAMS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[MODBUS_SET_PARAMS]);
-                ios_modbusSetParameters(&ios_modbusSetParams);
-                ios_response_json_create(job_t, ios_respStr[MODBUS_SET_PARAMS], (char *)ios_CmdInfo);
-                // # ext_mqtt_publisher(job_t);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[MODBUS_SET_PARAMS]);
-            } else if (seInfo.emAlgoId == MODBUS_GET_PARAMS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[MODBUS_GET_PARAMS]);
-                ios_modbusGetParameters(&ios_modbusSetParams);
-                ios_modbus_get_params_json_create(job_t);
-                // # ext_mqtt_publisher(job_t);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[MODBUS_GET_PARAMS]);
-            } else if (seInfo.emAlgoId == TRIGGER_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_SET_MODE]);
-                if (ios_trigger.outPin == LIGHT_SOURCE_1)
-                {
-                    ios_trigger.outPin = LIGHT_PIN_1;
-                }
-                else
-                {
-                    ios_trigger.outPin = LIGHT_PIN_2;
-                }
-                ios_triggerSetProcess(&ios_trigger);
-                ios_response_json_create(job_t, ios_respStr[TRIGGER_SET_MODE], (char *)ios_CmdInfo);
-                // # ext_mqtt_publisher(job_t);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[TRIGGER_SET_MODE]);
-            } else if (seInfo.emAlgoId == REPORT_TEST_RESULT) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[REPORT_TEST_RESULT]);
-                ios_response_json_create(job_t, ios_respStr[REPORT_TEST_RESULT], (char *)ios_CmdInfo);
-                UpdateLEDStatus_Flg = 1;
-                // # ext_mqtt_publisher(job_t);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[REPORT_TEST_RESULT]);
-            } else if (seInfo.emAlgoId == AUTO_TEST_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[AUTO_TEST_SET_MODE]);
-                ios_response_json_create(job_t, ios_respStr[AUTO_TEST_SET_MODE], (char *)ios_CmdInfo);
-                if(ios_cameraid == 0) {
-                    Process_Node.giFlow = GI_START;
-                } else if(ios_cameraid == 0) {
-                    Process_Node_Dual.giFlow = GI_START;
-                }
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[AUTO_TEST_SET_MODE]);
-            } else if (seInfo.emAlgoId == IO_RTC_SET_MODE) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_RTC_SET_MODE]);
-                IO_SetLocalTime(ios_rtc.use_ntp, &ios_rtc.local_time, &ios_rtc.timezone[0]);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_SYS_GET_PARAMS) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_SYS_GET_PARAMS]);
-                ios_sys_get_params_json_create(job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_SHOP_FLOOR_CONTROL) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_SHOP_FLOOR_CONTROL]);
-                ios_sfc_send_msg(&ios_sfc);
-                //ios_response_json_create(job_t, ios_respStr[IO_SHOP_FLOOR_CONTROL], (char *)ios_CmdInfo);
-                ios_sfc_params_json_create(job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_MAINLED_SET_PARAM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_MAINLED_SET_PARAM]);
-                ios_setMainLightLevel(ios_mainled.intBrightness);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
-                ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.intBrightness);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_EXTLIGHTING_SET_PARAM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_SET_PARAM]);
-                    
-                __LIGHT_MANUFACTURER__  manufacturer;
-                if(!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
-                    manufacturer = OPT;
-                }
-
-                ios_setExtLightLevel_withChannel(manufacturer, ios_ailighting.intBrightness, ios_ailighting.channel);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_EXTLIGHTING_GET_PARAM) {
-                MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_GET_PARAM]);
-                    
-                __LIGHT_MANUFACTURER__  manufacturer;
-                if(!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
-                    manufacturer = OPT;
-                }
-
-                ios_readExtLightLevel_withChannel(manufacturer, ios_ailighting.channel);
-                ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-            } else if (seInfo.emAlgoId == IO_TOF_GET_PARAM) {
-                xlog("new_job:%s", ios_cmdStr[IO_TOF_GET_PARAM]);
-                ios_tof.distance = tofReadDistance();
-                ios_get_tof_json_create(job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
-                xlog("IOS processing %s done, Distance:%d", ios_cmdStr[IO_TOF_GET_PARAM], ios_tof.distance);
-            } else {
-                MAINLOG(0, RED "[MAIN] : Unknow cmd emAlgoId=[%d] szCmd=[%s] fail.\n", seInfo.emAlgoId, seInfo.szCmd);
-                ios_sys_get_params_json_create(job_t);
-                ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        ios_light_get_brightness_json_create(job_t, brightness);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == LED_SET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        jes.new_job = LedSetProcess;
+        ios_ledSetProcess(&ios_setled);
+        ios_led_get_process_json_create(job_t);
+        // # ext_mqtt_publisher(job_t);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == LED_GET_PROCESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), setfuncStr[jes.new_job]);
+        jes.new_job = LedGetProcess;
+        // ios_led_get_process_json_create(job_t);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_respStr[LED_GET_PROCESS]);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
+      } else if (seInfo.emAlgoId == LED_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LED_SET_MODE]);
+        // MAINLOG(0, "%d ios_setLedMode.Indication = %d\n", __LINE__, strlen(ios_setLedMode.Indication));
+        MAINLOG(0, "%d ios_setLedMode.Indication = %s\n", __LINE__, ios_setLedMode.Indication);
+        if (strlen((char *)ios_setLedMode.Indication) != 0) {
+          // printf("ios_setLedMode.Indication\n");
+          if (strcmp((char *)ios_setLedMode.Indication, (char *)"ON") == 0) {
+            if (strcmp((char *)ios_setLedMode.Color, (char *)"Red") == 0) {
+              MAINLOG(0, "%d \n", __LINE__);
+              sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
+            } else if (strcmp((char *)ios_setLedMode.Color, (char *)"Green") == 0) {
+              sprintf((char *)ios_setled.outStatus, "%s", (char *)"Green ON");
+            } else if (strcmp((char *)ios_setLedMode.Color, (char *)"Orange") == 0) {
+              sprintf((char *)ios_setled.outStatus, "%s", (char *)"Orange ON");
             }
-            MAINLOG(0, " ## break of ios_process ##\n");
+            ios_setled.outBlinkDelay = 0;
+            ios_setled.outOffDelay = 0;
+          } else if (strcmp((char *)ios_setLedMode.Indication, (char *)"OFF") == 0) {
+            sprintf((char *)ios_setled.outStatus, "%s", "OFF");
+            ios_setled.outBlinkDelay = 0;
+            ios_setled.outOffDelay = 0;
+          } else if (strcmp((char *)ios_setLedMode.Indication, (char *)"Blink") == 0) {
+            if (strcmp((char *)ios_setLedMode.Color, "Red") == 0) {
+              sprintf((char *)ios_setled.outStatus, "%s", "Red Blinking");
+            } else if (strcmp((char *)ios_setLedMode.Color, (char *)"Green") == 0) {
+              sprintf((char *)ios_setled.outStatus, "%s", "Green Blinking");
+            } else if (strcmp((char *)ios_setLedMode.Color, "Orange") == 0) {
+              sprintf((char *)ios_setled.outStatus, "%s", "Orange Blinking");
+            }
+            ios_setled.outBlinkDelay = 10000;
+            ios_setled.outOffDelay = 0;
+            /* so far, must fill out outMode to indicated LED */
+            sprintf((char *)ios_setled.outMode, "%s", "AI status");
+          }
+        } else {
+          // printf("ios_setLedMode.ledMode=%s\n", ios_setLedMode.ledMode);
+          if (strcmp((char *)ios_setLedMode.ledMode, (char *)"AI status") == 0) {
+            sprintf((char *)ios_setled.outMode, "%s", "AI status");
+            sprintf((char *)ios_setled.outStatus, "%s", "Red ON");
+          } else if (strcmp((char *)ios_setLedMode.ledMode, (char *)"Light status") == 0) {
+            MAINLOG(0, "%d \n", __LINE__);
+            /* turn off LED */
+            usleep(50000); /* delay 50  ms */
+            sprintf((char *)ios_setled.outStatus, "%s", "OFF");
+            ios_setled.outPin = UserDef2LED;
+            ios_ledSetProcess(&ios_setled);
+            usleep(50000); /* delay 50  ms */
+            ios_setled.outPin = UserDef1LED;
+            ios_ledSetProcess(&ios_setled);
+            /* fills other LED later */
+          }
+          ios_setled.outBlinkDelay = 0;
+          ios_setled.outOffDelay = 0;
+        }
+        if (ios_setLedMode.led == 1) {
+          ios_setled.outPin = UserDef1LED;
+          strcpy((char *)Process_Node.UsrDef1Mode, (char *)ios_setLedMode.ledMode);
+        } else if (ios_setLedMode.led == 2) {
+          ios_setled.outPin = UserDef2LED;
+          strcpy((char *)Process_Node.UsrDef2Mode, (char *)ios_setLedMode.ledMode);
+        } else {
+          MAINLOG(0, "[MAINCTL] : user define LED number is wrong !!");
         }
 
-        if (IO_JsonQ_IsEmpty())
-        {
-            if (io_doneFlag)    
-            {
-                MAINLOG(0, " ## break of ips_process ##\n");
-                break;
-            }
-
-            suspend_io();
+        if (!strcasecmp((char *)&ios_setled.outStatus[0], "OFF")) {
+          IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+          ios_setStatusLed(ios_setLedMode.led, 0);
+        } else if (!strcasecmp((char *)&ios_setled.outStatus[0], "Red ON")) {
+          IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+          ios_setStatusLed(ios_setLedMode.led, 1);
+        } else if (!strcasecmp((char *)&ios_setled.outStatus[0], "Green ON")) {
+          IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+          ios_setStatusLed(ios_setLedMode.led, 2);
+        } else if (!strcasecmp((char *)&ios_setled.outStatus[0], "Orange ON")) {
+          IOSLOG(0, "[IOS](%s)%d: \n", __func__, __LINE__);
+          ios_setStatusLed(ios_setLedMode.led, 3);
+        } else {
+          MAINLOG(0, "[MAINCTL] : ios_setled outStatus [%s] is wrong !!", ios_setled.outStatus);
         }
 
-        // MAINLOG(0, "*****   IO processing App.    *****\n");
-        
-        usleep(1000); /* delay 1 ms */
+        usleep(50000); /* delay 50  ms */
+        ios_LED_Status_Handler();
+        // ios_ledSetProcess(&ios_setled);
+        ios_response_json_create(job_t, ios_respStr[LED_SET_MODE], (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", setfuncStr[jes.new_job]);
+      } else if (seInfo.emAlgoId == DIN_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIN_SET_MODE]);
+        ios_di.inPin = ios_setDinMode.DinPin;
+        strcpy((char *)ios_di.inMode, (char *)ios_setDinMode.DinPolarity);
+        ios_di.inControlMode = 0;
+        ios_di.outPin = 0;                          // inform MCU don't handle Dout pin when Din is triggered
+                                                    // strcpy(ios_di.outMode, ios_setDinMode.DinPolarity); // this line is free when outPin = 0
+        sprintf((char *)ios_di.outMode, "%s", "");  // this line is free when outPin = 0
+        ios_di.outControlMode = 0;
+        ios_di.outDelay = 0;
+        ios_di.onoffSetting = 0;
+        ios_dinSetProcess(&ios_di);
+        if (strcmp((char *)ios_setDinMode.SelectMode, (char *)"Glue inspection") == 0) {
+          /* avoiding SelectMode's string be modified by backend, we always keep the internal defined string */
+          if (ios_cameraid == 0) {
+            Process_Node.autoMode = GLUE_INSPECTION;
+          } else if (ios_cameraid == 0) {
+            Process_Node_Dual.autoMode = GLUE_INSPECTION;
+          }
+          Process_Node_Dual.autoMode = Process_Node.autoMode = GLUE_INSPECTION;
+        }
+        ios_response_json_create(job_t, ios_respStr[DIN_SET_MODE], (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DIN_SET_MODE]);
+      } else if (seInfo.emAlgoId == DOUT_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DOUT_SET_MODE]);
+        if (ios_doutMode.CameraId == 0) {
+          if (ios_doutMode.outPin == 1) {
+            strcpy((char *)Process_Node.Dout1Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node.Dout1selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 2) {
+            strcpy((char *)Process_Node.Dout2Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node.Dout2selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 3) {
+            strcpy((char *)Process_Node.Dout3Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node.Dout3selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 4) {
+            strcpy((char *)Process_Node.Dout4Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node.Dout4selectMode, (char *)ios_doutMode.selectMode);
+          }
+        } else {
+          if (ios_doutMode.outPin == 1) {
+            strcpy((char *)Process_Node_Dual.Dout1Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node_Dual.Dout1selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 2) {
+            strcpy((char *)Process_Node_Dual.Dout2Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node_Dual.Dout2selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 3) {
+            strcpy((char *)Process_Node_Dual.Dout3Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node_Dual.Dout3selectMode, (char *)ios_doutMode.selectMode);
+          } else if (ios_doutMode.outPin == 4) {
+            strcpy((char *)Process_Node_Dual.Dout4Mode, (char *)ios_doutMode.polarity);
+            strcpy((char *)Process_Node_Dual.Dout4selectMode, (char *)ios_doutMode.selectMode);
+          }
+        }
+        ios_Control_Dout_Handler_Dual((char *)ios_doutMode.selectMode, TRUE, ios_doutMode.CameraId);
+        usleep(50000);
+        ios_Control_Dout_Handler_Dual((char *)ios_doutMode.selectMode, FALSE, ios_doutMode.CameraId);
+        ios_response_json_create(job_t, ios_respStr[DOUT_SET_MODE], (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_doutMode.CameraId);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DOUT_SET_MODE]);
+      } else if (seInfo.emAlgoId == DIO_GET_STATUS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DIO_GET_STATUS]);
+        ios_getStatus(&ios_getstatus);
+        // printf("ios_getstatus.dout1=%d\n", ios_getstatus.dout1);
+        // printf("ios_getstatus.dout2=%d\n", ios_getstatus.dout2);
+        // printf("ios_getstatus.dout3=%d\n", ios_getstatus.dout3);
+        // printf("ios_getstatus.dout4=%d\n", ios_getstatus.dout4);
+        // printf("ios_getstatus.din1=%d\n", ios_getstatus.din1);
+        // printf("ios_getstatus.din2=%d\n", ios_getstatus.din2);
+        // printf("ios_getstatus.din3=%d\n", ios_getstatus.din3);
+        // printf("ios_getstatus.din4=%d\n", ios_getstatus.din4);
+        ios_get_status_json_create(job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DIO_GET_STATUS]);
+      } else if (seInfo.emAlgoId == DOUT_MANUAL_CONTROL) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[DOUT_MANUAL_CONTROL]);
+        ios_doutSetProcess(&ios_dout);
+        ios_response_json_create(job_t, ios_respStr[DOUT_MANUAL_CONTROL], (char *)ios_CmdInfo);
+        // ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[DOUT_MANUAL_CONTROL]);
+      } else if (seInfo.emAlgoId == LIGHT_SET_BRIGHTNESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_SET_BRIGHTNESS]);
+        jes.new_job = LightSetPWM;
+
+        if (ios_setpwm.inLight == LIGHT_SOURCE_1) {
+          Process_Node.Brightness[0] = ios_setpwm.value;
+        } else if (ios_setpwm.inLight == LIGHT_SOURCE_2) {
+          Process_Node.Brightness[1] = ios_setpwm.value;
+        }
+
+        if (strcmp((char *)ios_setpwm.LightSwitch, (char *)"ON") == 0) {
+          ios_Control_Light_Handler(ios_setpwm.inLight, TRUE);
+        } else {
+          ios_Control_Light_Handler(ios_setpwm.inLight, FALSE);
+        }
+        ios_response_json_create(job_t, ios_respStr[LIGHT_SET_BRIGHTNESS], (char *)ios_CmdInfo);
+        // ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[LIGHT_SET_BRIGHTNESS]);
+      } else if (seInfo.emAlgoId == LIGHT_GET_BRIGHTNESS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[LIGHT_GET_BRIGHTNESS]);
+        jes.new_job = LightGetPWM;
+        uint16_t brightness[2];
+        brightness[0] = Process_Node.Brightness[0];
+        brightness[1] = Process_Node.Brightness[1];
+
+        ios_light_get_brightness_json_create(job_t, brightness);
+        // # ext_mqtt_publisher(job_t);
+      } else if (seInfo.emAlgoId == MODBUS_SET_PARAMS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[MODBUS_SET_PARAMS]);
+        ios_modbusSetParameters(&ios_modbusSetParams);
+        ios_response_json_create(job_t, ios_respStr[MODBUS_SET_PARAMS], (char *)ios_CmdInfo);
+        // # ext_mqtt_publisher(job_t);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[MODBUS_SET_PARAMS]);
+      } else if (seInfo.emAlgoId == MODBUS_GET_PARAMS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[MODBUS_GET_PARAMS]);
+        ios_modbusGetParameters(&ios_modbusSetParams);
+        ios_modbus_get_params_json_create(job_t);
+        // # ext_mqtt_publisher(job_t);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[MODBUS_GET_PARAMS]);
+      } else if (seInfo.emAlgoId == TRIGGER_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_SET_MODE]);
+        if (ios_trigger.outPin == LIGHT_SOURCE_1) {
+          ios_trigger.outPin = LIGHT_PIN_1;
+        } else {
+          ios_trigger.outPin = LIGHT_PIN_2;
+        }
+        ios_triggerSetProcess(&ios_trigger);
+        ios_response_json_create(job_t, ios_respStr[TRIGGER_SET_MODE], (char *)ios_CmdInfo);
+        // # ext_mqtt_publisher(job_t);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[TRIGGER_SET_MODE]);
+      } else if (seInfo.emAlgoId == REPORT_TEST_RESULT) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[REPORT_TEST_RESULT]);
+        ios_response_json_create(job_t, ios_respStr[REPORT_TEST_RESULT], (char *)ios_CmdInfo);
+        UpdateLEDStatus_Flg = 1;
+        // # ext_mqtt_publisher(job_t);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[REPORT_TEST_RESULT]);
+      } else if (seInfo.emAlgoId == AUTO_TEST_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[AUTO_TEST_SET_MODE]);
+        ios_response_json_create(job_t, ios_respStr[AUTO_TEST_SET_MODE], (char *)ios_CmdInfo);
+        if (ios_cameraid == 0) {
+          Process_Node.giFlow = GI_START;
+        } else if (ios_cameraid == 0) {
+          Process_Node_Dual.giFlow = GI_START;
+        }
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        MAINLOG(0, YELLOW "[MAIN] : IOS processing %s done..\n", ios_cmdStr[AUTO_TEST_SET_MODE]);
+      } else if (seInfo.emAlgoId == IO_RTC_SET_MODE) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_RTC_SET_MODE]);
+        IO_SetLocalTime(ios_rtc.use_ntp, &ios_rtc.local_time, &ios_rtc.timezone[0]);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_SYS_GET_PARAMS) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_SYS_GET_PARAMS]);
+        ios_sys_get_params_json_create(job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_SHOP_FLOOR_CONTROL) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_SHOP_FLOOR_CONTROL]);
+        ios_sfc_send_msg(&ios_sfc);
+        // ios_response_json_create(job_t, ios_respStr[IO_SHOP_FLOOR_CONTROL], (char *)ios_CmdInfo);
+        ios_sfc_params_json_create(job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_MAINLED_SET_PARAM) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_MAINLED_SET_PARAM]);
+        ios_setMainLightLevel(ios_mainled.intBrightness);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
+        ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.intBrightness);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_EXTLIGHTING_SET_PARAM) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_SET_PARAM]);
+
+        __LIGHT_MANUFACTURER__ manufacturer;
+        if (!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
+          manufacturer = OPT;
+        }
+
+        ios_setExtLightLevel_withChannel(manufacturer, ios_ailighting.intBrightness, ios_ailighting.channel);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_EXTLIGHTING_GET_PARAM) {
+        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_GET_PARAM]);
+
+        __LIGHT_MANUFACTURER__ manufacturer;
+        if (!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
+          manufacturer = OPT;
+        }
+
+        ios_readExtLightLevel_withChannel(manufacturer, ios_ailighting.channel);
+        ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      } else if (seInfo.emAlgoId == IO_TOF_GET_PARAM) {
+        xlog("new_job:%s", ios_cmdStr[IO_TOF_GET_PARAM]);
+        ios_tof.distance = tofReadDistance();
+        ios_get_tof_json_create(job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+        xlog("IOS processing %s done, Distance:%d", ios_cmdStr[IO_TOF_GET_PARAM], ios_tof.distance);
+      } else {
+        MAINLOG(0, RED "[MAIN] : Unknow cmd emAlgoId=[%d] szCmd=[%s] fail.\n", seInfo.emAlgoId, seInfo.szCmd);
+        ios_sys_get_params_json_create(job_t);
+        ext_mqtt_publisher_Dual(job_t, ios_cameraid);
+      }
+      MAINLOG(0, " ## break of ios_process ##\n");
     }
 
-    MAINLOG(0, " ## exit of ios_process ##\n");
-    return nullptr;
+    if (IO_JsonQ_IsEmpty()) {
+      if (io_doneFlag) {
+        MAINLOG(0, " ## break of ips_process ##\n");
+        break;
+      }
+
+      suspend_io();
+    }
+
+    // MAINLOG(0, "*****   IO processing App.    *****\n");
+
+    usleep(1000); /* delay 1 ms */
+  }
+
+  MAINLOG(0, " ## exit of ios_process ##\n");
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -2749,12 +2556,11 @@ void* ios_process(void *argu)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void suspend_ip_Dual(const int iID)
-{ // tell the thread to suspend
-    xlog("");
-    pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
-    ip_suspendFlag_Dual[iID] = 1;
-    pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
+void suspend_ip_Dual(const int iID) {  // tell the thread to suspend
+  xlog("");
+  pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
+  ip_suspendFlag_Dual[iID] = 1;
+  pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
 }
 /***********************************************************
  *	Function 	: resume_ip_Dual
@@ -2762,12 +2568,11 @@ void suspend_ip_Dual(const int iID)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void resume_ip_Dual(const int iID)
-{ // tell the thread to resume
-    pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
-    ip_suspendFlag_Dual[iID] = 0;
-    pthread_cond_broadcast(&ip_resumeCond_Dual[iID]);
-    pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
+void resume_ip_Dual(const int iID) {  // tell the thread to resume
+  pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
+  ip_suspendFlag_Dual[iID] = 0;
+  pthread_cond_broadcast(&ip_resumeCond_Dual[iID]);
+  pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
 }
 /***********************************************************
  *	Function 	: close_ip_Dual
@@ -2775,13 +2580,12 @@ void resume_ip_Dual(const int iID)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void close_ip_Dual(const int iID)
-{
-    pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
-    ip_suspendFlag_Dual[iID] = 0;
-    ip_doneFlag_Dual[iID] = 1;
-    pthread_cond_broadcast(&ip_resumeCond_Dual[iID]);
-    pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
+void close_ip_Dual(const int iID) {
+  pthread_mutex_lock(&ip_suspendMutex_Dual[iID]);
+  ip_suspendFlag_Dual[iID] = 0;
+  ip_doneFlag_Dual[iID] = 1;
+  pthread_cond_broadcast(&ip_resumeCond_Dual[iID]);
+  pthread_mutex_unlock(&ip_suspendMutex_Dual[iID]);
 }
 
 /***********************************************************
@@ -2790,12 +2594,11 @@ void close_ip_Dual(const int iID)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void suspend_io()
-{ // tell the thread to suspend
-    xlog("");
-    pthread_mutex_lock(&io_suspendMutex);
-    io_suspendFlag = 1;
-    pthread_mutex_unlock(&io_suspendMutex);
+void suspend_io() {  // tell the thread to suspend
+  xlog("");
+  pthread_mutex_lock(&io_suspendMutex);
+  io_suspendFlag = 1;
+  pthread_mutex_unlock(&io_suspendMutex);
 }
 /***********************************************************
  *	Function 	: resume_io
@@ -2803,13 +2606,12 @@ void suspend_io()
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void resume_io()
-{ // tell the thread to resume
-    // MAINLOG(0, "%s\n", __func__);
-    pthread_mutex_lock(&io_suspendMutex);
-    io_suspendFlag = 0;
-    pthread_cond_broadcast(&io_resumeCond);
-    pthread_mutex_unlock(&io_suspendMutex);
+void resume_io() {  // tell the thread to resume
+  // MAINLOG(0, "%s\n", __func__);
+  pthread_mutex_lock(&io_suspendMutex);
+  io_suspendFlag = 0;
+  pthread_cond_broadcast(&io_resumeCond);
+  pthread_mutex_unlock(&io_suspendMutex);
 }
 /***********************************************************
  *	Function 	: close_io
@@ -2817,14 +2619,13 @@ void resume_io()
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void close_io()
-{
-    // MAINLOG(0, "%s\n", __func__);
-    pthread_mutex_lock(&io_suspendMutex);
-    io_suspendFlag = 0;
-    io_doneFlag = 1;
-    pthread_cond_broadcast(&io_resumeCond);
-    pthread_mutex_unlock(&io_suspendMutex);
+void close_io() {
+  // MAINLOG(0, "%s\n", __func__);
+  pthread_mutex_lock(&io_suspendMutex);
+  io_suspendFlag = 0;
+  io_doneFlag = 1;
+  pthread_cond_broadcast(&io_resumeCond);
+  pthread_mutex_unlock(&io_suspendMutex);
 }
 
 /***********************************************************
@@ -2833,12 +2634,11 @@ void close_io()
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void suspend_mp()
-{ // tell the thread to suspend
-    // MAINLOG(0, "%s\n", __func__);
-    pthread_mutex_lock(&mp_suspendMutex);
-    mp_suspendFlag = 1;
-    pthread_mutex_unlock(&mp_suspendMutex);
+void suspend_mp() {  // tell the thread to suspend
+  // MAINLOG(0, "%s\n", __func__);
+  pthread_mutex_lock(&mp_suspendMutex);
+  mp_suspendFlag = 1;
+  pthread_mutex_unlock(&mp_suspendMutex);
 }
 
 /***********************************************************
@@ -2847,14 +2647,13 @@ void suspend_mp()
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void resume_mp(int iStatus)
-{ // tell the thread to resume
-    // MAINLOG(0, "%s\n", __func__);
-    pthread_mutex_lock(&mp_suspendMutex);
-    mp_suspendFlag = 0;
-    mp_FlowStatus = iStatus;
-    pthread_cond_broadcast(&mp_resumeCond);
-    pthread_mutex_unlock(&mp_suspendMutex);
+void resume_mp(int iStatus) {  // tell the thread to resume
+  // MAINLOG(0, "%s\n", __func__);
+  pthread_mutex_lock(&mp_suspendMutex);
+  mp_suspendFlag = 0;
+  mp_FlowStatus = iStatus;
+  pthread_cond_broadcast(&mp_resumeCond);
+  pthread_mutex_unlock(&mp_suspendMutex);
 }
 
 /***********************************************************
@@ -2863,14 +2662,13 @@ void resume_mp(int iStatus)
  *	Param       : NONE
  *	Return      : NONE
  *************************************************************/
-void close_mp()
-{
-    // MAINLOG(0, "%s\n", __func__);
-    pthread_mutex_lock(&mp_suspendMutex);
-    mp_suspendFlag = 0;
-    mp_doneFlag = 1;
-    pthread_cond_broadcast(&mp_resumeCond);
-    pthread_mutex_unlock(&mp_suspendMutex);
+void close_mp() {
+  // MAINLOG(0, "%s\n", __func__);
+  pthread_mutex_lock(&mp_suspendMutex);
+  mp_suspendFlag = 0;
+  mp_doneFlag = 1;
+  pthread_cond_broadcast(&mp_resumeCond);
+  pthread_mutex_unlock(&mp_suspendMutex);
 }
 
 /***********************************************************
@@ -2879,12 +2677,11 @@ void close_mp()
  *	Param       : int *pStatus
  *	Return      : NONE
  *************************************************************/
-void getStatus_mp(int *pStatus)
-{
-    // int retStatus;
-    pthread_mutex_lock(&mp_suspendMutex);
-    *pStatus = mp_FlowStatus;
-    pthread_mutex_unlock(&mp_suspendMutex);
+void getStatus_mp(int *pStatus) {
+  // int retStatus;
+  pthread_mutex_lock(&mp_suspendMutex);
+  *pStatus = mp_FlowStatus;
+  pthread_mutex_unlock(&mp_suspendMutex);
 }
 
 /***********************************************************
@@ -2893,12 +2690,11 @@ void getStatus_mp(int *pStatus)
  *	Param       : int *pStatus
  *	Return      : NONE
  *************************************************************/
-void setStatus_mp(int pStatus)
-{
-    // int retStatus;
-    pthread_mutex_lock(&mp_suspendMutex);
-    mp_FlowStatus = pStatus;
-    pthread_mutex_unlock(&mp_suspendMutex);
+void setStatus_mp(int pStatus) {
+  // int retStatus;
+  pthread_mutex_lock(&mp_suspendMutex);
+  mp_FlowStatus = pStatus;
+  pthread_mutex_unlock(&mp_suspendMutex);
 }
 
 /***********************************************************
@@ -2907,15 +2703,14 @@ void setStatus_mp(int pStatus)
  *	Param       : int *pStatus
  *	Return      : NONE
  *************************************************************/
-void init_value_set_to_default()
-{
-    ios_status.finish = FALSE;
+void init_value_set_to_default() {
+  ios_status.finish = FALSE;
 }
 
 /***********************************************************
  *	Function 	: main
  *	Description : initial subsystem and create thread for MQTT
- *                subcriber MQTT and create a command testing 
+ *                subcriber MQTT and create a command testing
  *                by keyboard (for subsystem or web backend)
  *	Param     : void *argu --> none
  *	Return    : NONE
@@ -2923,16 +2718,16 @@ void init_value_set_to_default()
 int main(int argc, char **argv) {
   int ret;
 
-//   std::string strFWVersion(FW_VERSION);
-//   std::string strIPSVersion(VSB_VERSION);
-//   std::string strIOSVersion(IOS_VERSION);
+  //   std::string strFWVersion(FW_VERSION);
+  //   std::string strIPSVersion(VSB_VERSION);
+  //   std::string strIOSVersion(IOS_VERSION);
 
-//   MAINLOG(0, "*******************************************\n");
-//   MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
-//   MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
-//   MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
-//   MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
-//   MAINLOG(0, "*******************************************\n");
+  //   MAINLOG(0, "*******************************************\n");
+  //   MAINLOG(0, "*****   Main App. [%s] *****\n", strFWVersion.c_str());
+  //   MAINLOG(0, "***** >> IPS_ver: %s *****\n", strIPSVersion.c_str());
+  //   MAINLOG(0, "***** >> IOS_ver: %s *****\n", strIOSVersion.c_str());
+  //   MAINLOG(0, "***** >> (Compile time: %s,%s) *****\n", __DATE__, __TIME__);
+  //   MAINLOG(0, "*******************************************\n");
 
   xlog("Main App version : %s", FW_VERSION);
   xlog("IPS version : %s", VSB_VERSION);
@@ -3048,13 +2843,10 @@ int main(int argc, char **argv) {
     xlog("iosCtl_init success");
   }
 
-xlog("");
-
   suspend_ip_Dual(0);
   suspend_ip_Dual(1);
   suspend_io();
 
-  xlog("");
   /* read the input character from keyborad be pressed  */
 
   while (1) {
