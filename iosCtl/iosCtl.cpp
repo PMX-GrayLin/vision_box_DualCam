@@ -1745,18 +1745,22 @@ int ios_sfc_send_msg(IOS_SFC_SET_MODE *ios_sfc) {
 uint16_t tof_Dev;
 
 int tof_init(void) {
-  int status;
-  // int adapter_nr = 1;
-  int adapter_nr = 2;
+  int status = 0;
   int file = 0;
+  int counterCheck = 0;
+  
+  // i2c bus
+  int adapter_nr = 2;
+
+  // i2c address
+  // uint8_t I2cDevAddr = 0x29;
+  uint8_t I2cDevAddr = (0x52 >> 1); 
 
   uint8_t byteData, sensorState = 0;
-  uint16_t wordData;
-
+  uint16_t wordData = 0;
   uint8_t first_range = 1;
-  uint8_t I2cDevAddr = 0x29;
 
-  xlog("I2C Bus:%d", adapter_nr);
+  xlog("I2C Bus:%d, address:0x%X", adapter_nr, I2cDevAddr);
 
   file = VL53L1X_UltraLite_Linux_I2C_Init(tof_Dev, adapter_nr, I2cDevAddr);
   if (file == -1) {
@@ -1771,8 +1775,12 @@ int tof_init(void) {
   status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
   xlog("VL53L1X wordData:0x%X", wordData);
   while (sensorState == 0) {
-  	status += VL53L1X_BootState(tof_Dev, &sensorState);
-  	VL53L1_WaitMs(tof_Dev, 10);
+    status += VL53L1X_BootState(tof_Dev, &sensorState);
+    VL53L1_WaitMs(tof_Dev, 10);
+    counterCheck++ if (counterCheck > 10) {
+      xlog("VL53L1X_BootState error");
+      return -1;
+    }
   }
   xlog("VL53L1X Chip booted");
 
@@ -1783,6 +1791,7 @@ int tof_init(void) {
   status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
   status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
   status += VL53L1X_StartRanging(tof_Dev);
+
 }
 
 int tofReadDistance(void) {
@@ -2690,7 +2699,7 @@ int ios_readEthAddr(char *eth, char *jstring)
 
 int iosCtl_init()
 {
-    int ret;
+    int ret = 0;
     
     xlog("");
     // IOSLOG(0, "*********************************\n");
@@ -2723,11 +2732,18 @@ int iosCtl_init()
     /* initial vailable */
     iosPWM_init(LIGHTING_PWM1_NUM);
     iosPWM_init(LIGHTING_PWM2_NUM);
+    
+    // not necessary in AICamera G2 
     // iosGPIO_init();
+
     iosLED_init();
     sfcCtl_init();
     SPI_Open();
-    tof_init();
+
+    ret = tof_init();
+    if (ret != 0) {
+      xlog("tof_init fail");
+    }
 
     ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     if (ret < 0) {
