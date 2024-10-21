@@ -1797,6 +1797,7 @@ int tof_init(void) {
   status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
   xlog("");
   status += VL53L1X_StartRanging(tof_Dev);
+  xlog("");
 }
 
 int tofReadDistance(void) {
@@ -2738,11 +2739,13 @@ int iosCtl_init()
     sfcCtl_init();
     SPI_Open();
 
+xlog("");
     tof_init();
     // ret = tof_init();
     // if (ret != 0) {
     //   xlog("tof_init fail");
     // }
+    xlog("");
 
     // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     // if (ret < 0) {
