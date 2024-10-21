@@ -1798,6 +1798,8 @@ int tof_init(void) {
   xlog("");
   status += VL53L1X_StartRanging(tof_Dev);
   xlog("");
+
+  return 0;
 }
 
 int tofReadDistance(void) {
