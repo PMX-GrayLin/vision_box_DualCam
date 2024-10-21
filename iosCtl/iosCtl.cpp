@@ -1763,30 +1763,25 @@ int tof_init(void) {
     return -1;
   }
 
-  // status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
-  // xlog("VL53L1X Model_ID:0x%X", byteData);
-  // status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
-  // xlog("VL53L1X Module_Type:0x%X", byteData);
-  // status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
-  // xlog("VL53L1X wordData:0x%X", wordData);
-  // ??
-  // while (sensorState == 0) {
-  // 	status += VL53L1X_BootState(tof_Dev, &sensorState);
-  // 	VL53L1_WaitMs(tof_Dev, 2);
-  // }
-  // IOSLOG(0, "Chip booted\n");
+  status = VL53L1_RdByte(tof_Dev, 0x010F, &byteData);
+  xlog("VL53L1X Model_ID:0x%X", byteData);
+  status += VL53L1_RdByte(tof_Dev, 0x0110, &byteData);
+  xlog("VL53L1X Module_Type:0x%X", byteData);
+  status += VL53L1_RdWord(tof_Dev, 0x010F, &wordData);
+  xlog("VL53L1X wordData:0x%X", wordData);
+  while (sensorState == 0) {
+  	status += VL53L1X_BootState(tof_Dev, &sensorState);
+  	VL53L1_WaitMs(tof_Dev, 2);
+  }
+  xlog("VL53L1X Chip booted");
 
-  xlog("Chip booted");
-
-  // ??
-  // status = VL53L1X_SensorInit(tof_Dev);
+  status = VL53L1X_SensorInit(tof_Dev);
   /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
-  // ??
-  // status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
-  // status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
-  // status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
-  // status += VL53L1X_StartRanging(tof_Dev);
+  status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+  status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
+  status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
+  status += VL53L1X_StartRanging(tof_Dev);
 }
 
 int tofReadDistance(void) {
