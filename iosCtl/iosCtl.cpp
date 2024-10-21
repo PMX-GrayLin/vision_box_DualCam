@@ -1752,7 +1752,8 @@ int tof_init(void) {
   uint8_t byteData, sensorState = 0;
   uint16_t wordData;
 
-  uint8_t first_range = 1;
+  // uint8_t first_range = 1;
+  uint8_t first_range = 2;
   uint8_t I2cDevAddr = 0x29;
 
   xlog("I2C Bus:%d", adapter_nr);
