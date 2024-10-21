@@ -64,6 +64,8 @@
 
 #include "VL53L1X_api.h"
 #include <string.h>
+#include "global.hpp"
+
 
 #if 0
 uint8_t VL51L1X_NVM_CONFIGURATION[] = {
@@ -227,18 +229,23 @@ VL53L1X_ERROR VL53L1X_SensorInit(uint16_t dev)
 	VL53L1X_ERROR status = 0;
 	uint8_t Addr = 0x00, tmp;
 
+	xlog("");
 	for (Addr = 0x2D; Addr <= 0x87; Addr++){
 		status = VL53L1_WrByte(dev, Addr, VL51L1X_DEFAULT_CONFIGURATION[Addr - 0x2D]);
 	}
+	xlog("");
 	status = VL53L1X_StartRanging(dev);
 	tmp  = 0;
+	xlog("");
 	while(tmp==0){
 			status = VL53L1X_CheckForDataReady(dev, &tmp);
 	}
+	xlog("");
 	status = VL53L1X_ClearInterrupt(dev);
 	status = VL53L1X_StopRanging(dev);
 	status = VL53L1_WrByte(dev, VL53L1_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND, 0x09); /* two bounds VHV */
 	status = VL53L1_WrByte(dev, 0x0B, 0); /* start VHV from the previous temperature */
+	xlog("");
 	return status;
 }
 
