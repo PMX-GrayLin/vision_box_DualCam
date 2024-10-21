@@ -280,9 +280,16 @@ void sigExit_main(int sig) {
 
 // for test
 void signalHandler(int signal) {
-    xlog("signal:%d", signal);
+  xlog("signal:%d", signal);
 
+  if (signal == 10) {
+    // get tof
     tofReadDistance();
+    
+  } else if (signal == 12) {
+    /* code */
+  }
+
 }
 
 /***********************************************************
@@ -2839,7 +2846,6 @@ int main(int argc, char **argv) {
   ret = pthread_create(&thread5, nullptr, ios_process, &iCamId[1]);
   if (ret < 0) {
     xlog("pthread_create fail, ios_process iCamId:%d", iCamId[1]);
-    // perror("Cannot create thread 5 _ ios_process(...) !!\n");
     exit(1);
   } else {
     xlog("pthread_create success, ios_process iCamId:%d", iCamId[1]);

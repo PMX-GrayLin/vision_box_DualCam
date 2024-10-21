@@ -1789,7 +1789,7 @@ int tof_init(void) {
   status = VL53L1X_SensorInit(tof_Dev);
   // /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
-  status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+  status += VL53L1X_SetDistanceMode(tof_Dev, 1); /* 1=short, 2=long */
   status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
   status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
   status += VL53L1X_StartRanging(tof_Dev);
@@ -1804,9 +1804,12 @@ int tofReadDistance(void) {
 
   /* Get the data the new way */
   status += VL53L1X_GetResult(tof_Dev, &Results);
+  xlog("Status:%2d, Distance:%5d, Ambient:%2d, SigPerSPAD:%5d, NumSPADs:%5d", 
+        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs
+  );
 
-  IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
-         Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+  // IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
+  //        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
 
   /* trigger next ranging */
   status += VL53L1X_ClearInterrupt(tof_Dev);
