@@ -61,7 +61,8 @@ static int8_t Linux_I2CRead(uint8_t *buff, uint8_t len)
 
 	ret = read(i2c_hdl, buff, len);
 	if (ret != len) {
-		printf("Read failed with %d\n", ret);
+		// printf("Read failed with %d\n", ret);
+		// xlog("fail");
 		return -1;
 	}
 	return 0;
@@ -73,7 +74,7 @@ static int8_t Linux_I2CWrite(uint8_t *buff, uint8_t len)
 
 	ret = write(i2c_hdl, buff, len);
 	if (ret != len) {
-		xlog("write fail");
+		// xlog("fail");
 		return -1;
 	}
 	return 0;

@@ -1771,7 +1771,7 @@ int tof_init(void) {
   xlog("VL53L1X wordData:0x%X", wordData);
   while (sensorState == 0) {
   	status += VL53L1X_BootState(tof_Dev, &sensorState);
-  	VL53L1_WaitMs(tof_Dev, 2);
+  	VL53L1_WaitMs(tof_Dev, 10);
   }
   xlog("VL53L1X Chip booted");
 
