@@ -154,10 +154,10 @@ LDFLAG += -L$(shell pwd)/iosCtl/tof_lib/core/
 
 OBJ_BUILD += $(CPPOBJECTS) 
 OBJ_BUILD += $(IOS_OBJS)
-OBJ_BUILD += $(IPS_OBJS)
-OBJ_BUILD += $(OBJ_IPL)
-OBJ_BUILD += $(OBJ_GIGE)
-OBJ_BUILD += $(OBJ_TPL)
+# OBJ_BUILD += $(IPS_OBJS)
+# OBJ_BUILD += $(OBJ_IPL)
+# OBJ_BUILD += $(OBJ_GIGE)
+# OBJ_BUILD += $(OBJ_TPL)
 OBJ_BUILD += $(OBJ_TOF)
 
 all: $(OBJ_BUILD)
