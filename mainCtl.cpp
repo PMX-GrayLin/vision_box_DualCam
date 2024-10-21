@@ -281,6 +281,8 @@ void sigExit_main(int sig) {
 // for test
 void signalHandler(int signal) {
     xlog("signal:%d", signal);
+
+    tofReadDistance();
 }
 
 /***********************************************************
