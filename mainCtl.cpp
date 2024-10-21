@@ -38,7 +38,6 @@
 #include <chrono>
 #include <deque>
 #include <string>
-#include <cstdint>
 
 #include "IOS_CompFunction.h"
 #include "IPLAlgoDataStructureDef.h"

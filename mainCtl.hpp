@@ -7,6 +7,7 @@
 /* INCLUDE FILE DECLARATIONS --------------------------------------------------------- */
 #include <linux/types.h>
 #include <stdbool.h>
+#include <cstdint>
 
 
 /* NAMING CONSTANT DECLARATIONS ------------------------------------------------------ */
