@@ -1754,7 +1754,7 @@ int tof_init(void) {
 
   // i2c address
   // uint8_t I2cDevAddr = 0x29;
-  uint8_t I2cDevAddr = (0x52 >> 1); 
+  uint8_t I2cDevAddr = (0x52 >> 1);
 
   uint8_t byteData, sensorState = 0;
   uint16_t wordData = 0;
@@ -1777,7 +1777,8 @@ int tof_init(void) {
   while (sensorState == 0) {
     status += VL53L1X_BootState(tof_Dev, &sensorState);
     VL53L1_WaitMs(tof_Dev, 10);
-    counterCheck++ if (counterCheck > 10) {
+    counterCheck++;
+    if (counterCheck > 10) {
       xlog("VL53L1X_BootState error");
       return -1;
     }
