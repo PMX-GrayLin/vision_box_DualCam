@@ -2980,7 +2980,6 @@ int main(int argc, char **argv) {
   /* initial hash tabe of Mqtt parse and Method assign */
   createHashMap_Param();
   createHashMap_Method();
-
   createHashMap_IO_Param();
 
   usleep(100000);
@@ -3044,7 +3043,6 @@ int main(int argc, char **argv) {
   ret = iosCtl_init();
   if (ret < 0) {
     xlog("iosCtl_init fail");
-    //   perror("iosCtl_init");
     exit(1);
   } else {
     xlog("iosCtl_init success");

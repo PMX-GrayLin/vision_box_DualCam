@@ -2738,10 +2738,11 @@ int iosCtl_init()
     sfcCtl_init();
     SPI_Open();
 
-    ret = tof_init();
-    if (ret != 0) {
-      xlog("tof_init fail");
-    }
+    tof_init();
+    // ret = tof_init();
+    // if (ret != 0) {
+    //   xlog("tof_init fail");
+    // }
 
     // ret = pthread_create(&iosThread, NULL, iosCtl, NULL);
     // if (ret < 0) {
