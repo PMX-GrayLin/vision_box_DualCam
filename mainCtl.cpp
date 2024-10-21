@@ -278,6 +278,11 @@ void sigExit_main(int sig) {
   exit(1);
 }
 
+// for test
+void signalHandler(int signal) {
+    std::cout << "Caught signal " << signal << std::endl;
+}
+
 /***********************************************************
  *	Function 	: main_gettime_ms
  *	Description : Get current time(ms)
@@ -2739,6 +2744,10 @@ int main(int argc, char **argv) {
   signal(SIGTERM, sigExit_main);
   signal(SIGSEGV, sigExit_main);
   signal(SIGINT, sigExit_main);
+
+  // Register signal handler for SIGUSR1
+  signal(SIGUSR1, signalHandler);
+  signal(SIGUSR2, signalHandler);
 
   /* init value */
   jes.new_job = NO_SETFUNC;
