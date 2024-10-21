@@ -3048,9 +3048,13 @@ int main(int argc, char **argv) {
     xlog("iosCtl_init success");
   }
 
+xlog("");
+
   suspend_ip_Dual(0);
   suspend_ip_Dual(1);
   suspend_io();
+
+  xlog("");
   /* read the input character from keyborad be pressed  */
 
   while (1) {
