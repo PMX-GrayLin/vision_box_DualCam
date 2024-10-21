@@ -2733,9 +2733,13 @@ int iosCtl_init()
     // iosGPIO_init();
 
     iosLED_init();
-    sfcCtl_init();
+
+    // temp disable
+    // sfcCtl_init();
+
     SPI_Open();
 
+    // init tof
     ret = tof_init();
     if (ret != 0) {
       xlog("tof_init fail");
@@ -2749,13 +2753,13 @@ int iosCtl_init()
       xlog("create iosThread success");
     }
 
-    ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
-    if (ret < 0) {
-      xlog("Create didoThread iosThread fail");
-      return -1;
-    } else {
-      xlog("create didoThread success");
-    }
+    // ret = pthread_create(&didoThread, NULL, trigCtl, NULL);
+    // if (ret < 0) {
+    //   xlog("Create didoThread iosThread fail");
+    //   return -1;
+    // } else {
+    //   xlog("create didoThread success");
+    // }
 
     ret = pthread_create(&ledThread, NULL, ioCtl, NULL);
     if (ret < 0) {
