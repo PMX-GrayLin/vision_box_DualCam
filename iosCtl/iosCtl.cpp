@@ -1776,7 +1776,7 @@ int tof_init(void) {
   xlog("VL53L1X wordData:0x%X", wordData);
   while (sensorState == 0) {
     status += VL53L1X_BootState(tof_Dev, &sensorState);
-    VL53L1_WaitMs(tof_Dev, 10);
+    VL53L1_WaitMs(tof_Dev, 2);
     counterCheck++;
     xlog("sensorState:%d, counterCheck:%d", sensorState, counterCheck);
     if (counterCheck > 10) {
@@ -1786,14 +1786,13 @@ int tof_init(void) {
   }
   xlog("VL53L1X Chip booted");
 
-  // status = VL53L1X_SensorInit(tof_Dev);
+  status = VL53L1X_SensorInit(tof_Dev);
   // /* status += VL53L1X_SetInterruptPolarity(tof_Dev, 0); */
 
-  // status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
-  // status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
-  // status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
-  // status += VL53L1X_StartRanging(tof_Dev);
-
+  status += VL53L1X_SetDistanceMode(tof_Dev, 2); /* 1=short, 2=long */
+  status += VL53L1X_SetTimingBudgetInMs(tof_Dev, 100);
+  status += VL53L1X_SetInterMeasurementInMs(tof_Dev, 100);
+  status += VL53L1X_StartRanging(tof_Dev);
 }
 
 int tofReadDistance(void) {
