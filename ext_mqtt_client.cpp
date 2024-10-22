@@ -42,8 +42,8 @@
 #include "ext_mqtt_client.hpp"
 #include "common.hpp"
 #include "mainCtl.hpp"
-#include "global.hpp"
 #include "json.h"
+#include "global.hpp"
 
 /* GLOBAL VARIABLE DECLARATIONS ------------------------------------------------------- */
 extern WIFI_AP_PARA wifi;
@@ -151,7 +151,7 @@ int ext_json_parse_Dual(uint8_t *payload, uint8_t *setFunc, const int iID)
     seJsonInfo seInfo;
     memset(&seInfo, 0x00, sizeof(seJsonInfo));
 
-    MAINLOG(3, "[MAIN] : json_parse payload=[%s]\n", payload);
+    // MAINLOG(3, "[MAIN] : json_parse payload=[%s]\n", payload);
     if (setFunc == nullptr)
         return -1;
     root = (struct json_object *)json_tokener_parse((const char *)payload);
@@ -178,12 +178,14 @@ int ext_json_parse_Dual(uint8_t *payload, uint8_t *setFunc, const int iID)
 
     if (0 == iSetlection) // mqtt_type_header[0] : "Normal"
     {
-        MAINLOG(0, "iSelection[ %02d ] is %s. ", iSetlection, mqtt_type_header[iSetlection]);
+        xlog("iSetlection:%d:%s", iSetlection, mqtt_type_header[iSetlection]);
+        // MAINLOG(0, "iSelection[ %02d ] is %s. ", iSetlection, mqtt_type_header[iSetlection]);
 
         /* parsing "CMS" */
         j_subsystem = (struct json_object *)json_object_object_get(root, "cmd");
 
         strcpy((char *)setFunc, json_object_get_string(j_subsystem));
+        xlog("setFunc:%s", setFunc);
 
         if (j_subsystem != nullptr)
         {
@@ -333,8 +335,8 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
     //cycletime_start >>
     start = std::chrono::high_resolution_clock::now();
 
+    xlog("");
 
-    MAINLOG(1, "__%s__\n", __func__);
     if (ext_process_messages == false)
         return;
 
@@ -358,15 +360,17 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
     }
     else
     {
-        MAINLOG(0, " @ >> @ >> [MQTT]: mid = %d, len=%d, qos=%d, retain=%d\n", message->mid, message->payloadlen, message->qos, message->retain);
-        MAINLOG(0, "[MQTT]: message->payload --> %p\n", message->payload);
+        // MAINLOG(0, " @ >> @ >> [MQTT]: mid = %d, len=%d, qos=%d, retain=%d\n", message->mid, message->payloadlen, message->qos, message->retain);
+        // MAINLOG(0, "[MQTT]: message->payload --> %p\n", message->payload);
+        xlog("topic:%s, payloadlen:%d, payload:%s", message->topic, message->payloadlen, message->payload);
+
         if (message->payloadlen == (int)strlen((const char*)message->payload))
         {
             // # cycletime_end <<
             end = std::chrono::high_resolution_clock::now();
             duration = end - start;
             strtmp = std::to_string(duration.count());
-            MAINLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
+            // MAINLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "01", strtmp.c_str());
 
             //cycletime_start >>
             start = std::chrono::high_resolution_clock::now();
@@ -377,7 +381,7 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
 
             memset(setFunc, '\0', sizeof(setFunc));
 
-            MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : message->topic \"%s\"-->\n" NONE, ext_gettime_ms(), message->topic);
+            // MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : message->topic \"%s\"-->\n" NONE, ext_gettime_ms(), message->topic);
             if(!strcmp(message->topic, subscribe_topic[0])) {
                 ios_cameraid = 0;
             } else if(!strcmp(message->topic, subscribe_topic[1])) {
@@ -389,7 +393,7 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
             // "PX/VBS/Cmd/Cam02"
             if ( strcmp(message->topic, subscribe_topic[1]) == 0 ) {
                 
-                MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : subscribe_topic[1] \"%s\"-->\n" NONE, ext_gettime_ms(), subscribe_topic[1]);                
+                // MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : subscribe_topic[1] \"%s\"-->\n" NONE, ext_gettime_ms(), subscribe_topic[1]);                
 
                 if (ext_json_parse_Dual((uint8_t*)message->payload, (uint8_t*)setFunc, 1) != 0)
                 {
@@ -398,12 +402,12 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
             }
             else {  //"PX/VBS/Cmd/Cam01"
 
-                MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : subscribe_topic[0] \"%s\"-->\n" NONE, ext_gettime_ms(), subscribe_topic[0]);                     
+                // MAINLOG(0, LIGHT_GREEN "%d [MQTT-EXT] : subscribe_topic[0] \"%s\"-->\n" NONE, ext_gettime_ms(), subscribe_topic[0]);                     
 
                 if (ext_json_parse_Dual((uint8_t*)message->payload, (uint8_t*)setFunc, 0) != 0)
                 {
                     sprintf((char*)setFunc, "%s", "MQTT_PARSER_ERROR");
-                }                            
+                }                         
             }      
 
             /////////////////////////////////////////////////////////////////////////////
@@ -414,7 +418,7 @@ void ext_message_callback_Dual(struct mosquitto *ext_mosq, void *obj, const stru
             end = std::chrono::high_resolution_clock::now();
             duration = end - start;
             strtmp = std::to_string(duration.count());
-            MAINLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "02", strtmp.c_str());
+            // MAINLOG(0, RED "[__%s__] CycleTime : %s (ms)\n", "02", strtmp.c_str());
 
         }
         else

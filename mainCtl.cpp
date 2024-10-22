@@ -2813,7 +2813,6 @@ int main(int argc, char **argv) {
   ret = pthread_create(&thread2, nullptr, ext_mqtt_sub_Dual, nullptr);
   if (ret < 0) {
     xlog("pthread_create fail, ext_mqtt_sub_Dual");
-    // perror("Cannot create thread 2 !!\n");
     exit(1);
   } else {
     xlog("pthread_create success, ext_mqtt_sub_Dual");
