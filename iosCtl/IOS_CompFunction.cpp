@@ -16,6 +16,7 @@
 #include "IOS_CompFunction.h"
 #include "spi.h"
 #include "json.h"
+#include "global.hpp"
 
 pthread_mutex_t _IO_JsonQ_lock = PTHREAD_MUTEX_INITIALIZER;
 std::deque<seIO_JsonInfo> BufQueue_IO_Json;
@@ -1123,10 +1124,13 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
 {
     if (pCmd == nullptr || pJson_Obj == nullptr || pParam == nullptr || Json_CmdInfo_Out == nullptr)
     {
-        IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
+        xlog("Error!!!, the pointer define is nullptr");
+        // IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
         return -1;
     }
-    MAINLOG(0, "[MAIN] : It's my command : IO_MAINLED_SET_PARAM\n");
+    xlog("IO_MAINLED_SET_PARAM");
+    // MAINLOG(0, "[MAIN] : It's my command : IO_MAINLED_SET_PARAM\n");
+
     struct json_object *root, *j_args, *j_param;
     root = (struct json_object *)pJson_Obj;
 
@@ -1135,29 +1139,29 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
 
     if (j_args != nullptr)
     {
-        // parsing "args"
         j_args = (struct json_object *)json_object_object_get(root, "args");
-        MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+        // MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+        xlog("args:%s", json_object_get_string(j_args));
 
         j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
         if (j_param)
         {
-            IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+            // IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
             ios_mainled.intBrightness = json_object_get_int(j_param);
         }
 
         j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
         if (j_param)
         {
-            IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+            // IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
             if (!strcasecmp(json_object_get_string(j_param), "off"))
             {
                 ios_mainled.intBrightness = 0;
             }
         }
     }  
-    
-    
+
+    xlog("set brightness:%d", ios_mainled.intBrightness);
     
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
@@ -1462,7 +1466,8 @@ int compareHashMap_IO_Param(std::string strKey)
 
 int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_JsonInfo *pInfo)
 {
-    IOSLOG(0, "\n\n[__%s()__] %d: ===> start [%s]\n", __func__, __LINE__, szKey);
+    // IOSLOG(0, "\n\n[__%s()__] %d: ===> start [%s]\n", __func__, __LINE__, szKey);
+    xlog("szKey:%s", szKey);
 
     int ret = -1;
 
@@ -1504,7 +1509,8 @@ int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_J
         }
     }
 
-    IOSLOG(0, "[__%s__] %d: end <===  \n\n", __func__, __LINE__);
+    xlog("");
+    // IOSLOG(0, "[__%s__] %d: end <===  \n\n", __func__, __LINE__);
 
     return ret;
 }
