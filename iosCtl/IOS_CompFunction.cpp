@@ -1165,6 +1165,7 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
     xlog("");
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
+    return 0;
 }
 
 int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj, void *pParam, void *Json_CmdInfo_Out)
