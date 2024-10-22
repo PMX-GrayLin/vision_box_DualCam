@@ -1475,7 +1475,7 @@ int compareHashMap_IO_Param(std::string strKey)
 int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_JsonInfo *pInfo)
 {
     // IOSLOG(0, "\n\n[__%s()__] %d: ===> start [%s]\n", __func__, __LINE__, szKey);
-    xlog("szKey:%s, IO_AlgoParam_TblCnt:%s", szKey, IO_AlgoParam_TblCnt);
+    xlog("szKey:%s, IO_AlgoParam_TblCnt:%d", szKey, IO_AlgoParam_TblCnt);
 
     int ret = -1;
 
