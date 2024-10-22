@@ -1128,6 +1128,7 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
         // IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
         return -1;
     }
+    
     xlog("IO_MAINLED_SET_PARAM");
     // MAINLOG(0, "[MAIN] : It's my command : IO_MAINLED_SET_PARAM\n");
 
@@ -1161,6 +1162,7 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
         }
     }
     
+    xlog("");
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
 }
@@ -1172,7 +1174,9 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
         IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
         return -1;
     }
-    MAINLOG(0, "[MAIN] : It's my command : IO_AILIGHTING_SET_PARAM\n");
+
+    xlog("IO_AILIGHTING_SET_PARAM");
+    // MAINLOG(0, "[MAIN] : It's my command : IO_AILIGHTING_SET_PARAM\n");
     struct json_object *root, *j_args, *j_param;
     root = (struct json_object *)pJson_Obj;
 
@@ -1216,6 +1220,7 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
         }
     }
 
+    xlog("");
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
 }
@@ -1228,11 +1233,8 @@ int IO_MqttParse_IO_EXTLIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Ob
         return -1;
     }
 
-    // ??
     xlog("IO_EXTLIGHTING_SET_PARAM");
-    return 0;
-
-    MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_SET_PARAM\n");
+    // MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_SET_PARAM\n");
     struct json_object *root, *j_args, *j_param;
     root = (struct json_object *)pJson_Obj;
 
@@ -1289,10 +1291,8 @@ int IO_MqttParse_IO_EXTLIGHTING_GET_PARAM(const char *pCmd, const void *pJson_Ob
         return -1;
     }
 
-    // ??
     xlog("IO_EXTLIGHTING_GET_PARAM");
     // MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_GET_PARAM\n");
-    return 0;
 
     struct json_object *root, *j_args, *j_param;
     root = (struct json_object *)pJson_Obj;
