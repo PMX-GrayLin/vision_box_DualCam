@@ -1227,8 +1227,10 @@ int IO_MqttParse_IO_EXTLIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Ob
         IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
         return -1;
     }
+
+    // ??
     xlog("IO_EXTLIGHTING_SET_PARAM");
-    return 0
+    return 0;
 
     MAINLOG(0, "[MAIN] : It's my command : IO_EXTLIGHTING_SET_PARAM\n");
     struct json_object *root, *j_args, *j_param;
