@@ -1128,7 +1128,7 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
         // IOSLOG(0, " %s : >>> Error!!!, the pointer define is nullptr.\n", __func__);
         return -1;
     }
-    
+
     xlog("IO_MAINLED_SET_PARAM");
     // MAINLOG(0, "[MAIN] : It's my command : IO_MAINLED_SET_PARAM\n");
 
@@ -1475,7 +1475,7 @@ int compareHashMap_IO_Param(std::string strKey)
 int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_JsonInfo *pInfo)
 {
     // IOSLOG(0, "\n\n[__%s()__] %d: ===> start [%s]\n", __func__, __LINE__, szKey);
-    xlog("szKey:%s", szKey);
+    xlog("szKey:%s, IO_AlgoParam_TblCnt:%s", szKey, IO_AlgoParam_TblCnt);
 
     int ret = -1;
 
@@ -1485,13 +1485,14 @@ int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_J
     {
 
         int res = 0;
+        xlog("strCmd:%s", gIO_AlgoParamReg[i].strCmd);
         // IOSLOG(0, "%s()%d: [%s][%s][%d]\n", __FUNCTION__, __LINE__, szKey, gIO_AlgoParamReg[i].strCmd, IO_AlgoParam_TblCnt);
         if (!strcmp(szKey, gIO_AlgoParamReg[i].strCmd))
         {
-
             pIO_AlgoParam = &gIO_AlgoParamReg[i];
+            xlog("");
             res = pIO_AlgoParam->MqttParsesFunc(pIO_AlgoParam->strCmd, j_subsystem, pIO_AlgoParam->pParam, pIO_AlgoParam->szJsonInfo);
-
+            xlog("");
             if (pIO_AlgoParam->emAlgoId != ENUM_IO_ALGO_END)
             {
 
@@ -1504,7 +1505,7 @@ int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_J
                 strcpy(pInfo->szJsonBuf, pIO_AlgoParam->szJsonInfo);
                 
                 // IOSLOG(0, "%s()%d: [%s][%s]\n", __FUNCTION__, __LINE__, szKey, gIO_AlgoParamReg[i].strCmd);
-                IOSLOG(0, "%s()%d: [%d][%s][%s]\n", __FUNCTION__, __LINE__, pInfo->emAlgoId, pInfo->szCmd, pInfo->szJsonBuf);
+                // IOSLOG(0, "%s()%d: [%d][%s][%s]\n", __FUNCTION__, __LINE__, pInfo->emAlgoId, pInfo->szCmd, pInfo->szJsonBuf);
                 ret = 0;
                 break;
             }
