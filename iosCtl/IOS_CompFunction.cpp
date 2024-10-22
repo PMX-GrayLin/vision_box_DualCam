@@ -1159,9 +1159,7 @@ int IO_MqttParse_IO_MAINLED_SET_PARAM(const char *pCmd, const void *pJson_Obj, v
                 ios_mainled.intBrightness = 0;
             }
         }
-    }  
-
-    xlog("set brightness:%d", ios_mainled.intBrightness);
+    }
     
     memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
     strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
