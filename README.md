@@ -20,7 +20,7 @@
 ```
 
  ### AI Lighting
-![ToCheck](https://img.shields.io/badge/Status-ToCheck-red)
+![To Check](https://img.shields.io/badge/Status-ToCheck-red)
 ```
 {
   "cmd":"IO_AILIGHTING_SET_PARAM",
