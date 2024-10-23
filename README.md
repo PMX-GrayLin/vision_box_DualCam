@@ -7,8 +7,10 @@
 ## MQTT command check list
 
 ### Main LED
-$${\color{green}check status : PASS}$$
-![Important](https://img.shields.io/badge/Status-PASS-green)
+<!-- $${\color{green}check status : PASS}$$ -->
+![PASS](https://img.shields.io/badge/Status-PASS-green)
+![Important](https://img.shields.io/badge/Note-Important-red)
+
 ```
 {
   "cmd":"IO_MAINLED_SET_PARAM",
