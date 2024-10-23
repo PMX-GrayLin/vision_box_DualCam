@@ -8,6 +8,7 @@
 
 ### Main LED
 $${\color{green}check status : PASS}$$
+https://img.shields.io/badge/Status-PASS-green
 ```
 {
   "cmd":"IO_MAINLED_SET_PARAM",
