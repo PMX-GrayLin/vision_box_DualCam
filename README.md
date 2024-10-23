@@ -1,9 +1,4 @@
 
-![Red Badge](https://img.shields.io/badge/Important-Red-red)
-# Project Title
-
-![Important](https://img.shields.io/badge/Note-Important-red)
-
 ## MQTT command check list
 
 ### Main LED
@@ -20,7 +15,7 @@
 ```
 
  ### AI Lighting
-![To Check](https://img.shields.io/badge/Status-To Check-red)
+![ToCheck](https://img.shields.io/badge/Status-ToCheck-red)
 ```
 {
   "cmd":"IO_AILIGHTING_SET_PARAM",
@@ -33,7 +28,7 @@
 ```
 
  ### TOF
-$${\color{green}check status : PASS}$$
+![PASS](https://img.shields.io/badge/Status-PASS-green)
 ```
 {
    "cmd":"IO_TOF_GET_PARAM",
