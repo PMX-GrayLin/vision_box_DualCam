@@ -4,7 +4,7 @@
 
 ![Important](https://img.shields.io/badge/Note-Important-red)
 
-## MQTT command check listmage
+## MQTT command check list
 
 ### Main LED
 $${\color{green}check status : PASS}$$
