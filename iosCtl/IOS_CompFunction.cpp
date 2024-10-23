@@ -1289,22 +1289,20 @@ int compareHashMap_IO_Param(std::string strKey) {
 }
 
 int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_JsonInfo *pInfo) {
-  // IOSLOG(0, "\n\n[__%s()__] %d: ===> start [%s]\n", __func__, __LINE__, szKey);
-  xlog("szKey:%s, IO_AlgoParam_TblCnt:%d", szKey, IO_AlgoParam_TblCnt);
 
+  xlog("szKey:%s, IO_AlgoParam_TblCnt:%d", szKey, IO_AlgoParam_TblCnt);
   int ret = -1;
 
   seIO_AlgoParamReg *pIO_AlgoParam = nullptr;
 
   for (int i = 0; i < IO_AlgoParam_TblCnt; i++) {
     int res = 0;
-    xlog("strCmd:%s", gIO_AlgoParamReg[i].strCmd);
-    // IOSLOG(0, "%s()%d: [%s][%s][%d]\n", __FUNCTION__, __LINE__, szKey, gIO_AlgoParamReg[i].strCmd, IO_AlgoParam_TblCnt);
+    // xlog("strCmd:%s", gIO_AlgoParamReg[i].strCmd);
     if (!strcmp(szKey, gIO_AlgoParamReg[i].strCmd)) {
+
       pIO_AlgoParam = &gIO_AlgoParamReg[i];
-      xlog("");
       res = pIO_AlgoParam->MqttParsesFunc(pIO_AlgoParam->strCmd, j_subsystem, pIO_AlgoParam->pParam, pIO_AlgoParam->szJsonInfo);
-      xlog("");
+
       if (pIO_AlgoParam->emAlgoId != ENUM_IO_ALGO_END) {
         pInfo->emAlgoId = pIO_AlgoParam->emAlgoId;
 
@@ -1314,20 +1312,14 @@ int setIO_ParamAssign(const char *szKey, struct json_object *j_subsystem, seIO_J
         // Copy the Json information by the MQTT subscribe function.
         strcpy(pInfo->szJsonBuf, pIO_AlgoParam->szJsonInfo);
 
-        // IOSLOG(0, "%s()%d: [%s][%s]\n", __FUNCTION__, __LINE__, szKey, gIO_AlgoParamReg[i].strCmd);
-        // IOSLOG(0, "%s()%d: [%d][%s][%s]\n", __FUNCTION__, __LINE__, pInfo->emAlgoId, pInfo->szCmd, pInfo->szJsonBuf);
         ret = 0;
         break;
       } else {
         ret = -1;
-        // IOSLOG(0, "%s()%d: Unknow cmd=[%s][%s][%d]\n", __func__, __LINE__, szKey, gIO_AlgoParamReg[i].strCmd, IO_AlgoParam_TblCnt);
         break;
       }
     }
   }
-
-  xlog("");
-  // IOSLOG(0, "[__%s__] %d: end <===  \n\n", __func__, __LINE__);
 
   return ret;
 }

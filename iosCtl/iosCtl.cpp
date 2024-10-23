@@ -1748,7 +1748,7 @@ int tof_init(void) {
   int status = 0;
   int file = 0;
   int counterCheck = 0;
-  
+
   // i2c bus
   int adapter_nr = 2;
 
@@ -1804,21 +1804,20 @@ int tofReadDistance(void) {
 
   /* Get the data the new way */
   status += VL53L1X_GetResult(tof_Dev, &Results);
-  xlog("Status:%2d, Distance:%5d, Ambient:%2d, SigPerSPAD:%5d, NumSPADs:%5d", 
-        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs
-  );
 
-  // IOSLOG(0, "Status = %2d, dist = %5d, Ambient = %2d, Signal = %5d, #ofSpads = %5d\n",
-  //        Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+#if defined(DEBUG_TOF)
+  xlog("Status:%2d, Distance:%5d, Ambient:%2d, SigPerSPAD:%5d, NumSPADs:%5d",
+       Results.Status, Results.Distance, Results.Ambient, Results.SigPerSPAD, Results.NumSPADs);
+#endif
 
   /* trigger next ranging */
   status += VL53L1X_ClearInterrupt(tof_Dev);
   if (first_range) {
-  	/* very first measurement shall be ignored
-  	 * thus requires twice call
-  	 */
-  	status += VL53L1X_ClearInterrupt(tof_Dev);
-  	first_range = 0;
+    /* very first measurement shall be ignored
+     * thus requires twice call
+     */
+    status += VL53L1X_ClearInterrupt(tof_Dev);
+    first_range = 0;
   }
 
   return Results.Distance;
