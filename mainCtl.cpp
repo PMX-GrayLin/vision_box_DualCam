@@ -2509,7 +2509,7 @@ void *ios_process(void *argu) {
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
         // MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
-        ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.intBrightness);
+        ios_setAiLightLevel_withChannel(ios_ailighting.channel, ios_ailighting.intBrightness);
         ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_EXTLIGHTING_SET_PARAM) {
