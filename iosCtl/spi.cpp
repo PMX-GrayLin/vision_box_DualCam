@@ -507,7 +507,7 @@ int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel) {
   
   PWM_AI_TX_Data[LIGHT_LEVEL] = level;
   PWM_AI_TX_Data[CHECKSUM] = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN - 1);
-  xlog("checksum:0x%0X", PWM_AI_TX_Data[CHECKSUM]);
+  // xlog("checksum:0x%0X", PWM_AI_TX_Data[CHECKSUM]);
   PWM_AI_TX_Data[AI_LIGHT_ENABLE] = ((channel & 0x08) > 0) ? 1 : 0;      // Led4
   PWM_AI_TX_Data[AI_LIGHT_ENABLE + 1] = ((channel & 0x04) > 0) ? 1 : 0;  // Led3
   PWM_AI_TX_Data[AI_LIGHT_ENABLE + 2] = ((channel & 0x02) > 0) ? 1 : 0;  // Led2
@@ -515,7 +515,7 @@ int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel) {
 
   checksum = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN - 1);
   PWM_AI_TX_Data[CHECKSUM] = checksum;
-  xlog("checksum:0x%0X", checksum);
+  // xlog("checksum:0x%0X", checksum);
 
   SPI_Transfer(PWM_AI_TX_Data, RxBuf, MAX_FORMAT_LEN + 2);
   return 0;

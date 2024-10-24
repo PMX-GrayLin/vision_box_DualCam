@@ -618,26 +618,24 @@ int32_t ext_mqtt_subscriber_Dual() {
  *                bool bCameID:
  *	Return		: error number
  *************************************************************/
-int32_t ext_mqtt_publisher_Dual(char *jString, const bool bCameID)
-{
-    pthread_mutex_lock(&ext_mqtt_publisher_Dual_Mutex);
-    std::string strText(jString);
+int32_t ext_mqtt_publisher_Dual(char *jString, const bool bCameID) {
+  pthread_mutex_lock(&ext_mqtt_publisher_Dual_Mutex);
+  std::string strText(jString);
 
-    int ret = 0;
+  int ret = 0;
 
-    MAINLOG(1, "%s, jString=%s\n", __func__, jString);
+  xlog("MQTT publish topic:%s, json:%s", ext_cfg->topics_pub[bCameID], jString);
+  // MAINLOG(1, "%s, jString=%s\n", __func__, jString);
+  // MAINLOG(0, LIGHT_PURPLE "[MAIN-EXT] : MQTT publish topics_pub[%d] \"%s\" --> %s\n" NONE, bCameID, ext_cfg->topics_pub[bCameID], strText.c_str());
 
-    MAINLOG(0, LIGHT_PURPLE "[MAIN-EXT] : MQTT publish topics_pub[%d] \"%s\" --> %s\n" NONE, bCameID, ext_cfg->topics_pub[bCameID], strText.c_str());
+  // Publish the message to the topic
+  ret = mosquitto_publish(ext_mosq, &mid, ext_cfg->topics_pub[bCameID], strText.size(), strText.c_str(), ext_cfg->qos, ext_cfg->retain);
 
-    // Publish the message to the topic
-    ret = mosquitto_publish(ext_mosq, &mid, ext_cfg->topics_pub[bCameID], strText.size(), strText.c_str(), ext_cfg->qos, ext_cfg->retain);
-
-    if (ret)
-    {
-        fprintf(stderr, "Can't publish to Mosquitto server\n");
-        printf("Error (%d) publishing message.\n", ret);
-        exit(-1);
-    }
-    pthread_mutex_unlock(&ext_mqtt_publisher_Dual_Mutex);
-    return ret;
+  if (ret) {
+    fprintf(stderr, "Can't publish to Mosquitto server\n");
+    printf("Error (%d) publishing message.\n", ret);
+    exit(-1);
+  }
+  pthread_mutex_unlock(&ext_mqtt_publisher_Dual_Mutex);
+  return ret;
 }
