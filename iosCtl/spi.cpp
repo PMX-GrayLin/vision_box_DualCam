@@ -48,18 +48,14 @@ int SPI_Transfer(const uint8_t *TxBuf, uint8_t *RxBuf, int len)
 #ifdef DEBUG_SPI
       int i;
       // printf("nsend spi message Succeed\n");
-      printf("%s()%d: nSPI Send [Len:%d]: ", __FUNCTION__, __LINE__, len);
+      printf("%s:%d: SPI Tx, Len:%d: ", __FUNCTION__, __LINE__, len);
       for (i = 0; i < len; i++) {
-        // if (i % 8 == 0)
-        //     printf("nt\n");
         printf("0x%02X ", TxBuf[i]);
       }
       printf("\r\n");
 
-      printf("%s()%d: SPI Receive [len:%d]:", __FUNCTION__, __LINE__, len);
+      printf("%s:%d: SPI Rx, len:%d: ", __FUNCTION__, __LINE__, len);
       for (i = 0; i < len; i++) {
-        // if (i % 8 == 0)
-        //     printf("nt\n");
         printf("0x%02X ", RxBuf[i]);
       }
       printf("\r\n");
@@ -498,24 +494,30 @@ int ios_setMainLightLevel(uint16_t level){
 *               channel 3 : 0x04, channel 2 : 0x02, channel 1 : 0x01)
 *   Return : OK 0, Error -1
 *********************************************************************/
-int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel){
-  unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN]={PWM_AI_LED,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x64,0x00};
+int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel) {
+  unsigned char PWM_AI_TX_Data[MAX_FORMAT_LEN] = {PWM_AI_LED, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x64, 0x00};
   unsigned char checksum;
-  uint8_t RxBuf[10]={0};
+  uint8_t RxBuf[10] = {0};
 
-  if(level > MAX_AI_LIGHT_LEVEL) return -1;
+  xlog("level:%d, channel:%d", level, channel);
+  if (level > MAX_AI_LIGHT_LEVEL) {
+    xlog("fail, level > MAX_AI_LIGHT_LEVEL");
+    return -1;
+  }
+  
   PWM_AI_TX_Data[LIGHT_LEVEL] = level;
-  PWM_AI_TX_Data[CHECKSUM] = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN-1);
-  PWM_AI_TX_Data[AI_LIGHT_ENABLE]   = ((channel & 0x08) > 0) ? 1 : 0;   // Led4
-  PWM_AI_TX_Data[AI_LIGHT_ENABLE+1] = ((channel & 0x04) > 0) ? 1 : 0;   // Led3
-  PWM_AI_TX_Data[AI_LIGHT_ENABLE+2] = ((channel & 0x02) > 0) ? 1 : 0;   // Led2
-  PWM_AI_TX_Data[AI_LIGHT_ENABLE+3] = ((channel & 0x01) > 0) ? 1 : 0;   // Led1
+  PWM_AI_TX_Data[CHECKSUM] = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN - 1);
+  xlog("checksum:0x%0X", PWM_AI_TX_Data[CHECKSUM]);
+  PWM_AI_TX_Data[AI_LIGHT_ENABLE] = ((channel & 0x08) > 0) ? 1 : 0;      // Led4
+  PWM_AI_TX_Data[AI_LIGHT_ENABLE + 1] = ((channel & 0x04) > 0) ? 1 : 0;  // Led3
+  PWM_AI_TX_Data[AI_LIGHT_ENABLE + 2] = ((channel & 0x02) > 0) ? 1 : 0;  // Led2
+  PWM_AI_TX_Data[AI_LIGHT_ENABLE + 3] = ((channel & 0x01) > 0) ? 1 : 0;  // Led1
 
-
-  checksum = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN-1);
-  printf("%s()%d: checksum=%x\r\n", __FUNCTION__, __LINE__,checksum);
+  checksum = xor_checksum(PWM_AI_TX_Data, MAX_FORMAT_LEN - 1);
   PWM_AI_TX_Data[CHECKSUM] = checksum;
-  SPI_Transfer(PWM_AI_TX_Data, RxBuf, MAX_FORMAT_LEN+2);
+  xlog("checksum:0x%0X", checksum);
+
+  SPI_Transfer(PWM_AI_TX_Data, RxBuf, MAX_FORMAT_LEN + 2);
   return 0;
 }
 

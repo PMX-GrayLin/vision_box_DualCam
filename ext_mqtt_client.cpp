@@ -192,8 +192,7 @@ int ext_json_parse_Dual(uint8_t *payload, uint8_t *setFunc, const int iID)
             int ret = 0;
             //================= IOS function.start ===================
             if((ret = json_parse_IOS(root, setFunc, iID)) == 0) {
-
-                MAINLOG(0, "Running %s object of Json ret=[%d]\n", "IOS", ret);
+                // MAINLOG(0, "Running %s object of Json ret=[%d]\n", "IOS", ret);
             }     
             //================= IOS function.End ===================                        
 

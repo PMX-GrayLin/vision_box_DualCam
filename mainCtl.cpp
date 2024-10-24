@@ -1613,13 +1613,14 @@ void *mainCtl(void *argu) {
         // seIO_JsonInfo seIOInfo;
         // if (!IO_JsonQ_DeQ(&seIOInfo))
         if (!IO_JsonQ_IsEmpty()) {
-          MAINLOG(0, "%s : ======   IOS process.START   ======\n", __func__);
+          xlog("IO_JsonQ not empty");
 
+          // MAINLOG(0, "%s : ======   IOS process.START   ======\n", __func__);
           // MAINLOG(0, "%s : enum_IdReg emAlgoId : %d\n", __func__, seIOInfo.emAlgoId);
           // MAINLOG(0, "%s : szCmd : %s\n", __func__, seIOInfo.szCmd);
-          MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+          // MAINLOG(0, "%s : %s ---> start\n", __func__, "resume_ip()");
+          // MAINLOG(0, "%s : ======   IOS process.END   ======\n", __func__);
 
-          MAINLOG(0, "%s : ======   IOS process.END   ======\n", __func__);
           resume_io();
         }
         //=================   IOS process.END (Single camera)    ===================
@@ -2175,7 +2176,8 @@ void *ios_process(void *argu) {
       seIO_JsonInfo seInfo;
       IO_JsonQ_DeQ(&seInfo);
       strcpy((char *)rec_data, seInfo.szCmd);
-      MAINLOG(0, YELLOW " @@@ === >>> IO_JsonQ_DeQ() = [%d][%s]\n", seInfo.emAlgoId, seInfo.szCmd);
+      xlog("IO_JsonQ_DeQ, emAlgoId:%d, szCmd:%s", seInfo.emAlgoId, seInfo.szCmd);
+      // MAINLOG(0, YELLOW " @@@ === >>> IO_JsonQ_DeQ() = [%d][%s]\n", seInfo.emAlgoId, seInfo.szCmd);
 
       if (seInfo.emAlgoId == TRIGGER_SET_PROCESS) {
         MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[TRIGGER_SET_PROCESS]);
@@ -2500,12 +2502,12 @@ void *ios_process(void *argu) {
         ios_sfc_params_json_create(job_t);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_MAINLED_SET_PARAM) {
-        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_MAINLED_SET_PARAM]);
+        // MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_MAINLED_SET_PARAM]);
         ios_setMainLightLevel(ios_mainled.intBrightness);
         ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
-        MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
+        // MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
         ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.intBrightness);
         ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);

@@ -1037,17 +1037,17 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
   if (j_args != nullptr) {
     // parsing "args"
     j_args = (struct json_object *)json_object_object_get(root, "args");
-    MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
+    // MAINLOG(0, "[MAIN] : args=%s\n", json_object_get_string(j_args));
 
     j_param = (struct json_object *)json_object_object_get(j_args, "lightSource");
     if (j_param) {
-      IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
+      // IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
       ios_ailighting.strlightSource = json_object_get_string(j_param);
     }
 
     j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
     if (j_param) {
-      IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
+      // IOSLOG(0, "[__%s__] : intBrightness = %d\n", __func__, json_object_get_int(j_param));
       ios_ailighting.intBrightness = json_object_get_int(j_param);
     }
 
@@ -1058,14 +1058,15 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
 
     j_param = (struct json_object *)json_object_object_get(j_args, "Switch");
     if (j_param) {
-      IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
+      // IOSLOG(0, "[__%s__] : strSwitch = %s\n", __func__, json_object_get_string(j_param));
       if (!strcasecmp(json_object_get_string(j_param), "off")) {
         ios_ailighting.intBrightness = 0;
       }
     }
+
+    xlog("intBrightness:%d", ios_ailighting.intBrightness);
   }
 
-  xlog("");
   memset((char *)ios_CmdInfo, '\0', sizeof((char *)ios_CmdInfo));
   strcpy((char *)ios_CmdInfo, json_object_get_string(j_args));
   return 0;
