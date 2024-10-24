@@ -336,6 +336,7 @@ int ios_response_json_create(char *jstring, const char *cmd, const char *pset) {
   sprintf(jstring, "%s", buf_cst);
   MAINLOG(0, "%s json : %s\n", __func__, jstring);
   json_object_put(root);
+  xlog("");
   return 0;
 }
 
