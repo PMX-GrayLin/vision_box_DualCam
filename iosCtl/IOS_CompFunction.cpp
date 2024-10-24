@@ -1043,7 +1043,8 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
     if (j_param) {
       // IOSLOG(0, "[__%s__] : strlightSource = %s\n", __func__, json_object_get_string(j_param));
       ios_ailighting.strlightSource = json_object_get_string(j_param);
-    }
+      xlog("ios_ailighting.strlightSource:%s", ios_ailighting.strlightSource);
+  }
 
     j_param = (struct json_object *)json_object_object_get(j_args, "Brightness");
     if (j_param) {
@@ -1054,7 +1055,6 @@ int IO_MqttParse_IO_AILIGHTING_SET_PARAM(const char *pCmd, const void *pJson_Obj
 
     int led1, led2, led3, led4;
     if (sscanf(ios_ailighting.strlightSource.c_str(), "[%d,%d,%d,%d]", &led1, &led2, &led3, &led4) >= 4) {
-      xlog("sscanf >= 4");
       ios_ailighting.channel = (char)(led1 | led2 << 1 | led3 << 2 | led4 << 3) & 0x0F;
       // ios_ailighting.intBrightness = value = (char)(led1 | led2 << 1 | led3 << 2 | led4 << 3) & 0x0F;
     }

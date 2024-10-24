@@ -2544,7 +2544,9 @@ void *ios_process(void *argu) {
         ios_sys_get_params_json_create(job_t);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       }
-      MAINLOG(0, " ## break of ios_process ##\n");
+
+      xlog("ios_process break");
+      // MAINLOG(0, " ## break of ios_process ##\n");
     }
 
     if (IO_JsonQ_IsEmpty()) {
