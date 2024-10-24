@@ -334,9 +334,9 @@ int ios_response_json_create(char *jstring, const char *cmd, const char *pset) {
   memset(jstring, '\0', strlen(jstring));
   const char *buf_cst = json_object_to_json_string(root);
   sprintf(jstring, "%s", buf_cst);
-  MAINLOG(0, "%s json : %s\n", __func__, jstring);
+  // MAINLOG(0, "%s json : %s\n", __func__, jstring);
   json_object_put(root);
-  xlog("");
+
   return 0;
 }
 
@@ -2509,12 +2509,11 @@ void *ios_process(void *argu) {
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_AILIGHTING_SET_PARAM) {
         // MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_AILIGHTING_SET_PARAM]);
-        ios_setAiLightLevel_withChannel(ios_ailighting.channel, ios_ailighting.intBrightness);
+        ios_setAiLightLevel_withChannel(ios_ailighting.intBrightness, ios_ailighting.channel);
         ios_response_json_create(job_t, (char *)rec_data, (char *)ios_CmdInfo);
         ext_mqtt_publisher_Dual(job_t, ios_cameraid);
       } else if (seInfo.emAlgoId == IO_EXTLIGHTING_SET_PARAM) {
         MAINLOG(0, "%d [MAINCTL] : new_job=%s\n", main_gettime_ms(), ios_cmdStr[IO_EXTLIGHTING_SET_PARAM]);
-
         __LIGHT_MANUFACTURER__ manufacturer;
         if (!strncasecmp(ios_ailighting.strlightSource.c_str(), "opt", strlen("opt"))) {
           manufacturer = OPT;
