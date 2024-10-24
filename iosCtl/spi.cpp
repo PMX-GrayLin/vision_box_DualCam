@@ -499,7 +499,7 @@ int ios_setAiLightLevel_withChannel(uint16_t level, uint8_t channel) {
   unsigned char checksum;
   uint8_t RxBuf[10] = {0};
 
-  xlog("level:%d, channel:%d", level, channel);
+  xlog("channel:%d, level:%d", channel, level);
   if (level > MAX_AI_LIGHT_LEVEL) {
     xlog("fail, level > MAX_AI_LIGHT_LEVEL");
     return -1;
